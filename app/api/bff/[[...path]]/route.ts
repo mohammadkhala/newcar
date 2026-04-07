@@ -24,6 +24,12 @@ async function forward(
   const headers = new Headers();
   headers.set("Accept", "application/json");
   headers.set("X-localization", loc);
+  const xff = req.headers.get("x-forwarded-for");
+  const xReal = req.headers.get("x-real-ip");
+  const clientIp = xff?.split(",")[0]?.trim() || xReal?.trim();
+  if (clientIp) {
+    headers.set("X-Forwarded-For", clientIp);
+  }
   if (token) {
     headers.set("Authorization", `Bearer ${token}`);
   }

@@ -19,11 +19,23 @@ export async function POST(req: NextRequest) {
     },
     body,
   });
-  const data = (await res.json()) as {
+  const raw = await res.text();
+  let data: {
     token?: string;
     status?: boolean;
     errors?: unknown;
-  };
+    message?: string;
+  } = {};
+  if (raw) {
+    try {
+      data = JSON.parse(raw) as typeof data;
+    } catch {
+      return NextResponse.json(
+        { message: "Login service returned a non-JSON response" },
+        { status: res.status >= 400 ? res.status : 502 },
+      );
+    }
+  }
   if (!res.ok) {
     return NextResponse.json(data, { status: res.status });
   }
