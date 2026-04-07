@@ -1,0 +1,14 @@
+import { setRequestLocale } from "next-intl/server";
+import { redirect } from "@/i18n/navigation";
+
+type Props = { params: Promise<{ locale: string }> };
+
+/**
+ * Canonical /shop entry point; redirect to searchable listing.
+ */
+export default async function ShopIndexPage({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  redirect({ href: "/shop/search", locale });
+}
+

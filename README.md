@@ -1,36 +1,122 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# New-Stor — واجهة المتجر (Next.js)
 
-## Getting Started
+متجر الزبائن لـ **New Car**، مبني على **Next.js 16** (App Router) + **TypeScript** + **Tailwind CSS v4** + **next-intl** (عربي / إنجليزي / عبري).
 
-First, run the development server:
+**المستودع:** [github.com/baitpait/New-Stor](https://github.com/baitpait/New-Stor)
+
+الخلفية (Laravel + Passport + API `v1`) تعمل منفصلة؛ هذا المشروع يستهلك الـ API فقط عبر `NEXT_PUBLIC_API_BASE_URL`.
+
+---
+
+## المتطلبات
+
+- **Node.js 20+** (يُفضّل LTS الحالي)
+- **npm** (أو `pnpm` / `yarn` مع تعديل الأوامر)
+
+---
+
+## التطوير المحلي
+
+```bash
+npm install
+cp .env.local.example .env.local
+```
+
+عدّل `.env.local` واضبط `NEXT_PUBLIC_API_BASE_URL` على قاعدة الـ API كاملة حتى `/api/v1`، مثال:
+
+```env
+NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000/api/v1
+```
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+يفتح التطبيق على [http://localhost:3000](http://localhost:3000) (أو المنفذ الذي يعرضه Next).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## النشر على السيرفر (VPS / Node)
 
-## Learn More
+### 1) متغيرات البيئة (مهم جداً)
 
-To learn more about Next.js, take a look at the following resources:
+متغيرات `NEXT_PUBLIC_*` تُدمَج في **وقت البناء** (`npm run build`). غيابها أو خطأها يعني واجهة بدون API.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+على السيرفر أنشئ ملف بيئة (مثلاً `.env.production` أو `.env.local`) **قبل** البناء:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| المتغير | وصف |
+|--------|-----|
+| `NEXT_PUBLIC_API_BASE_URL` | إلزامي. مثال: `https://your-admin-domain.com/api/v1` (بدون شرطة مائلة أخيرة اختياري؛ الكود يطبّع المسار). |
+| `NEXT_PUBLIC_SITE_URL` | اختياري. رابط المتجر العلني لـ Open Graph و`metadataBase` وPWA (مثال: `https://store.yourdomain.com`). |
 
-## Deploy on Vercel
+### 2) CORS على Laravel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+في `.env` الخاص بلوحة Laravel / الـ API، تأكد أن `CORS_ALLOWED_ORIGINS` يتضمن **أصل المتجر** (البروتوكول + الدومين + المنفذ إن وُجد)، مثال:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```env
+CORS_ALLOWED_ORIGINS=https://store.yourdomain.com,https://www.store.yourdomain.com
+```
+
+ثم على الخادم:
+
+```bash
+php artisan optimize:clear
+```
+
+### 3) بناء وتشغيل الإنتاج
+
+```bash
+cd /path/to/New-Stor   # جذر مستنسخ المستودع
+npm ci
+npm run build
+npm run start
+```
+
+افتراضياً `next start` يستمع على المنفذ **3000**. خلف **Nginx** أو **Caddy** كـ reverse proxy مع TLS.
+
+مثال موجز لـ Nginx (استبدل الدومين والمسار):
+
+```nginx
+server {
+    server_name store.yourdomain.com;
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+### 4) تشغيل دائم (اختياري)
+
+استخدم **systemd** أو **PM2** لتشغيل `npm run start` بعد إعادة التشغيل. عند كل نشر جديد: سحب الكود، `npm ci`, `npm run build`, إعادة تشغيل العملية.
+
+---
+
+## أوامر مفيدة
+
+| الأمر | الغرض |
+|--------|--------|
+| `npm run lint` | ESLint |
+| `npm run build` | بناء إنتاج |
+| `npm run start` | تشغيل بعد البناء |
+| `npm run verify-api-localization` | تحقق اختياري من ترويسة `X-localization` للـ API |
+
+---
+
+## هيكل مرتبط بالتكامل
+
+- `lib/api.ts` — جلب من الخادم (مع `revalidate` حيث ينطبق).
+- `lib/client-api.ts` — جلب من المتصفح (فلاتر المركبة وغيرها عبر CORS).
+- `public/logo.png` — شعار المتجر.
+
+لمزيد من تخطيط المنتج والـ IA راجع مستودع المشروع الأوسع: `store/STORE-MASTER-PLAN.md` إن وُجد ضمن نسختك المحلية للمونوريبو.
+
+---
+
+## الترخيص
+
+خاص بالمشروع (Private) ما لم يُحدَّد غير ذلك في المستودع.
