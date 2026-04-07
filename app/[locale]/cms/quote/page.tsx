@@ -48,6 +48,7 @@ export default function QuotePage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="mt-1 w-full rounded-lg border border-surface-muted px-3 py-2"
+            autoComplete="name"
           />
         </label>
         <label className="block text-sm">
@@ -57,6 +58,7 @@ export default function QuotePage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="mt-1 w-full rounded-lg border border-surface-muted px-3 py-2"
+            autoComplete="email"
           />
         </label>
         <label className="block text-sm">
@@ -65,6 +67,7 @@ export default function QuotePage() {
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             className="mt-1 w-full rounded-lg border border-surface-muted px-3 py-2"
+            autoComplete="tel"
           />
         </label>
         <label className="block text-sm">
@@ -75,6 +78,7 @@ export default function QuotePage() {
             onChange={(e) => setMessage(e.target.value)}
             rows={5}
             className="mt-1 w-full rounded-lg border border-surface-muted px-3 py-2"
+            autoComplete="off"
           />
         </label>
         <button

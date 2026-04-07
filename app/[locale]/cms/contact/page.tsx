@@ -49,6 +49,7 @@ export default function ContactPage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="mt-1 w-full rounded-lg border border-surface-muted px-3 py-2"
+            autoComplete="name"
           />
         </label>
         <label className="block text-sm">
@@ -59,6 +60,7 @@ export default function ContactPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="mt-1 w-full rounded-lg border border-surface-muted px-3 py-2"
+            autoComplete="email"
           />
         </label>
         <label className="block text-sm">
@@ -67,6 +69,7 @@ export default function ContactPage() {
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             className="mt-1 w-full rounded-lg border border-surface-muted px-3 py-2"
+            autoComplete="tel"
           />
         </label>
         <label className="block text-sm">
@@ -75,6 +78,7 @@ export default function ContactPage() {
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
             className="mt-1 w-full rounded-lg border border-surface-muted px-3 py-2"
+            autoComplete="off"
           />
         </label>
         <label className="block text-sm">
@@ -85,6 +89,7 @@ export default function ContactPage() {
             onChange={(e) => setMessage(e.target.value)}
             rows={5}
             className="mt-1 w-full rounded-lg border border-surface-muted px-3 py-2"
+            autoComplete="off"
           />
         </label>
         <button

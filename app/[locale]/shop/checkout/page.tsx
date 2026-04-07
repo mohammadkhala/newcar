@@ -544,6 +544,7 @@ export default function CheckoutPage() {
                   setCity("");
                 }}
                 className="mt-1 w-full rounded-lg border border-surface-muted px-3 py-2"
+                autoComplete="address-level1"
               >
                 <option value="">{t("chooseArea")}</option>
                 {areas.map((area) => (
@@ -562,6 +563,7 @@ export default function CheckoutPage() {
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
                 className="mt-1 w-full rounded-lg border border-surface-muted px-3 py-2"
+                autoComplete="address-level2"
               >
                 <option value="">{t("chooseCity")}</option>
                 {cityOptions.map((cityRow) => {
@@ -582,6 +584,7 @@ export default function CheckoutPage() {
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
                 className="mt-1 w-full rounded-lg border border-surface-muted px-3 py-2"
+                autoComplete="address-level2"
               />
             </label>
           )}
@@ -592,6 +595,7 @@ export default function CheckoutPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="mt-1 w-full rounded-lg border border-surface-muted px-3 py-2"
+              autoComplete="name"
             />
           </label>
           <label className="block text-sm">
@@ -616,6 +620,7 @@ export default function CheckoutPage() {
               value={line}
               onChange={(e) => setLine(e.target.value)}
               className="mt-1 min-h-[4.5rem] w-full resize-y rounded-lg border border-surface-muted px-3 py-2"
+              autoComplete="street-address"
             />
           </label>
           <div className="flex flex-wrap gap-2">

@@ -97,6 +97,7 @@ export default function LoginPage() {
               onChange={(e) => setCountryCode(e.target.value as "+970" | "+972")}
               className="store-input w-full min-w-0 text-sm sm:text-base"
               aria-label={t("countryCode")}
+              autoComplete="tel-country-code"
             >
               <option value="+970">+970 {t("countryPalestine")}</option>
               <option value="+972">+972 {t("countryIsrael")}</option>

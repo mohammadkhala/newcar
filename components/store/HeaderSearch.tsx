@@ -33,6 +33,7 @@ export function HeaderSearch() {
         <input
           name="q"
           type="search"
+          autoComplete="search"
           placeholder={t("namePlaceholder")}
           className="min-h-10 w-full min-w-0 rounded-full border-0 bg-transparent py-2 ps-10 pe-2 text-sm text-secondary placeholder:text-secondary/55 focus:outline-none md:ps-11"
           aria-label={t("nameLabel")}

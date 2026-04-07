@@ -102,6 +102,7 @@ export function SearchSidebar({
             defaultValue={initialQuery.name ?? ""}
             placeholder={t("namePlaceholder")}
             className="store-input"
+            autoComplete="off"
             onChange={handleInputDebounced}
           />
         </label>
@@ -176,11 +177,25 @@ export function SearchSidebar({
         <div className="grid grid-cols-2 gap-2 border-t border-border-soft pt-4">
           <label className="flex flex-col gap-1 text-xs font-medium text-secondary">
             {t("priceMin")}
-            <input type="number" name="price_low" defaultValue={initialQuery.price_low ?? ""} className="store-input min-h-10" onChange={handleInputDebounced} />
+            <input
+              type="number"
+              name="price_low"
+              defaultValue={initialQuery.price_low ?? ""}
+              className="store-input min-h-10"
+              autoComplete="off"
+              onChange={handleInputDebounced}
+            />
           </label>
           <label className="flex flex-col gap-1 text-xs font-medium text-secondary">
             {t("priceMax")}
-            <input type="number" name="price_high" defaultValue={initialQuery.price_high ?? ""} className="store-input min-h-10" onChange={handleInputDebounced} />
+            <input
+              type="number"
+              name="price_high"
+              defaultValue={initialQuery.price_high ?? ""}
+              className="store-input min-h-10"
+              autoComplete="off"
+              onChange={handleInputDebounced}
+            />
           </label>
         </div>
 
@@ -196,7 +211,15 @@ export function SearchSidebar({
           <div className="mt-3 space-y-3">
             <label className="flex flex-col gap-1 text-xs font-medium text-secondary">
               {t("ratingMin")}
-              <input type="number" step="0.1" name="rating" defaultValue={initialQuery.rating ?? ""} className="store-input min-h-10" onChange={handleInputDebounced} />
+              <input
+                type="number"
+                step="0.1"
+                name="rating"
+                defaultValue={initialQuery.rating ?? ""}
+                className="store-input min-h-10"
+                autoComplete="off"
+                onChange={handleInputDebounced}
+              />
             </label>
             <div className="flex flex-col gap-1 text-xs font-medium text-secondary" onChange={handleDirectChange}>
               {t("tags")}

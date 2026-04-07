@@ -236,6 +236,7 @@ export default async function CategoryDetailPage({
                 defaultValue={query.name ?? ""}
                 placeholder={tSearch("namePlaceholder")}
                 className="store-input"
+                autoComplete="off"
               />
             </label>
 
@@ -300,6 +301,7 @@ export default async function CategoryDetailPage({
                   name="price_low"
                   defaultValue={query.price_low ?? ""}
                   className="store-input min-h-10"
+                  autoComplete="off"
                 />
               </label>
               <label className="flex flex-col gap-1 text-xs font-medium text-secondary">
@@ -309,6 +311,7 @@ export default async function CategoryDetailPage({
                   name="price_high"
                   defaultValue={query.price_high ?? ""}
                   className="store-input min-h-10"
+                  autoComplete="off"
                 />
               </label>
             </div>
@@ -336,6 +339,7 @@ export default async function CategoryDetailPage({
                     name="rating"
                     defaultValue={query.rating ?? ""}
                     className="store-input min-h-10"
+                    autoComplete="off"
                   />
                 </label>
                 <label className="flex flex-col gap-1 text-xs font-medium text-secondary">

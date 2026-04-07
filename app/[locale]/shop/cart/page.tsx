@@ -67,6 +67,7 @@ export default function CartPage() {
                           setQty(l.productId, Number(e.target.value) || 1)
                         }
                         className="w-20 rounded border border-surface-muted px-2 py-1"
+                        autoComplete="off"
                       />
                     </label>
                   </div>

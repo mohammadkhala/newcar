@@ -167,6 +167,7 @@ export default function AccountProfilePage() {
                 onChange={(e) => setFName(e.target.value)}
                 required
                 className="store-input w-full"
+                autoComplete="given-name"
               />
             </div>
             
@@ -182,6 +183,7 @@ export default function AccountProfilePage() {
                 onChange={(e) => setLName(e.target.value)}
                 required
                 className="store-input w-full"
+                autoComplete="family-name"
               />
             </div>
 
@@ -198,6 +200,7 @@ export default function AccountProfilePage() {
                 required
                 className="store-input w-full"
                 dir="ltr"
+                autoComplete="email"
               />
             </div>
 
@@ -216,6 +219,7 @@ export default function AccountProfilePage() {
                 dir="ltr"
                 readOnly
                 title="لا يمكن تغيير رقم الجوال المعتمد للحساب"
+                autoComplete="tel"
               />
               <p className="text-xs text-secondary/60">
                 لا يمكن تعديل رقم الجوال.

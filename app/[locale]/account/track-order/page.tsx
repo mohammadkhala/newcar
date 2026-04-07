@@ -83,6 +83,7 @@ export default function TrackOrderPage() {
                 onChange={(e) => setOrderId(e.target.value)}
                 required
                 className="store-input w-full text-end px-4 h-12 border-surface-muted bg-white shadow-sm"
+                autoComplete="off"
               />
             </div>
             <div className="flex-1 w-full relative">
@@ -98,6 +99,7 @@ export default function TrackOrderPage() {
                 required
                 className="store-input w-full ps-[80px] pe-4 h-12 text-end border-surface-muted bg-white shadow-sm"
                 dir="ltr"
+                autoComplete="tel-national"
               />
             </div>
             <button
