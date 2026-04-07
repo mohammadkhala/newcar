@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getApiBaseUrl } from "@/lib/api-base";
+import { forwardClientIpHeaders } from "@/lib/laravel-forward-headers";
 
 const TOKEN_COOKIE = "nc_access_token";
 
@@ -16,6 +17,7 @@ export async function POST(req: NextRequest) {
       "Content-Type": "application/json",
       "X-localization": loc,
       Accept: "application/json",
+      ...forwardClientIpHeaders(req),
     },
     body,
   });
