@@ -59,6 +59,23 @@ export function useFcmTokenListener(isAuthenticated: boolean) {
       console.log("FCM Token successfully linked to user profile.");
     };
 
+    const isSessionAuthenticated = async (): Promise<boolean> => {
+      try {
+        const res = await fetch("/api/auth/session", {
+          method: "GET",
+          credentials: "include",
+          cache: "no-store",
+        });
+        if (!res.ok) {
+          return false;
+        }
+        const payload = (await res.json()) as { authenticated?: boolean };
+        return Boolean(payload?.authenticated);
+      } catch {
+        return isAuthenticated;
+      }
+    };
+
     const processToken = async (token: string) => {
       const normalizedToken = String(token || "").trim();
       if (!normalizedToken) {
@@ -75,7 +92,8 @@ export function useFcmTokenListener(isAuthenticated: boolean) {
       }
 
       // 2) Only authenticated users get token linked on users.cm_firebase_token.
-      if (isAuthenticated) {
+      const authenticatedNow = await isSessionAuthenticated();
+      if (authenticatedNow) {
         try {
           await linkTokenToProfile(normalizedToken);
         } catch (e) {
@@ -107,8 +125,21 @@ export function useFcmTokenListener(isAuthenticated: boolean) {
       void processToken(readPersistedToken());
     }
 
+    const retryLink = () => {
+      void processToken(readPersistedToken());
+    };
+    const retryOnVisibility = () => {
+      if (document.visibilityState === "visible") {
+        retryLink();
+      }
+    };
+    window.addEventListener("focus", retryLink);
+    document.addEventListener("visibilitychange", retryOnVisibility);
+
     return () => {
       window.removeEventListener("message", handleMessage);
+      window.removeEventListener("focus", retryLink);
+      document.removeEventListener("visibilitychange", retryOnVisibility);
       delete (window as any).setFcmToken;
     };
   }, [isAuthenticated, locale]);
