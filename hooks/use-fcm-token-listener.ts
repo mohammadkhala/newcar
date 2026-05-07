@@ -4,6 +4,13 @@ import { useEffect } from "react";
 import { useLocale } from "next-intl";
 import { bffFetch } from "@/lib/bff-client";
 
+declare global {
+  interface Window {
+    setFcmToken?: (token: string) => void | Promise<void>;
+    __ncLastFcmToken?: string;
+  }
+}
+
 /**
  * Listens for FCM token messages from the Native Wrapper (WebView)
  * and sends the token to the Laravel backend.
@@ -31,11 +38,11 @@ export function useFcmTokenListener(isAuthenticated: boolean) {
       } catch {
         // Ignore storage failures (private mode / restricted WebView).
       }
-      (window as any).__ncLastFcmToken = token;
+      window.__ncLastFcmToken = token;
     };
 
     const readPersistedToken = (): string => {
-      const fromWindow = String((window as any).__ncLastFcmToken || "").trim();
+      const fromWindow = String(window.__ncLastFcmToken || "").trim();
       if (fromWindow) {
         return fromWindow;
       }
@@ -56,7 +63,6 @@ export function useFcmTokenListener(isAuthenticated: boolean) {
       if (!res.ok) {
         throw new Error(`Token link failed (${res.status})`);
       }
-      console.log("FCM Token successfully linked to user profile.");
     };
 
     const isSessionAuthenticated = async (): Promise<boolean> => {
@@ -86,9 +92,8 @@ export function useFcmTokenListener(isAuthenticated: boolean) {
       // 1) Always subscribe to locale topic (works for guest/authenticated users).
       try {
         await subscribeToLanguageTopic(normalizedToken);
-        console.log(`FCM Token subscribed to '${languageTopic}' topic.`);
       } catch (e) {
-        console.error("Failed to subscribe to topic:", e);
+        void e;
       }
 
       // 2) Only authenticated users get token linked on users.cm_firebase_token.
@@ -97,7 +102,7 @@ export function useFcmTokenListener(isAuthenticated: boolean) {
         try {
           await linkTokenToProfile(normalizedToken);
         } catch (e) {
-          console.error("Failed to link FCM token to profile:", e);
+          void e;
         }
       }
     };
@@ -109,14 +114,14 @@ export function useFcmTokenListener(isAuthenticated: boolean) {
         if (data && data.type === "FCM_TOKEN" && data.token) {
           await processToken(data.token);
         }
-      } catch (error) {
+      } catch {
         // Ignore parsing errors for other messages
       }
     };
 
     window.addEventListener("message", handleMessage);
     
-    (window as any).setFcmToken = async (token: string) => {
+    window.setFcmToken = async (token: string) => {
       await processToken(token);
     };
 
@@ -140,7 +145,7 @@ export function useFcmTokenListener(isAuthenticated: boolean) {
       window.removeEventListener("message", handleMessage);
       window.removeEventListener("focus", retryLink);
       document.removeEventListener("visibilitychange", retryOnVisibility);
-      delete (window as any).setFcmToken;
+      delete window.setFcmToken;
     };
   }, [isAuthenticated, locale]);
 }

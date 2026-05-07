@@ -5,11 +5,14 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { CartBadge } from "@/components/store/CartBadge";
+import { HeaderStoreLogo } from "@/components/store/HeaderStoreLogo";
 import { HeaderSearch } from "@/components/store/HeaderSearch";
 import { HeaderAccountMenu } from "@/components/store/HeaderAccountMenu";
 import { LocaleSwitcher } from "@/components/store/LocaleSwitcher";
 import { VehicleFitmentPicker } from "@/components/vehicle/VehicleFitmentPicker";
 import { resolveMediaUrl } from "@/lib/resolve-media-url";
+import { useFcmTokenListener } from "@/hooks/use-fcm-token-listener";
+import { setupCapacitorPushNotifications } from "@/lib/capacitor-push";
 import type {
   CategoryTreeNode,
   LanguageOption,
@@ -29,6 +32,8 @@ type Props = {
   isAuthenticated: boolean;
   vehicleBrands: VehicleBrandsResponse["brands"];
   apiConfigured: boolean;
+  storeLogoSrc: string;
+  storeLogoAlt: string;
 };
 
 function CategoryThumb({
@@ -133,12 +138,21 @@ export function StoreHeaderBody({
   isAuthenticated,
   vehicleBrands,
   apiConfigured,
+  storeLogoSrc,
+  storeLogoAlt,
 }: Props) {
+  useFcmTokenListener(isAuthenticated);
+
   const t = useTranslations("Nav");
   const [menuOpen, setMenuOpen] = useState(false);
   const [categoriesDropdownOpen, setCategoriesDropdownOpen] = useState(false);
   const [shopDropdownOpen, setShopDropdownOpen] = useState(false);
   const [openFeaturedId, setOpenFeaturedId] = useState<number | null>(null);
+
+  useEffect(() => {
+    // Capacitor push: native only; setupCapacitorPushNotifications no-ops on web
+    void setupCapacitorPushNotifications();
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -251,14 +265,20 @@ export function StoreHeaderBody({
   );
 
   return (
-    <div className="overflow-visible shadow-md">
-      <div className="bg-slate-900 text-white">
-        <div className="store-shell py-3 md:py-4">
+    <div className="page-header store-header-hala overflow-visible shadow-md">
+      <div id="header-top" className="header-top border-b border-white/10 bg-black">
+        <div className="store-shell flex min-h-8 items-center justify-end py-0.5 md:min-h-9 md:py-1.5">
+          <LocaleSwitcher languageOptions={languageOptions} variant="halaTop" />
+        </div>
+      </div>
+
+      <div id="header-middle" className="header-middle bg-black">
+        <div className="store-shell header-panel-container py-3 md:py-4">
           <div className="flex flex-col gap-3 md:hidden">
             <div className="flex min-h-11 flex-nowrap items-center gap-2">
               <button
                 type="button"
-                className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-lg border border-white/20 text-white"
+                className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-lg border border-white/30 text-white hover:bg-white/10"
                 aria-expanded={menuOpen}
                 aria-controls="store-mobile-nav"
                 onClick={() => setMenuOpen((o) => !o)}
@@ -270,57 +290,46 @@ export function StoreHeaderBody({
                   <span className="block h-0.5 w-5 bg-white" />
                 </span>
               </button>
-              <Link
-                href="/"
-                className="flex shrink-0 items-center rounded-xl bg-white p-2 shadow-md ring-1 ring-black/5"
-              >
-                <Image
-                  src="/logo.png"
-                  alt="NEW CAR"
-                  width={150}
-                  height={51}
-                  className="h-9 w-auto object-contain"
-                  priority
+              <div className="min-w-0 flex-1 self-center">
+                <HeaderStoreLogo logoSrc={storeLogoSrc} imageAlt={storeLogoAlt} />
+              </div>
+              <div className="ms-auto flex min-h-11 shrink-0 items-center gap-1 sm:gap-2">
+                <HeaderAccountMenu
+                  isAuthenticated={isAuthenticated}
+                  variant="hala"
+                  compact
                 />
-              </Link>
-              <div className="ms-auto flex min-h-11 shrink-0 items-center gap-1.5">
-                <HeaderAccountMenu isAuthenticated={isAuthenticated} />
-                <CartBadge variant="dark" />
-                <LocaleSwitcher languageOptions={languageOptions} variant="dark" />
+                <CartBadge variant="hala" compact />
               </div>
             </div>
             <div className="w-full min-w-0">
-              <HeaderSearch />
+              <HeaderSearch variant="hala" />
             </div>
           </div>
 
-          <div className="hidden md:flex md:flex-nowrap md:items-center md:gap-4">
-            <Link
-              href="/"
-              className="flex shrink-0 items-center rounded-xl bg-white p-2 shadow-md ring-1 ring-black/5"
-            >
-              <Image
-                src="/logo.png"
-                alt="NEW CAR"
-                width={150}
-                height={51}
-                className="h-10 w-auto object-contain"
-              />
-            </Link>
-            <div className="flex min-w-0 flex-1 justify-center px-3">
-              <HeaderSearch />
+          <div className="hidden md:grid md:min-h-[4.5rem] md:grid-cols-[minmax(0,12rem),1fr,auto] md:items-center md:gap-5 lg:gap-8">
+            <div className="min-w-0 self-center">
+              <HeaderStoreLogo logoSrc={storeLogoSrc} imageAlt={storeLogoAlt} />
             </div>
-            <div className="flex shrink-0 items-center gap-2">
-              <HeaderAccountMenu isAuthenticated={isAuthenticated} />
-              <CartBadge variant="dark" />
-              <LocaleSwitcher languageOptions={languageOptions} variant="dark" />
+            <div className="min-w-0 self-center">
+              <HeaderSearch variant="hala" />
+            </div>
+            <div className="flex min-w-0 shrink-0 items-stretch justify-end gap-3 lg:gap-5">
+              <HeaderAccountMenu
+                isAuthenticated={isAuthenticated}
+                variant="hala"
+              />
+              <CartBadge variant="hala" />
             </div>
           </div>
         </div>
       </div>
 
-      <div className="relative z-[200] border-b border-border-soft bg-white">
-        <div className="store-shell flex flex-wrap items-center justify-between gap-2 py-2 md:flex-nowrap md:gap-4">
+      <div
+        id="header-sections-nav"
+        className="relative z-[200] border-b-2 border-[#EAB308] bg-black"
+      >
+        <div className="store-shell flex flex-wrap items-center justify-between gap-2 py-2.5 md:flex-nowrap md:gap-4">
           <div className="order-1 flex shrink-0 items-center gap-2">
             <div className="hidden md:block desktop-categories-dropdown">
               <div className="relative">
@@ -331,10 +340,10 @@ export function StoreHeaderBody({
                     setShopDropdownOpen(false);
                     setOpenFeaturedId(null);
                   }}
-                  className={`inline-flex min-h-[2.75rem] max-w-[min(100vw-2rem,16rem)] items-center gap-3 truncate rounded-lg px-4 text-sm font-bold text-white shadow-sm outline-none ring-primary/40 transition-all focus-visible:ring-2 sm:max-w-none ${
+                  className={`inline-flex min-h-[2.75rem] max-w-[min(100vw-2rem,16rem)] items-center gap-3 truncate rounded-lg px-4 text-sm font-bold text-black shadow-sm outline-none ring-2 ring-[#EAB308]/30 transition-all focus-visible:ring-2 sm:max-w-none ${
                     categoriesDropdownOpen
-                      ? "bg-primary-strong ring-2"
-                      : "bg-primary hover:bg-primary-strong"
+                      ? "bg-[#EAB308] ring-2 ring-white/40"
+                      : "bg-[#EAB308] hover:bg-[#D4A008]"
                   }`}
                 >
                   <span className="shrink-0 text-lg" aria-hidden>
@@ -354,7 +363,7 @@ export function StoreHeaderBody({
 
             <button
               type="button"
-              className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-surface-muted px-3 text-sm font-bold text-secondary outline-none ring-black/40 hover:bg-surface-muted/80 focus-visible:ring-2 md:hidden"
+              className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-white/20 bg-white/5 px-3 text-sm font-bold text-white outline-none ring-white/20 hover:bg-white/10 focus-visible:ring-2 md:hidden"
               onClick={() => setMenuOpen((o) => !o)}
             >
               <span aria-hidden>☰</span>
@@ -375,10 +384,10 @@ export function StoreHeaderBody({
                     setCategoriesDropdownOpen(false);
                     setOpenFeaturedId(null);
                   }}
-                  className={`inline-flex min-h-[2.5rem] whitespace-nowrap rounded-lg px-3 text-sm font-bold outline-none ring-primary/40 transition-colors focus-visible:ring-2 ${
+                  className={`inline-flex min-h-[2.5rem] whitespace-nowrap rounded-lg px-3 text-sm font-bold outline-none ring-[#EAB308]/50 transition-colors focus-visible:ring-2 ${
                     shopDropdownOpen
-                      ? "bg-surface-muted text-primary ring-2"
-                      : "text-secondary hover:bg-surface-muted hover:text-primary"
+                      ? "bg-white/10 text-[#EAB308] ring-2"
+                      : "text-white hover:bg-white/10 hover:text-[#EAB308]"
                   }`}
                 >
                   {t("shopByVehicle")}
@@ -454,10 +463,10 @@ export function StoreHeaderBody({
                       setCategoriesDropdownOpen(false);
                       setShopDropdownOpen(false);
                     }}
-                    className={`inline-flex min-h-[2.5rem] max-w-[10rem] truncate rounded-lg px-3 text-sm font-bold outline-none ring-primary/40 transition-colors focus-visible:ring-2 sm:max-w-[14rem] ${
+                    className={`inline-flex min-h-[2.5rem] max-w-[10rem] truncate rounded-lg px-3 text-sm font-bold outline-none ring-[#EAB308]/50 transition-colors focus-visible:ring-2 sm:max-w-[14rem] ${
                       openFeaturedId === node.id
-                        ? "bg-surface-muted text-primary ring-2"
-                        : "text-secondary hover:bg-surface-muted hover:text-primary"
+                        ? "bg-white/10 text-[#EAB308] ring-2"
+                        : "text-white hover:bg-white/10 hover:text-[#EAB308]"
                     }`}
                   >
                     {node.name}
@@ -510,9 +519,12 @@ export function StoreHeaderBody({
               </button>
             </div>
             <div className="flex-1 overflow-y-auto px-4 py-4">
-              <HeaderSearch />
+              <HeaderSearch variant="light" />
               <div className="mt-3 flex items-center justify-end gap-2">
-                <LocaleSwitcher languageOptions={languageOptions} variant="light" />
+                <LocaleSwitcher
+                  languageOptions={languageOptions}
+                  variant="topBar"
+                />
               </div>
               <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-secondary/70">
                 {t("shopByVehicle")}
