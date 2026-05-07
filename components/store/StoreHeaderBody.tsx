@@ -265,10 +265,10 @@ export function StoreHeaderBody({
   );
 
   return (
-    <div className="page-header store-header-hala overflow-visible shadow-md">
+    <div className="page-header store-header-newcar overflow-visible shadow-md">
       <div id="header-top" className="header-top border-b border-white/10 bg-black">
         <div className="store-shell flex min-h-8 items-center justify-end py-0.5 md:min-h-9 md:py-1.5">
-          <LocaleSwitcher languageOptions={languageOptions} variant="halaTop" />
+          <LocaleSwitcher languageOptions={languageOptions} variant="newcarTop" />
         </div>
       </div>
 
@@ -296,14 +296,14 @@ export function StoreHeaderBody({
               <div className="ms-auto flex min-h-11 shrink-0 items-center gap-1 sm:gap-2">
                 <HeaderAccountMenu
                   isAuthenticated={isAuthenticated}
-                  variant="hala"
+                  variant="newcar"
                   compact
                 />
-                <CartBadge variant="hala" compact />
+                <CartBadge variant="newcar" compact />
               </div>
             </div>
             <div className="w-full min-w-0">
-              <HeaderSearch variant="hala" />
+              <HeaderSearch variant="newcar" />
             </div>
           </div>
 
@@ -312,14 +312,14 @@ export function StoreHeaderBody({
               <HeaderStoreLogo logoSrc={storeLogoSrc} imageAlt={storeLogoAlt} />
             </div>
             <div className="min-w-0 self-center">
-              <HeaderSearch variant="hala" />
+              <HeaderSearch variant="newcar" />
             </div>
             <div className="flex min-w-0 shrink-0 items-stretch justify-end gap-3 lg:gap-5">
               <HeaderAccountMenu
                 isAuthenticated={isAuthenticated}
-                variant="hala"
+                variant="newcar"
               />
-              <CartBadge variant="hala" />
+              <CartBadge variant="newcar" />
             </div>
           </div>
         </div>

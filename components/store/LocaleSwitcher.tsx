@@ -20,8 +20,8 @@ const LOCALE_FLAGS: Record<string, string> = {
 
 type Props = {
   languageOptions?: LanguageOption[] | null;
-  /** Top strip: text label + dropdown (New Car header-top). halaTop: black bar, white text. */
-  variant?: "light" | "dark" | "topBar" | "halaTop";
+  /** Top strip: text label + dropdown (New Car header-top). newcarTop: black bar, white text. */
+  variant?: "light" | "dark" | "topBar" | "newcarTop";
 };
 
 export function LocaleSwitcher({ languageOptions, variant = "light" }: Props) {
@@ -69,14 +69,14 @@ export function LocaleSwitcher({ languageOptions, variant = "light" }: Props) {
   }, [open]);
 
   const isTop = variant === "topBar";
-  const isHala = variant === "halaTop";
+  const isNewCarTop = variant === "newcarTop";
   const triggerDark =
     "min-h-11 min-w-11 rounded-xl border border-white/20 bg-white/10 p-2 text-2xl leading-none shadow-sm transition-colors hover:border-primary/40 hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60";
   const triggerLight =
     "min-h-11 min-w-11 rounded-xl border border-surface-muted bg-white p-2 text-2xl leading-none shadow-sm transition-colors hover:border-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40";
   const triggerTopBar =
     "inline-flex min-h-7 items-center gap-1.5 rounded-md px-1.5 py-0.5 text-xs font-semibold text-secondary/90 transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40";
-  const triggerHalaTop =
+  const triggerNewCarTop =
     "inline-flex min-h-7 items-center gap-1.5 rounded-md px-1.5 py-0.5 text-xs font-medium text-white transition-colors hover:text-[#EAB308] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40";
 
   const panelDark =
@@ -85,7 +85,7 @@ export function LocaleSwitcher({ languageOptions, variant = "light" }: Props) {
     "absolute left-1/2 top-full z-[10001] mt-2 min-w-[8.5rem] -translate-x-1/2 rounded-xl border border-border-soft bg-white p-1.5 shadow-xl";
   const panelTopBar =
     "absolute end-0 top-full z-[10001] mt-1.5 min-w-[8.5rem] rounded-md border border-border-soft bg-white p-1 shadow-lg ring-1 ring-black/5";
-  const panelHalaTop =
+  const panelNewCarTop =
     "absolute end-0 top-full z-[10001] mt-1.5 min-w-[8.5rem] rounded-md border border-white/15 bg-neutral-950 p-1 shadow-xl ring-1 ring-white/10";
 
   const optDark =
@@ -94,25 +94,25 @@ export function LocaleSwitcher({ languageOptions, variant = "light" }: Props) {
     "flex w-full items-center justify-center rounded-lg px-3 py-2.5 text-2xl leading-none transition-colors hover:bg-surface-muted";
   const optTopBar =
     "flex w-full items-center gap-2 rounded px-2 py-1.5 text-xs font-medium text-secondary transition-colors hover:bg-surface-muted";
-  const optHalaTop =
+  const optNewCarTop =
     "flex w-full items-center gap-2 rounded px-2 py-1.5 text-xs font-medium text-white transition-colors hover:bg-white/10";
 
-  const triggerClass = isHala
-    ? triggerHalaTop
+  const triggerClass = isNewCarTop
+    ? triggerNewCarTop
     : isTop
       ? triggerTopBar
       : variant === "dark"
         ? triggerDark
         : triggerLight;
-  const panelClass = isHala
-    ? panelHalaTop
+  const panelClass = isNewCarTop
+    ? panelNewCarTop
     : isTop
       ? panelTopBar
       : variant === "dark"
         ? panelDark
         : panelLight;
-  const optionClass = isHala
-    ? optHalaTop
+  const optionClass = isNewCarTop
+    ? optNewCarTop
     : isTop
       ? optTopBar
       : variant === "dark"
@@ -132,15 +132,15 @@ export function LocaleSwitcher({ languageOptions, variant = "light" }: Props) {
         }}
         className={triggerClass}
       >
-        {isTop || isHala ? (
+        {isTop || isNewCarTop ? (
           <>
-            <span aria-hidden className={`text-sm ${isHala ? "opacity-90" : "opacity-80"}`}>
+            <span aria-hidden className={`text-sm ${isNewCarTop ? "opacity-90" : "opacity-80"}`}>
               {LOCALE_FLAGS[locale] ?? "🌐"}
             </span>
             <span>{currentLabel}</span>
             <span
               aria-hidden
-              className={`text-[10px] ${isHala ? "text-white/50" : "text-secondary/50"}`}
+              className={`text-[10px] ${isNewCarTop ? "text-white/50" : "text-secondary/50"}`}
             >
               ▼
             </span>
@@ -174,7 +174,7 @@ export function LocaleSwitcher({ languageOptions, variant = "light" }: Props) {
                     setOpen(false);
                   }}
                 >
-                  {isTop || isHala ? (
+                  {isTop || isNewCarTop ? (
                     <>
                       <span aria-hidden>{LOCALE_FLAGS[o.key] ?? "🌐"}</span>
                       <span>{o.value}</span>

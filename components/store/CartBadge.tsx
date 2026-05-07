@@ -6,22 +6,22 @@ import { IconCart } from "@/components/store/header-icons";
 import { useCart } from "@/lib/cart-context";
 
 type Props = {
-  /** Hala: white icon, label (e.g. سلة المشتريات), yellow count badge. */
-  variant?: "light" | "dark" | "hala";
+  /** New Car: white icon, label (e.g. سلة المشتريات), yellow count badge. */
+  variant?: "light" | "dark" | "newcar";
   compact?: boolean;
 };
 
 /**
- * Minicart trigger: `hala` matches stacked label + `IconCart` per reference.
+ * Minicart trigger: `newcar` matches stacked label + `IconCart` per reference.
  */
 export function CartBadge({ variant = "light", compact = false }: Props) {
   const t = useTranslations("Nav");
   const { lines } = useCart();
   const count = lines.reduce((sum, l) => sum + l.quantity, 0);
   const dark = variant === "dark";
-  const hala = variant === "hala";
+  const newcar = variant === "newcar";
 
-  if (hala) {
+  if (newcar) {
     return (
       <div id="desk_cart-wrapper" className="cart-link">
         <Link

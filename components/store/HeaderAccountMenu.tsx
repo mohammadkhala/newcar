@@ -7,14 +7,14 @@ import { IconLogout, IconUser } from "@/components/store/header-icons";
 
 type Props = {
   isAuthenticated: boolean;
-  /** Hala: black header, white stacked icon in ring + “حسابي”. */
-  variant?: "light" | "dark" | "hala";
+  /** New Car: black header, white stacked icon in ring + “حسابي”. */
+  variant?: "light" | "dark" | "newcar";
   /** Narrow mobile strip: same layout, smaller. */
   compact?: boolean;
 };
 
 /**
- * Business purpose: account entry; `hala` matches stacked icon+label and `account` copy (e.g. حسابي).
+ * Business purpose: account entry; `newcar` matches stacked icon+label and `account` copy (e.g. حسابي).
  */
 export function HeaderAccountMenu({
   isAuthenticated,
@@ -58,13 +58,13 @@ export function HeaderAccountMenu({
     };
   }, [open]);
 
-  const hala = variant === "hala";
-  const light = variant === "light" && !hala;
+  const newcar = variant === "newcar";
+  const light = variant === "light" && !newcar;
   const itemClassDark =
     "flex items-center gap-2 rounded-lg px-2 py-2 text-xs font-semibold text-white/90 transition-colors hover:bg-white/10 hover:text-white sm:text-sm";
   const itemClassLight =
     "flex items-center gap-2 rounded-lg px-2 py-2 text-xs font-semibold text-secondary transition-colors hover:bg-surface-muted sm:text-sm";
-  const itemClass = hala ? itemClassLight : light ? itemClassLight : itemClassDark;
+  const itemClass = newcar ? itemClassLight : light ? itemClassLight : itemClassDark;
 
   const accountLabel = t("account");
 
@@ -75,7 +75,7 @@ export function HeaderAccountMenu({
   const halaBase =
     "account-trigger cdz-top-link flex min-w-0 max-w-[5.75rem] flex-col items-center gap-0.5 text-center text-white no-underline outline-none transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-[#EAB308]/80 focus-visible:ring-offset-2 focus-visible:ring-offset-black sm:max-w-[6.5rem]";
 
-  if (hala && !isAuthenticated) {
+  if (newcar && !isAuthenticated) {
     return (
       <div className="account-wrapper">
         <Link href="/auth/login" className={halaBase} aria-label={accountLabel}>
@@ -91,7 +91,7 @@ export function HeaderAccountMenu({
     );
   }
 
-  if (hala && isAuthenticated) {
+  if (newcar && isAuthenticated) {
     return (
       <div ref={rootRef} className="account-wrapper relative">
         <button
