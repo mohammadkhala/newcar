@@ -1,12 +1,14 @@
 import { cookies } from "next/headers";
 import {
   fetchCategoryChildren,
+  fetchConfig,
   fetchLanguages,
   fetchRootCategories,
   fetchVehicleBrands,
   getApiBaseUrl,
 } from "@/lib/api";
 import { categoryDisplayImageSrc } from "@/lib/category-image";
+import { resolveStoreLogoUrl } from "@/lib/resolve-store-logo";
 import { StoreHeaderBody } from "@/components/store/StoreHeaderBody";
 import type {
   CategoryRow,
@@ -51,6 +53,17 @@ export async function StoreHeader() {
   const cookieStore = await cookies();
   const isAuthenticated = Boolean(cookieStore.get("nc_access_token")?.value);
   const apiConfigured = Boolean(getApiBaseUrl());
+
+  const config = (await fetchConfig().catch(() => null)) as Record<
+    string,
+    unknown
+  > | null;
+  const storeLogoSrc = resolveStoreLogoUrl(config) || "/logo.png";
+  const storeLogoAlt = String(
+    (config?.business_name as string) ||
+      (config?.ecommerce_name as string) ||
+      "NEW CAR",
+  ).trim() || "NEW CAR";
 
   let navCategories: {
     id: number;
@@ -114,6 +127,8 @@ export async function StoreHeader() {
         featuredNavItems={featuredNavItems}
         vehicleBrands={vehicleBrands}
         apiConfigured={apiConfigured}
+        storeLogoSrc={storeLogoSrc}
+        storeLogoAlt={storeLogoAlt}
       />
     </header>
   );
