@@ -53,8 +53,13 @@ async function apiFetch(
 
 /**
  * Fetches active vehicle brands for storefront filters.
+ * Returns empty list when the API base URL is not configured (avoids throwing from apiFetch).
  */
 export async function fetchVehicleBrands(): Promise<VehicleBrandsResponse> {
+  const base = getApiBaseUrl();
+  if (!base) {
+    return { brands: [] };
+  }
   const res = await apiFetch("vehicles/brands", {
     next: { revalidate: 300 },
   });
@@ -175,6 +180,10 @@ export async function fetchBanners(): Promise<BannerRow[]> {
   }
 }
 
+/**
+ * Fetches active campaign promo tiles for the home page.
+ * Order matches Laravel: sort_order ASC, then id DESC; see STORE-MASTER-PLAN D.1.1.
+ */
 export async function fetchCampaignBanners(): Promise<CampaignBannerRow[]> {
   const base = getApiBaseUrl();
   if (!base) {

@@ -53,6 +53,18 @@ export function useFcmTokenListener(isAuthenticated: boolean) {
       }
     };
 
+    const linkDeviceToAccount = async (token: string) => {
+      const res = await bffFetch("customer/device/push-token/link", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+        locale,
+      });
+      if (!res.ok) {
+        throw new Error(`Device link failed (${res.status})`);
+      }
+    };
+
     const linkTokenToProfile = async (token: string) => {
       const res = await bffFetch("customer/cm-firebase-token", {
         method: "PUT",
@@ -99,6 +111,11 @@ export function useFcmTokenListener(isAuthenticated: boolean) {
       // 2) Only authenticated users get token linked on users.cm_firebase_token.
       const authenticatedNow = await isSessionAuthenticated();
       if (authenticatedNow) {
+        try {
+          await linkDeviceToAccount(normalizedToken);
+        } catch (e) {
+          void e;
+        }
         try {
           await linkTokenToProfile(normalizedToken);
         } catch (e) {

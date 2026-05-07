@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1031344646622",
+    "project_id": "new-car-bfff7",
+    "storage_bucket": "new-car-bfff7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1031344646622:android:4bbd53206da4cdb220554f",
+        "android_client_info": {
+          "package_name": "com.newcarpal.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB81tBkzg111ffqGQ7AzB3uKjPhq-lISDc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

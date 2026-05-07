@@ -16,6 +16,7 @@ import {
 } from "@/components/store/HomeServicesSection";
 import { VehicleFitmentPicker } from "@/components/vehicle/VehicleFitmentPicker";
 import { HomeFlashSale } from "@/components/store/HomeFlashSale";
+import { HomeDriverPicksSection } from "@/components/store/HomeDriverPicksSection";
 import {
   fetchBanners,
   fetchCampaignBanners,
@@ -35,6 +36,7 @@ import {
 import { resolveMediaUrl } from "@/lib/resolve-media-url";
 import type {
   BannerRow,
+  CampaignBannerRow,
   CategoryRow,
   ProductBrandListResponse,
   VehicleBrandsResponse,
@@ -162,13 +164,75 @@ export default async function HomePage({ params }: Props) {
 
   const shortcutCategories = popular.slice(0, 12);
 
+  const topCampaigns = campaignBanners.filter(
+    (b: CampaignBannerRow) => (b.placement ?? "top") === "top",
+  );
+  const contentCampaigns = campaignBanners.filter(
+    (b: CampaignBannerRow) => b.placement === "content",
+  );
+
   return (
     <>
       {slides.length > 0 ? <HomeHeroCarousel slides={slides} /> : null}
 
+      {topCampaigns.length > 0 ? (
+        <div className="store-shell py-0 md:py-0">
+          <CampaignPromoGrid items={topCampaigns} />
+        </div>
+      ) : null}
+
       <HomeFlashSale data={flashSale} currencyCode={currencyCode} />
 
       <div className="store-shell space-y-10 py-8 md:space-y-12">
+        <TrustStrip />
+
+        <HomeDriverPicksSection
+          blocks={featured}
+          title={t("driverPicksTitle")}
+          viewAll={t("viewAll")}
+        />
+
+        {shortcutCategories.length > 0 ? (
+          <section className="space-y-4">
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="text-xl font-semibold text-secondary">
+                {t("shortcutsTitle")}
+              </h2>
+              <Link
+                href="/shop/categories"
+                className="text-sm font-medium text-primary hover:underline"
+              >
+                {t("viewAll")}
+              </Link>
+            </div>
+            <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+              {shortcutCategories.map((c) => (
+                <li key={c.id}>
+                  <Link
+                    href={`/shop/categories/${c.id}`}
+                    className="store-card flex min-h-[4.5rem] items-center justify-center px-3 py-3 text-center text-sm font-semibold text-secondary hover:border-primary/30"
+                  >
+                    {c.name ?? `#${c.id}`}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
+        <HomeProductTabs
+          currencyCode={currencyCode}
+          latest={latest?.products ?? []}
+          discounted={discounted ?? []}
+          newArrival={newArrival?.products ?? []}
+        />
+
+        {contentCampaigns.length > 0 ? (
+          <div className="store-shell py-0 md:py-0">
+            <CampaignPromoGrid items={contentCampaigns} />
+          </div>
+        ) : null}
+
         <section className="store-card overflow-hidden">
           <div className="grid gap-8 p-6 md:grid-cols-2 md:p-8">
             <div>
@@ -210,45 +274,6 @@ export default async function HomePage({ params }: Props) {
             </div>
           </div>
         </section>
-
-        <TrustStrip />
-
-        {shortcutCategories.length > 0 ? (
-          <section className="space-y-4">
-            <div className="flex items-center justify-between gap-2">
-              <h2 className="text-xl font-semibold text-secondary">
-                {t("shortcutsTitle")}
-              </h2>
-              <Link
-                href="/shop/categories"
-                className="text-sm font-medium text-primary hover:underline"
-              >
-                {t("viewAll")}
-              </Link>
-            </div>
-            <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-              {shortcutCategories.map((c) => (
-                <li key={c.id}>
-                  <Link
-                    href={`/shop/categories/${c.id}`}
-                    className="store-card flex min-h-[4.5rem] items-center justify-center px-3 py-3 text-center text-sm font-semibold text-secondary hover:border-primary/30"
-                  >
-                    {c.name ?? `#${c.id}`}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
-
-        <HomeProductTabs
-          currencyCode={currencyCode}
-          latest={latest?.products ?? []}
-          discounted={discounted ?? []}
-          newArrival={newArrival?.products ?? []}
-        />
-
-        <CampaignPromoGrid items={campaignBanners} />
 
         {brands.length > 0 ? (
           <section className="store-card px-4 py-6 md:px-6">

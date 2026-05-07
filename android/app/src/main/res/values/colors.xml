@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#F15A24</color>
+    <color name="colorPrimaryDark">#D63F14</color>
+    <color name="colorAccent">#F15A24</color>
+    <color name="splash_background">#000000</color>
+    <!-- Storefront header / light surface (matches web shell) -->
+    <color name="splash_brand_background">#FFFFFF</color>
+</resources>

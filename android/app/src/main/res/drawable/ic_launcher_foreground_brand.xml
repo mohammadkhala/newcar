@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Extra dp inset so the glyph sits like Play/Messages icons: breathing room inside the mask.
+  Bitmap is already padded in the script; this is a second safety margin on adaptive icons.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:bottom="28dp"
+        android:left="28dp"
+        android:right="28dp"
+        android:top="28dp">
+        <bitmap
+            android:gravity="center"
+            android:src="@drawable/ic_store_logo" />
+    </item>
+</layer-list>

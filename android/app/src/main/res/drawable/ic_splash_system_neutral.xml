@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Android 12+ masks windowSplashScreenAnimatedIcon to a circle. Using the same fill
+  as windowSplashScreenBackground makes that slot visually disappear (no logo in a circle).
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <size
+                android:width="240dp"
+                android:height="240dp" />
+            <solid android:color="@color/splash_brand_background" />
+        </shape>
+    </item>
+</layer-list>

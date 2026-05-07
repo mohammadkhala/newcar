@@ -9,6 +9,7 @@ type Props = {
 
 /**
  * Promotional campaign strip; each banner is clickable to product/category target.
+ * Renders `items` in array order: two columns on md+ (row: left, right, then next row).
  */
 export function CampaignPromoGrid({ items }: Props) {
   if (items.length === 0) {

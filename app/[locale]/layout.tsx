@@ -123,8 +123,9 @@ export default async function LocaleLayout({ children, params }: Props) {
       lang={locale}
       dir={dir}
       className={`${fontAr.variable} ${fontEn.variable} ${fontHe.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="flex min-h-full flex-col bg-white text-secondary">
+      <body className="flex min-h-full flex-col bg-white text-secondary" suppressHydrationWarning>
         <NextIntlClientProvider messages={messages}>
           <CartProvider>
             <WishlistProvider>

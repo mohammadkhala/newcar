@@ -118,6 +118,8 @@ export type CampaignBannerRow = {
   target_id: number;
   target_url: string | null;
   sort_order?: number;
+  /** Laravel: top = under hero; content = mid-page strip */
+  placement?: "top" | "content";
   starts_at?: string | null;
   ends_at?: string | null;
 };
