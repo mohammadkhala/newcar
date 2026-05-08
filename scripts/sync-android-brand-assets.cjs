@@ -61,7 +61,8 @@ const IOS_APP_ICON_FILE = path.join(
 
 const ICON_CANVAS = 512;
 const ADAPTIVE_SAFE_BOX = Math.floor((ICON_CANVAS * 72) / 108);
-const ADAPTIVE_LOGO_DIAGONAL_FRAC = 0.42;
+// Extra conservative safe area so the full lockup isn't cropped by circular/squircle masks.
+const ADAPTIVE_LOGO_DIAGONAL_FRAC = 0.28;
 const ICON_PLATE = { r: 255, g: 255, b: 255 };
 
 const SPLASH_LOGO_FULL_MAX = 2800;

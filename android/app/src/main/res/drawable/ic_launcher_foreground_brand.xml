@@ -5,10 +5,10 @@
 -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:bottom="28dp"
-        android:left="28dp"
-        android:right="28dp"
-        android:top="28dp">
+        android:bottom="60dp"
+        android:left="60dp"
+        android:right="60dp"
+        android:top="60dp">
         <bitmap
             android:gravity="center"
             android:src="@drawable/ic_store_logo" />

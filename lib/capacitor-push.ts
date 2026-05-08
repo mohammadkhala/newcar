@@ -3,12 +3,16 @@ import { Capacitor } from '@capacitor/core';
 
 const FCM_TOKEN_STORAGE_KEY = 'nc_fcm_token';
 const RETRY_DELAYS_MS = [1000, 3000, 10000, 30000];
+const PUSH_DENIED_INFO_KEY = 'nc_push_denied_info_shown';
 
 declare global {
   interface Window {
     setFcmToken?: (token: string) => void | Promise<void>;
   }
 }
+
+let pushListenersAttached = false;
+let permissionFlowPromise: Promise<void> | null = null;
 
 function getIsArabicUi(): boolean {
   if (typeof document === "undefined") {
@@ -68,77 +72,98 @@ async function registerPushTokenWithRetry(token: string, localeHeader: string): 
   }
 }
 
+/**
+ * Business purpose: register push notification listeners once per WebView lifetime to avoid duplicate handlers.
+ */
+function attachPushListenersOnce(): void {
+  if (pushListenersAttached) {
+    return;
+  }
+  pushListenersAttached = true;
+
+  PushNotifications.addListener('registration', (event) => {
+    const tokenValue = String(event.value || "").trim();
+    if (!tokenValue) {
+      return;
+    }
+    try {
+      window.localStorage.setItem(FCM_TOKEN_STORAGE_KEY, tokenValue);
+    } catch {
+      // Ignore storage failures (private mode / restricted WebView).
+    }
+    if (typeof window.setFcmToken === "function") {
+      void window.setFcmToken(tokenValue);
+    }
+    const localeHeader = getIsArabicUi() ? "ar" : "en";
+    void registerPushTokenWithRetry(tokenValue, localeHeader);
+  });
+
+  PushNotifications.addListener('registrationError', (error) => {
+    void error;
+  });
+
+  PushNotifications.addListener('pushNotificationReceived', (notification) => {
+    void notification;
+  });
+
+  PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
+    const data = notification.notification.data;
+    if (data && data.url) {
+      window.location.href = data.url;
+    }
+  });
+}
+
+/**
+ * Business purpose: on native shells, use the OS permission UI (iOS/Android) once per load and register when granted.
+ */
+async function runNativePermissionAndRegister(): Promise<void> {
+  const isArabicUi = getIsArabicUi();
+
+  const permissionResult = await PushNotifications.checkPermissions();
+  if (permissionResult.receive === "granted") {
+    await PushNotifications.register();
+    return;
+  }
+
+  const permStatus = await PushNotifications.requestPermissions();
+
+  if (permStatus.receive === "granted") {
+    await PushNotifications.register();
+    return;
+  }
+
+  try {
+    if (window.localStorage.getItem(PUSH_DENIED_INFO_KEY) === "1") {
+      return;
+    }
+    window.localStorage.setItem(PUSH_DENIED_INFO_KEY, "1");
+  } catch {
+    // If storage fails, still avoid repeated alerts in this session by skipping below when key set fails — show once.
+  }
+
+  const deniedMessage = isArabicUi
+    ? "تم رفض إذن الإشعارات. يمكنك تفعيل الإشعارات لاحقًا من إعدادات التطبيق في الجهاز."
+    : "Notification permission was denied. You can enable notifications later from app settings.";
+  window.alert(deniedMessage);
+}
+
 export async function setupCapacitorPushNotifications() {
   if (typeof window === 'undefined') return;
-  
+
   if (!Capacitor.isNativePlatform()) {
     return;
   }
 
   try {
-    const isArabicUi = getIsArabicUi();
+    attachPushListenersOnce();
 
-    // Attach listeners before register() so we don't miss fast registration callbacks.
-    PushNotifications.addListener('registration', (event) => {
-      const tokenValue = String(event.value || "").trim();
-      if (!tokenValue) {
-        return;
-      }
-      try {
-        window.localStorage.setItem(FCM_TOKEN_STORAGE_KEY, tokenValue);
-      } catch {
-        // Ignore storage failures (private mode / restricted WebView).
-      }
-      if (typeof window.setFcmToken === "function") {
-        void window.setFcmToken(tokenValue);
-      }
-      const localeHeader = getIsArabicUi() ? "ar" : "en";
-      void registerPushTokenWithRetry(tokenValue, localeHeader);
-    });
-
-    PushNotifications.addListener('registrationError', (error) => {
-      void error;
-    });
-
-    // Add a listener for when the app is in the foreground
-    PushNotifications.addListener('pushNotificationReceived', (notification) => {
-      void notification;
-    });
-
-    // Method called when tapping on a notification
-    PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
-      // Extract URL from the notification payload
-      const data = notification.notification.data;
-      if (data && data.url) {
-        // Using Next.js router would be better, but window.location works as a fallback
-        // Since we're in a global context, we'll use window.location
-        window.location.href = data.url;
-      }
-    });
-
-    const prePermissionMessage = isArabicUi
-      ? "لتصلك تحديثات الطلب والعروض الجديدة، يرجى السماح بالإشعارات."
-      : "To receive order updates and offers, please allow notifications.";
-    const continuePermissionRequest = window.confirm(prePermissionMessage);
-    if (!continuePermissionRequest) {
-      return;
+    if (!permissionFlowPromise) {
+      permissionFlowPromise = runNativePermissionAndRegister().catch(() => {
+        permissionFlowPromise = null;
+      });
     }
-
-    // Request permission to use push notifications
-    // iOS will prompt user and return if they granted permission or not
-    // Android will just grant without prompting
-    const permStatus = await PushNotifications.requestPermissions();
-
-    if (permStatus.receive === 'granted') {
-      // Register with Apple / Google to receive push via APNS/FCM
-      await PushNotifications.register();
-    } else {
-      const deniedMessage = isArabicUi
-        ? "تم رفض إذن الإشعارات. يمكنك تفعيل الإشعارات لاحقًا من إعدادات التطبيق في الجهاز."
-        : "Notification permission was denied. You can enable notifications later from app settings.";
-      window.alert(deniedMessage);
-    }
-
+    await permissionFlowPromise;
   } catch (error) {
     void error;
   }
