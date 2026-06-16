@@ -48,15 +48,7 @@ export function ProductCard({
           )}
         </Link>
         <div className="absolute start-2 top-2 z-10 flex flex-col gap-1">
-          {!priceInfo.inStock ? (
-            <span className="rounded-md bg-slate-800/90 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
-              {t("outOfStock")}
-            </span>
-          ) : (
-            <span className="rounded-md bg-emerald-600/95 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
-              {t("inStockBadge")}
-            </span>
-          )}
+          {/* Stock badge removed */}
         </div>
         <div className="absolute end-2 top-2 z-10">
           <WishlistToggleButton productId={Number(product.id)} />

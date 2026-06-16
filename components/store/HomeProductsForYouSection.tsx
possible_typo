@@ -1,0 +1,155 @@
+"use client";
+
+import { useLocale, useTranslations } from "next-intl";
+import { useCallback, useMemo, useState } from "react";
+import { CatalogProductCard } from "@/components/store/CatalogProductCard";
+import { clientFetchProductSearch } from "@/lib/client-api";
+import type { StoreProductListItem } from "@/lib/types";
+
+export type ProductsForYouTabKey = "all" | "mostViewed" | "bestSelling";
+
+export type ProductsForYouTabData = {
+  products: StoreProductListItem[];
+  totalSize: number;
+  offset: number;
+};
+
+type Props = {
+  pageSize: number;
+  initial: Record<ProductsForYouTabKey, ProductsForYouTabData>;
+};
+
+const TAB_SORT: Record<ProductsForYouTabKey, string> = {
+  all: "a_to_z",
+  mostViewed: "most_viewed",
+  bestSelling: "best_selling",
+};
+
+/**
+ * Home "Products for you" block with slanted tabs **tabs** and AJAX-style load more.
+ */
+export function HomeProductsForYouSection({ pageSize, initial }: Props) {
+  const t = useTranslations("Home.productsForYou");
+  const locale = useLocale();
+
+  const tabs = useMemo(
+    () =>
+      [
+        { id: "bestSelling" as const, label: t("bestSelling") },
+        { id: "mostViewed" as const, label: t("mostViewed") },
+        { id: "all" as const, label: t("all") },
+      ].filter((tab) => initial[tab.id].products.length > 0),
+    [t, initial],
+  );
+
+  const defaultTab = tabs.some((tab) => tab.id === "bestSelling")
+    ? "bestSelling"
+    : (tabs[0]?.id ?? "bestSelling");
+
+  const [active, setActive] = useState<ProductsForYouTabKey>(defaultTab);
+  const [tabState, setTabState] = useState(initial);
+  const [loading, setLoading] = useState(false);
+
+  const effectiveActive = tabs.some((tab) => tab.id === active)
+    ? active
+    : defaultTab;
+
+  const current = tabState[effectiveActive];
+  const hasMore = current.products.length < current.totalSize;
+
+  const loadMore = useCallback(async () => {
+    if (loading || !hasMore) {
+      return;
+    }
+    setLoading(true);
+    const nextOffset = current.offset + 1;
+    try {
+      const data = await clientFetchProductSearch(
+        {
+          sort_by: TAB_SORT[effectiveActive],
+          limit: String(pageSize),
+          offset: String(nextOffset),
+        },
+        locale,
+      );
+      if (!data?.products?.length) {
+        return;
+      }
+      setTabState((prev) => {
+        const row = prev[effectiveActive];
+        const seen = new Set(row.products.map((p) => p.id));
+        const merged = [...row.products];
+        for (const product of data.products) {
+          if (!seen.has(product.id)) {
+            merged.push(product);
+            seen.add(product.id);
+          }
+        }
+        return {
+          ...prev,
+          [effectiveActive]: {
+            products: merged,
+            totalSize: data.total_size ?? row.totalSize,
+            offset: nextOffset,
+          },
+        };
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [loading, hasMore, current.offset, effectiveActive, pageSize, locale]);
+
+  if (tabs.length === 0) {
+    return null;
+  }
+
+  return (
+    <section className="home-products-for-you space-y-6" aria-label={t("title")}>
+      <div className="cdz-block-title text-center">
+        <h2 className="text-2xl font-black text-secondary">{t("title")}</h2>
+      </motion.div>
+
+      <div className="flex flex-wrap justify-center">
+        {tabs.map((tab) => {
+          const isActive = effectiveActive === tab.id;
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setActive(tab.id)}
+              className={`home-tab-slope text-sm font-bold transition-colors md:text-base ${
+                isActive
+                  ? "home-tab-slope-active z-10"
+                  : "bg-secondary text-white hover:bg-secondary/90"
+              }`}
+              aria-pressed={isActive}
+            >
+              <span className="home-tab-slope-inner">{tab.label}</span>
+            </button>
+          );
+        })}
+      </motion.div>
+
+      <ul className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        {current.products.map((product) => (
+          <li key={product.id}>
+            <CatalogProductCard product={product} />
+          </li>
+        ))}
+      </ul>
+
+      {hasMore ? (
+        <div className="text-center">
+          <button
+            type="button"
+            onClick={() => void loadMore()}
+            disabled={loading}
+            className="home-show-more-btn min-h-11 rounded-md px-8 text-sm font-bold text-secondary disabled:opacity-60"
+          >
+            {loading ? t("loading") : t("showMore")}
+          </button>
+        </motion.div>
+      ) : null}
+    </section>
+  );
+}

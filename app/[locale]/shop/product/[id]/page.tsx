@@ -100,11 +100,6 @@ export default async function ShopProductPage({ params }: PageProps) {
                   {t("discount")} <strong>{p.discount}%</strong>
                 </div>
               )}
-              {typeof p.total_stock === "number" && (
-                <div className="store-panel col-span-2 px-3 py-2 text-secondary/90">
-                  {t("stock")}: <strong>{p.total_stock}</strong>
-                </div>
-              )}
             </div>
             <div className="mt-4 flex items-center gap-3">
               <AddToCartButton product={p} />

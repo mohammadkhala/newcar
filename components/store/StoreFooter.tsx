@@ -1,200 +1,196 @@
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
-import { fetchConfig } from "@/lib/api";
-import { resolveStoreLogoUrl } from "@/lib/resolve-store-logo";
-import { FooterNewsletterForm } from "@/components/store/FooterNewsletterForm";
-import { FooterTopPromoStrip } from "@/components/store/FooterTopPromoStrip";
+import { fetchServices } from "@/lib/api";
 
-type SocialRow = { name?: string; link?: string; status?: number };
-
-function socialRows(raw: unknown): SocialRow[] {
-  if (!Array.isArray(raw)) {
-    return [];
-  }
-  return raw.filter(
-    (x): x is SocialRow =>
-      x != null &&
-      typeof (x as SocialRow).link === "string" &&
-      (x as SocialRow).status === 1,
-  );
-}
-
-/**
- * Multi-column footer: company (from config when available), service, explore, CMS, newsletter, promo strip.
- */
 export async function StoreFooter() {
   const t = await getTranslations("Footer");
-  const tCms = await getTranslations("CMS");
-  const tNav = await getTranslations("Nav");
-
-  const config = (await fetchConfig().catch(() => null)) as Record<
-    string,
-    unknown
-  > | null;
-
-  const businessName = String(
-    (config?.business_name as string) ||
-      (config?.ecommerce_name as string) ||
-      "",
-  ).trim();
-  const displayName = businessName || t("defaultBrandName");
-  const logoSrc = resolveStoreLogoUrl(config);
-  const address = String(
-    (config?.address as string) || (config?.ecommerce_address as string) || "",
-  ).trim();
-  const phone = String(
-    (config?.phone as string) || (config?.ecommerce_phone as string) || "",
-  ).trim();
-  const email = String(
-    (config?.email as string) || (config?.ecommerce_email as string) || "",
-  ).trim();
-  const socials = socialRows(config?.social_media_link);
+  const services = (await fetchServices().catch(() => [])) as {
+    slug?: string;
+    title?: string;
+    name?: string;
+  }[];
 
   return (
-    <footer className="mt-auto border-t border-surface-muted bg-surface-muted/50">
-      <FooterTopPromoStrip />
-      <div className="mx-auto max-w-7xl border-b border-surface-muted/80 px-4 py-10">
-        <p className="text-center text-sm font-semibold text-secondary">
-          {t("newsletterTitle")}
-        </p>
-        <p className="mt-1 text-center text-xs text-secondary/70">{t("newsletterHint")}</p>
-        <div className="mt-4 flex justify-center">
-          <FooterNewsletterForm />
-        </div>
-      </div>
+    <footer className="mt-auto bg-[#0a0a0a] text-white border-t border-surface-muted/20">
       <div className="mx-auto max-w-7xl px-4 py-12 max-md:pb-[calc(6.5rem+env(safe-area-inset-bottom,0px))]">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-          <div>
-            {logoSrc ? (
-              <div className="mb-3">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
+          {/* Column 1: Hala Car & Apps */}
+          <div className="flex flex-col gap-6">
+            <h3 className="text-xl font-bold text-white">هلا كار</h3>
+            <p className="text-sm leading-relaxed text-neutral-300">
+              {t("taglineHala")}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <a href="#" className="inline-block" aria-label="Download on the App Store">
                 <Image
-                  src={logoSrc}
-                  alt=""
-                  width={140}
-                  height={48}
+                  src="/assets/app-store.svg"
+                  alt="App Store"
+                  width={120}
+                  height={40}
                   unoptimized
-                  className="h-12 w-auto object-contain object-start"
+                  className="h-10 w-auto object-contain"
                 />
-              </div>
-            ) : null}
-            <p className="text-sm font-semibold text-secondary">{t("colCompany")}</p>
-            <p className="mt-2 text-sm font-bold text-primary">{displayName}</p>
-            <p className="mt-2 text-sm text-secondary/85">
-              {address || t("tagline")}
-            </p>
-            {phone ? (
-              <p className="mt-2 text-sm text-secondary/90">
-                <a href={`tel:${phone.replace(/\s/g, "")}`} className="hover:text-primary">
-                  {t("labelPhone")}: {phone}
-                </a>
-              </p>
-            ) : null}
-            {email ? (
-              <p className="mt-1 text-sm text-secondary/90">
-                <a href={`mailto:${email}`} className="hover:text-primary">
-                  {t("labelEmail")}: {email}
-                </a>
-              </p>
-            ) : null}
-            {socials.length > 0 ? (
-              <ul className="mt-4 flex flex-wrap gap-3 text-sm">
-                {socials.map((s, i) => (
-                  <li key={`${s.link}-${i}`}>
-                    <a
-                      href={s.link}
-                      className="font-medium text-primary hover:underline"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {s.name || t("linkSocial")}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            ) : null}
-            <p className="mt-4 text-xs text-secondary/60">
-              © {new Date().getFullYear()} {displayName} — {t("rights")}
-            </p>
+              </a>
+              <a href="#" className="inline-block" aria-label="Get it on Google Play">
+                <Image
+                  src="/assets/google-play.svg"
+                  alt="Google Play"
+                  width={120}
+                  height={40}
+                  unoptimized
+                  className="h-10 w-auto object-contain"
+                />
+              </a>
+            </div>
+            {/* Social Icons Placeholder */}
+            <div className="flex flex-wrap gap-2 mt-2">
+              <a href="#" className="w-8 h-8 rounded bg-[#25D366] flex items-center justify-center" aria-label="WhatsApp">
+                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 2.17.69 4.17 1.83 5.82L2.5 22l4.31-1.28C8.42 21.54 10.15 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-1.66 0-3.23-.42-4.57-1.16l-.33-.18-2.61.77.78-2.54-.2-.31A7.95 7.95 0 0 1 4 12c0-4.41 3.59-8 8-8s8 3.59 8 8-3.59 8-8 8zm4.35-5.69c-.24-.12-1.42-.7-1.64-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.01-.37-1.92-1.04-.71-.52-1.19-1.16-1.33-1.4-.14-.24-.01-.37.11-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.47-.4-.41-.54-.42h-.46c-.22 0-.58.08-.88.4-.3.32-1.14 1.12-1.14 2.74 0 1.62 1.17 3.18 1.33 3.4.16.22 2.32 3.54 5.62 4.97.79.34 1.4.54 1.88.69.79.25 1.51.21 2.08.13.63-.09 1.93-.79 2.2-1.55.27-.76.27-1.4.19-1.54-.08-.14-.3-.22-.54-.34z"/></svg>
+              </a>
+              <a href="#" className="w-8 h-8 rounded bg-[#0088cc] flex items-center justify-center" aria-label="Telegram">
+                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.11.03-1.84 1.18-5.21 3.46-.49.33-.94.5-1.34.49-.44-.01-1.28-.24-1.91-.44-.77-.25-1.38-.38-1.33-.81.03-.22.34-.44.93-.67 3.65-1.59 6.08-2.6 7.3-3.11 3.47-1.44 4.19-1.69 4.66-1.7.1 0 .34.02.49.15.13.11.16.27.17.38-.01.1-.01.22-.03.31z"/></svg>
+              </a>
+              <a href="#" className="w-8 h-8 rounded bg-[#000000] flex items-center justify-center border border-neutral-700" aria-label="TikTok">
+                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12.53.02C13.84 0 15.14.01 16.44 0c.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.12-3.44-3.13-3.65-5.46-.02-.14-.02-.29-.02-.44.01-1.48.47-2.92 1.34-4.12 1.3-1.84 3.46-3.04 5.72-3.2.14-.02.29-.02.44-.02v4.04c-1.37.03-2.73.54-3.76 1.48-.6.54-1.04 1.25-1.2 2.05-.13.56-.1 1.15.06 1.7.35 1.12 1.28 1.97 2.42 2.26.79.2 1.63.15 2.39-.17.92-.37 1.61-1.12 1.92-2.06.12-.34.18-.7.18-1.07V.02h4.08z"/></svg>
+              </a>
+              <a href="#" className="w-8 h-8 rounded bg-[#0077b5] flex items-center justify-center" aria-label="LinkedIn">
+                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+              </a>
+              <a href="#" className="w-8 h-8 rounded bg-gradient-to-tr from-[#f09433] via-[#e6683c] to-[#bc1888] flex items-center justify-center" aria-label="Instagram">
+                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+              </a>
+              <a href="#" className="w-8 h-8 rounded bg-[#1877f2] flex items-center justify-center" aria-label="Facebook">
+                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+              </a>
+            </div>
           </div>
 
+          {/* Column 2: Company Info */}
           <div>
-            <p className="text-sm font-semibold text-secondary">{t("colService")}</p>
-            <ul className="mt-3 flex flex-col gap-2 text-sm">
+            <p className="text-lg font-bold text-white mb-4 border-b border-neutral-800 pb-2 inline-block">{t("colCompany")}</p>
+            <ul className="flex flex-col gap-3 text-sm text-neutral-400">
               <li>
-                <Link href="/account" className="text-secondary/90 hover:text-primary">
+                <Link href="/cms/about" className="hover:text-white transition-colors">
+                  {t("linkAboutUs")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/cms/privacy" className="hover:text-white transition-colors">
+                  {t("linkPrivacy")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/cms/contact" className="hover:text-white transition-colors">
+                  {t("linkCompanyAddress")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/cms/faqs" className="hover:text-white transition-colors">
+                  {t("linkFaqs")}
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 3: Customer Service */}
+          <div>
+            <p className="text-lg font-bold text-white mb-4 border-b border-neutral-800 pb-2 inline-block">{t("colService")}</p>
+            <ul className="flex flex-col gap-3 text-sm text-neutral-400">
+              <li>
+                <Link href="/account" className="hover:text-white transition-colors">
                   {t("linkAccount")}
                 </Link>
               </li>
               <li>
-                <Link href="/shop/cart" className="text-secondary/90 hover:text-primary">
-                  {t("linkCart")}
+                <Link href="/account/orders" className="hover:text-white transition-colors">
+                  {t("linkOrders")}
                 </Link>
               </li>
               <li>
-                <Link href="/cms/contact" className="text-secondary/90 hover:text-primary">
+                <Link href="/cms/return-policy" className="hover:text-white transition-colors">
+                  {t("linkReturnPolicy")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/cms/contact" className="hover:text-white transition-colors">
                   {t("linkContact")}
-                </Link>
-              </li>
-              <li>
-                <Link href="/cms/quote" className="text-secondary/90 hover:text-primary">
-                  {t("linkQuote")}
                 </Link>
               </li>
             </ul>
           </div>
 
+          {/* Column 4: Explore */}
           <div>
-            <p className="text-sm font-semibold text-secondary">{t("colExplore")}</p>
-            <ul className="mt-3 flex flex-col gap-2 text-sm">
+            <p className="text-lg font-bold text-white mb-4 border-b border-neutral-800 pb-2 inline-block">{t("colExplore")}</p>
+            <ul className="flex flex-col gap-3 text-sm text-neutral-400">
               <li>
-                <Link href="/shop/categories" className="text-secondary/90 hover:text-primary">
-                  {t("linkCategories")}
-                </Link>
-              </li>
-              <li>
-                <Link href="/shop/brands" className="text-secondary/90 hover:text-primary">
-                  {t("linkBrands")}
-                </Link>
-              </li>
-              <li>
-                <Link href="/shop/flash-sale" className="text-secondary/90 hover:text-primary">
+                <Link href="/shop/flash-sale" className="hover:text-white transition-colors">
                   {t("linkFlash")}
                 </Link>
               </li>
               <li>
-                <Link href="/shop/vehicle" className="text-secondary/90 hover:text-primary">
-                  {tNav("shopByVehicle")}
+                <Link href="/shop/new-arrivals" className="hover:text-white transition-colors">
+                  {t("linkNewArrivals")}
                 </Link>
               </li>
               <li>
-                <Link href="/notifications" className="text-secondary/90 hover:text-primary">
-                  {t("linkNotifications")}
+                <Link href="/shop/best-sellers" className="hover:text-white transition-colors">
+                  {t("linkBestSellers")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/shop/global" className="hover:text-white transition-colors">
+                  {t("linkGlobalGoods")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/shop/most-requested" className="hover:text-white transition-colors">
+                  {t("linkMostRequested")}
                 </Link>
               </li>
             </ul>
           </div>
 
+          {/* Column 5: Car Services */}
           <div>
-            <p className="text-sm font-semibold text-secondary">{t("linkAboutPages")}</p>
-            <ul className="mt-3 flex flex-col gap-2 text-sm">
-              <li>
-                <Link href="/cms/pages" className="text-secondary/90 hover:text-primary">
-                  {tCms("pagesTitle")}
-                </Link>
-              </li>
-              <li>
-                <Link href="/cms/faqs" className="text-secondary/90 hover:text-primary">
-                  {t("linkFaqs")}
-                </Link>
-              </li>
-              <li>
-                <Link href="/cms/services" className="text-secondary/90 hover:text-primary">
-                  {t("linkServices")}
-                </Link>
-              </li>
+            <p className="text-lg font-bold text-white mb-4 border-b border-neutral-800 pb-2 inline-block">{t("colCarServices")}</p>
+            <ul className="flex flex-col gap-3 text-sm text-neutral-400">
+              {services.map((svc, i) => {
+                const slug = svc.slug;
+                if (!slug) return null;
+                return (
+                  <li key={`${slug}-${i}`}>
+                    <Link
+                      href={`/cms/services/${encodeURIComponent(slug)}`}
+                      className="hover:text-white transition-colors"
+                    >
+                      {svc.title ?? svc.name ?? slug}
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           </div>
+        </div>
+      </div>
+
+      {/* Bottom Strip */}
+      <div className="bg-black py-4 border-t border-neutral-800">
+        <div className="mx-auto max-w-7xl px-4 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex gap-2">
+            <span className="w-12 h-8 bg-white rounded flex items-center justify-center">
+              {/* Fake Mastercard Icon */}
+              <svg className="h-5" viewBox="0 0 44 32" fill="none"><circle cx="16" cy="16" r="15" fill="#EB001B" /><circle cx="28" cy="16" r="15" fill="#F79E1B" fillOpacity="0.8" /></svg>
+            </span>
+            <span className="w-12 h-8 bg-white rounded flex items-center justify-center">
+              {/* Fake Amex Icon */}
+              <svg className="h-5 text-[#002663]" viewBox="0 0 100 32" fill="currentColor"><path d="M10 24L0 8h5l7 11 7-11h5L14 24h-4zm20 0V8h12v4H34v3h7v4h-7v5h-4zm22 0V8h8l5 6 5-6h8v16h-4v-9l-5 6h-8l-5-6v9h-4zm32 0l-5-7-5 7h-5l8-10-7-9h5l4 6 4-6h5l-7 9 8 10h-5z"/></svg>
+            </span>
+          </div>
+          <p className="text-sm text-neutral-500 font-medium">
+            {t("bottomRights")}
+          </p>
         </div>
       </div>
     </footer>

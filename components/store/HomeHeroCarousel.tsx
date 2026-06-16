@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "@/i18n/navigation";
 
 function isExternalHref(href: string): boolean {
@@ -31,17 +31,6 @@ export function HomeHeroCarousel({ slides }: Props) {
   const t = useTranslations("Home");
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-
-  const scrollByDir = useCallback((direction: 1 | -1) => {
-    const el = scrollerRef.current;
-    if (!el) {
-      return;
-    }
-    const w = el.clientWidth;
-    const rtl = document.documentElement.getAttribute("dir") === "rtl";
-    const delta = rtl ? -direction : direction;
-    el.scrollBy({ left: delta * w, behavior: "smooth" });
-  }, []);
 
   useEffect(() => {
     if (slides.length <= 1) {
@@ -125,22 +114,6 @@ export function HomeHeroCarousel({ slides }: Props) {
         </div>
         {slides.length > 1 ? (
           <>
-            <button
-              type="button"
-              onClick={() => scrollByDir(-1)}
-              className="absolute start-3 top-1/2 z-10 flex min-h-11 min-w-11 -translate-y-1/2 items-center justify-center rounded-full border border-border-soft bg-white/90 text-lg text-secondary shadow-sm transition-colors hover:bg-white"
-              aria-label={t("heroPrev")}
-            >
-              ‹
-            </button>
-            <button
-              type="button"
-              onClick={() => scrollByDir(1)}
-              className="absolute end-3 top-1/2 z-10 flex min-h-11 min-w-11 -translate-y-1/2 items-center justify-center rounded-full border border-border-soft bg-white/90 text-lg text-secondary shadow-sm transition-colors hover:bg-white"
-              aria-label={t("heroNext")}
-            >
-              ›
-            </button>
             <div className="absolute inset-x-0 bottom-3 z-10 flex items-center justify-center gap-1">
               {slides.map((slide, idx) => (
                 <button

@@ -64,6 +64,11 @@ export async function StoreHeader() {
       (config?.ecommerce_name as string) ||
       "NEW CAR",
   ).trim() || "NEW CAR";
+  const storePhone = String(
+    (config?.phone as string) ||
+      (config?.ecommerce_phone as string) ||
+      "",
+  ).trim();
 
   let navCategories: {
     id: number;
@@ -129,6 +134,7 @@ export async function StoreHeader() {
         apiConfigured={apiConfigured}
         storeLogoSrc={storeLogoSrc}
         storeLogoAlt={storeLogoAlt}
+        storePhone={storePhone}
       />
     </header>
   );

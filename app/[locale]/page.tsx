@@ -7,32 +7,38 @@ import {
   HomeHeroCarousel,
   type HomeHeroSlide,
 } from "@/components/store/HomeHeroCarousel";
-import { HomeProductTabs } from "@/components/store/HomeProductTabs";
 import { TrustStrip } from "@/components/store/TrustStrip";
 import { CampaignPromoGrid } from "@/components/store/CampaignPromoGrid";
 import {
   HomeServicesSection,
   type HomeServiceRow,
 } from "@/components/store/HomeServicesSection";
-import { VehicleFitmentPicker } from "@/components/vehicle/VehicleFitmentPicker";
 import { HomeFlashSale } from "@/components/store/HomeFlashSale";
-import { HomeDriverPicksSection } from "@/components/store/HomeDriverPicksSection";
+import { HomeCategoryVisualSection } from "@/components/store/HomeCategoryVisualSection";
+import {
+  HomeProductsForYouSection,
+  type ProductsForYouTabData,
+  type ProductsForYouTabKey,
+} from "@/components/store/HomeProductsForYouSection";
+import { HomeExactModelSection } from "@/components/store/HomeExactModelSection";
+import { HomeNewArrivalSection } from "@/components/store/HomeNewArrivalSection";
 import {
   fetchBanners,
   fetchCampaignBanners,
   fetchConfig,
-  fetchDiscountedProducts,
   fetchFeaturedCategories,
   fetchFlashSale,
   fetchLatestProducts,
   fetchNewArrivalProducts,
   fetchPopularCategories,
   fetchProductBrands,
+  fetchProductSearch,
   fetchServices,
   fetchVehicleBrands,
   getApiBaseUrl,
   type FeaturedBlock,
 } from "@/lib/api";
+import { categoryDisplayImageSrc } from "@/lib/category-image";
 import { resolveMediaUrl } from "@/lib/resolve-media-url";
 import type {
   BannerRow,
@@ -46,6 +52,83 @@ type VehicleBrandRow = VehicleBrandsResponse["brands"][number];
 type ProductBrandRow = ProductBrandListResponse["brands"][number];
 
 type Props = { params: Promise<{ locale: string }> };
+
+const PRODUCTS_FOR_YOU_PAGE_SIZE = 8;
+const NEW_ARRIVAL_CAROUSEL_SIZE = 10;
+
+function toProductsForYouTab(
+  data: Awaited<ReturnType<typeof fetchProductSearch>>,
+): ProductsForYouTabData {
+  return {
+    products: data?.products ?? [],
+    totalSize: data?.total_size ?? data?.products?.length ?? 0,
+    offset: 1,
+  };
+}
+
+function copyProductsForYouTab(data: ProductsForYouTabData): ProductsForYouTabData {
+  return {
+    products: [...data.products],
+    totalSize: data.totalSize,
+    offset: data.offset,
+  };
+}
+
+async function fetchProductsForYouInitial(): Promise<
+  Record<ProductsForYouTabKey, ProductsForYouTabData>
+> {
+  const limit = String(PRODUCTS_FOR_YOU_PAGE_SIZE);
+  const [all, mostViewed, bestSelling] = await Promise.all([
+    fetchProductSearch({ sort_by: "a_to_z", limit, offset: "1" }),
+    fetchProductSearch({ sort_by: "most_viewed", limit, offset: "1" }),
+    fetchProductSearch({ sort_by: "best_selling", limit, offset: "1" }),
+  ]);
+
+  const allTab = toProductsForYouTab(all);
+
+  let bestSellingTab = toProductsForYouTab(bestSelling);
+  if (bestSellingTab.products.length === 0) {
+    bestSellingTab = toProductsForYouTab(
+      await fetchProductSearch({ sort_by: "new_arrival", limit, offset: "1" }),
+    );
+  }
+  if (bestSellingTab.products.length === 0) {
+    const latest = await fetchLatestProducts(limit, "1");
+    if (latest?.products?.length) {
+      bestSellingTab = {
+        products: latest.products,
+        totalSize:
+          (latest as { total_size?: number }).total_size ??
+          latest.products.length,
+        offset: 1,
+      };
+    }
+  }
+  if (bestSellingTab.products.length === 0 && allTab.products.length > 0) {
+    bestSellingTab = copyProductsForYouTab(allTab);
+  }
+
+  let mostViewedTab = toProductsForYouTab(mostViewed);
+  if (mostViewedTab.products.length === 0) {
+    mostViewedTab = toProductsForYouTab(
+      await fetchProductSearch({
+        sort_by: "price_high_to_low",
+        limit,
+        offset: "1",
+      }),
+    );
+  }
+  if (mostViewedTab.products.length === 0 && allTab.products.length > 0) {
+    mostViewedTab = copyProductsForYouTab(allTab);
+  }
+
+  return {
+    all: allTab,
+    mostViewed: mostViewedTab,
+    bestSelling: bestSellingTab,
+  };
+}
+
 function parseHomeServices(raw: unknown[]): HomeServiceRow[] {
   if (!Array.isArray(raw)) {
     return [];
@@ -87,7 +170,6 @@ export default async function HomePage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("Home");
-  const tNav = await getTranslations("Nav");
   const apiBase = getApiBaseUrl();
 
   const brandsPromise = apiBase
@@ -112,35 +194,48 @@ export default async function HomePage({ params }: Props) {
       )
     : Promise.resolve(null);
 
+  const productsForYouPromise = apiBase
+    ? fetchProductsForYouInitial().catch(() => ({
+        all: { products: [], totalSize: 0, offset: 1 },
+        mostViewed: { products: [], totalSize: 0, offset: 1 },
+        bestSelling: { products: [], totalSize: 0, offset: 1 },
+      }))
+    : Promise.resolve({
+        all: { products: [], totalSize: 0, offset: 1 },
+        mostViewed: { products: [], totalSize: 0, offset: 1 },
+        bestSelling: { products: [], totalSize: 0, offset: 1 },
+      });
+
   const [
     banners,
     campaignBanners,
     featured,
     popular,
-    latest,
-    discounted,
     newArrival,
     config,
     brands,
     productBrands,
     servicesRaw,
     flashSale,
+    productsForYou,
   ] = await Promise.all([
     fetchBanners(),
     fetchCampaignBanners(),
     fetchFeaturedCategories().catch(() => [] as FeaturedBlock[]),
     fetchPopularCategories().catch(() => [] as CategoryRow[]),
-    fetchLatestProducts("8", "1").catch(() => null),
-    fetchDiscountedProducts().catch(() => null),
-    fetchNewArrivalProducts("8", "1").catch(() => null),
+    fetchNewArrivalProducts(String(NEW_ARRIVAL_CAROUSEL_SIZE), "1").catch(() => null),
     fetchConfig().catch(() => null),
     brandsPromise,
     productBrandsPromise,
     servicesPromise,
     flashPromise,
+    productsForYouPromise,
   ]);
 
   const homeServices = parseHomeServices(servicesRaw);
+
+  const newArrivalBg =
+    process.env.NEXT_PUBLIC_HOME_NEW_ARRIVAL_BG?.trim() || null;
 
   const currencyCode =
     (config?.currency_code as string | undefined) ||
@@ -162,7 +257,11 @@ export default async function HomePage({ params }: Props) {
     })
     .filter((s): s is HomeHeroSlide => s !== null);
 
-  const shortcutCategories = popular.slice(0, 12);
+  const shortcutCategories = popular.slice(0, 12).map((category) => ({
+    id: category.id,
+    name: category.name ?? `#${category.id}`,
+    imageSrc: categoryDisplayImageSrc(category),
+  }));
 
   const topCampaigns = campaignBanners.filter(
     (b: CampaignBannerRow) => (b.placement ?? "top") === "top",
@@ -175,105 +274,48 @@ export default async function HomePage({ params }: Props) {
     <>
       {slides.length > 0 ? <HomeHeroCarousel slides={slides} /> : null}
 
-      {topCampaigns.length > 0 ? (
-        <div className="store-shell py-0 md:py-0">
-          <CampaignPromoGrid items={topCampaigns} />
-        </div>
-      ) : null}
-
       <HomeFlashSale data={flashSale} currencyCode={currencyCode} />
 
       <div className="store-shell space-y-10 py-8 md:space-y-12">
         <TrustStrip />
 
-        <HomeDriverPicksSection
-          blocks={featured}
-          title={t("driverPicksTitle")}
+        <HomeCategoryVisualSection
+          items={shortcutCategories}
+          title={t("shortcutsTitle")}
+          subtitle={t("shortcutsSubtitle")}
           viewAll={t("viewAll")}
         />
 
-        {shortcutCategories.length > 0 ? (
-          <section className="space-y-4">
-            <div className="flex items-center justify-between gap-2">
-              <h2 className="text-xl font-semibold text-secondary">
-                {t("shortcutsTitle")}
-              </h2>
-              <Link
-                href="/shop/categories"
-                className="text-sm font-medium text-primary hover:underline"
-              >
-                {t("viewAll")}
-              </Link>
-            </div>
-            <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-              {shortcutCategories.map((c) => (
-                <li key={c.id}>
-                  <Link
-                    href={`/shop/categories/${c.id}`}
-                    className="store-card flex min-h-[4.5rem] items-center justify-center px-3 py-3 text-center text-sm font-semibold text-secondary hover:border-primary/30"
-                  >
-                    {c.name ?? `#${c.id}`}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
-
-        <HomeProductTabs
-          currencyCode={currencyCode}
-          latest={latest?.products ?? []}
-          discounted={discounted ?? []}
-          newArrival={newArrival?.products ?? []}
+        <HomeProductsForYouSection
+          pageSize={PRODUCTS_FOR_YOU_PAGE_SIZE}
+          initial={productsForYou}
         />
+
+        <div className="home-exact-model-bleed">
+          <HomeExactModelSection
+            brands={brands}
+            categories={popular}
+            apiConfigured={Boolean(apiBase)}
+          />
+        </div>
+
+        <div className="home-new-arrival-bleed">
+          <HomeNewArrivalSection
+            products={newArrival?.products ?? []}
+            currencyCode={currencyCode}
+            backgroundSrc={newArrivalBg}
+          />
+        </div>
+
+        {topCampaigns.length > 0 ? (
+          <CampaignPromoGrid items={topCampaigns} />
+        ) : null}
 
         {contentCampaigns.length > 0 ? (
           <div className="store-shell py-0 md:py-0">
             <CampaignPromoGrid items={contentCampaigns} />
           </div>
         ) : null}
-
-        <section className="store-card overflow-hidden">
-          <div className="grid gap-8 p-6 md:grid-cols-2 md:p-8">
-            <div>
-              <p className="inline-flex rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                {t("heroBadge")}
-              </p>
-              <h1 className="mt-4 text-3xl font-black tracking-tight text-secondary md:text-4xl">
-                {t("title")}
-              </h1>
-              <p className="mt-3 max-w-xl text-sm leading-6 text-secondary/90 md:text-base">
-                {t("tagline")}
-              </p>
-              <div className="mt-6 flex flex-wrap gap-3">
-                <Link
-                  href="/shop/vehicle"
-                  className="store-btn-primary inline-flex items-center justify-center px-6 text-sm"
-                >
-                  {tNav("shopByVehicle")}
-                </Link>
-                <Link
-                  href="/shop/search"
-                  className="store-btn-soft inline-flex items-center justify-center px-6 text-sm"
-                >
-                  {t("heroBrowseCta")}
-                </Link>
-              </div>
-              <p className="mt-5 text-xs text-secondary/70">{t("heroHelp")}</p>
-            </div>
-
-            <div className="store-panel p-4 md:p-5">
-              <h2 className="text-lg font-bold text-secondary">{t("fitmentTitle")}</h2>
-              <p className="mt-1 text-sm text-secondary/85">{t("fitmentSubtitle")}</p>
-              <div className="mt-5">
-                <VehicleFitmentPicker
-                  brands={brands}
-                  apiConfigured={Boolean(apiBase)}
-                />
-              </div>
-            </div>
-          </div>
-        </section>
 
         {brands.length > 0 ? (
           <section className="store-card px-4 py-6 md:px-6">

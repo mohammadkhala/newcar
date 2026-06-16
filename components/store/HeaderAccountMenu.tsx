@@ -68,19 +68,19 @@ export function HeaderAccountMenu({
 
   const accountLabel = t("account");
 
-  const halaRing = compact ? "h-7 w-7" : "h-8 w-8 sm:h-9 sm:w-9";
-  const halaIcon = compact ? "h-3.5 w-3.5" : "h-4 w-4 sm:h-5 sm:w-5";
-  const halaText = compact ? "text-[9px] leading-tight" : "text-[10px] font-semibold leading-tight sm:text-xs";
+  const halaRing = compact ? "h-6 w-6" : "h-7 w-7 sm:h-8 sm:w-8";
+  const halaIcon = compact ? "h-6 w-6" : "h-7 w-7 sm:h-8 sm:w-8";
+  const halaText = compact ? "text-[10px] leading-tight" : "text-[11px] font-semibold leading-tight sm:text-xs";
 
   const halaBase =
-    "account-trigger cdz-top-link flex min-w-0 max-w-[5.75rem] flex-col items-center gap-0.5 text-center text-white no-underline outline-none transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-[#EAB308]/80 focus-visible:ring-offset-2 focus-visible:ring-offset-black sm:max-w-[6.5rem]";
+    "account-trigger cdz-top-link flex min-w-0 flex-col items-center gap-1 text-center text-white no-underline outline-none transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-[#EAB308]/80 focus-visible:ring-offset-2 focus-visible:ring-offset-black";
 
   if (newcar && !isAuthenticated) {
     return (
       <div className="account-wrapper">
         <Link href="/auth/login" className={halaBase} aria-label={accountLabel}>
           <span
-            className={`inline-flex shrink-0 items-center justify-center rounded-full border-2 border-white ${halaRing}`}
+            className={`inline-flex shrink-0 items-center justify-center ${halaRing}`}
             aria-hidden
           >
             <IconUser className={`${halaIcon} text-white`} />
@@ -106,7 +106,7 @@ export function HeaderAccountMenu({
           }}
         >
           <span
-            className={`inline-flex shrink-0 items-center justify-center rounded-full border-2 border-white ${halaRing}`}
+            className={`inline-flex shrink-0 items-center justify-center ${halaRing}`}
             aria-hidden
           >
             <IconUser className={`${halaIcon} text-white`} />

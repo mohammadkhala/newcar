@@ -199,11 +199,6 @@ export function SearchSidebar({
           </label>
         </div>
 
-        <label className="flex items-center gap-2 text-sm font-medium text-secondary">
-          <input type="checkbox" name="in_stock_only" value="1" defaultChecked={initialQuery.in_stock_only === "1"} onChange={handleDirectChange} />
-          {t("inStock")}
-        </label>
-
         <details className="border-t border-border-soft pt-4">
           <summary className="cursor-pointer text-sm font-bold text-secondary">
             {t("filters")}

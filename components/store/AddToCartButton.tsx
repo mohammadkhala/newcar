@@ -13,12 +13,8 @@ type Props = {
 export function AddToCartButton({ product }: Props) {
   const t = useTranslations("Product");
   const { add } = useCart();
-  const { inStock } = getProductPriceInfo(product);
 
   function handleAdd() {
-    if (!inStock) {
-      return;
-    }
     add(product, 1);
     toast.success(t("addedToCart"), {
       description: product.name,
@@ -28,11 +24,10 @@ export function AddToCartButton({ product }: Props) {
   return (
     <button
       type="button"
-      disabled={!inStock}
       onClick={handleAdd}
       className="store-btn-primary mt-2 flex w-full items-center justify-center gap-2 px-4 text-sm disabled:cursor-not-allowed disabled:opacity-60"
     >
-      {inStock ? t("addToCart") : t("outOfStock")}
+      {t("addToCart")}
     </button>
   );
 }

@@ -316,16 +316,6 @@ export default async function CategoryDetailPage({
               </label>
             </div>
 
-            <label className="flex items-center gap-2 text-sm font-medium text-secondary">
-              <input
-                type="checkbox"
-                name="in_stock_only"
-                value="1"
-                defaultChecked={query.in_stock_only === "1"}
-              />
-              {tSearch("inStock")}
-            </label>
-
             <details className="border-t border-border-soft pt-4">
               <summary className="cursor-pointer text-sm font-bold text-secondary">
                 {tSearch("filters")}

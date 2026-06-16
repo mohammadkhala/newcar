@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">New Car</string>
-    <string name="title_activity_main">New Car</string>
+    <string name="app_name">نيو كار - New Car</string>
+    <string name="title_activity_main">نيو كار - New Car</string>
     <string name="package_name">com.newcarpal.app</string>
     <string name="custom_url_scheme">com.newcarpal.app</string>
 </resources>

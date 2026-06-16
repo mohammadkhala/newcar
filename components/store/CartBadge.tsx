@@ -26,12 +26,12 @@ export function CartBadge({ variant = "light", compact = false }: Props) {
       <div id="desk_cart-wrapper" className="cart-link">
         <Link
           href="/shop/cart"
-          className="action showcart cdz-top-link group flex min-w-0 max-w-[6.5rem] flex-col items-center gap-0.5 text-center text-white no-underline outline-none transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-[#EAB308] focus-visible:ring-offset-2 focus-visible:ring-offset-black sm:max-w-[7rem]"
+          className="action showcart cdz-top-link group flex min-w-0 flex-col items-center gap-1 text-center text-white no-underline outline-none transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-[#EAB308] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
           aria-label={t("cartAria")}
         >
           <span className="relative inline-flex items-center justify-center text-white">
             <IconCart
-              className={compact ? "h-5 w-5" : "h-6 w-6 sm:h-7 sm:w-7"}
+              className={compact ? "h-6 w-6" : "h-7 w-7 sm:h-8 sm:w-8"}
             />
             {count > 0 && (
               <span className="absolute -top-1.5 -end-1.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-[#EAB308] px-0.5 text-[8px] font-bold text-neutral-900 ring-1 ring-black/20 sm:min-w-4 sm:text-[9px]">
@@ -42,8 +42,8 @@ export function CartBadge({ variant = "light", compact = false }: Props) {
           <span
             className={
               compact
-                ? "max-w-[4.5rem] text-[8px] font-semibold leading-tight"
-                : "max-w-[5.5rem] text-[9px] font-semibold leading-tight sm:max-w-[6rem] sm:text-[10px]"
+                ? "text-[10px] leading-tight"
+                : "text-[11px] font-semibold leading-tight sm:text-xs"
             }
           >
             {t("cartLabelShort")}

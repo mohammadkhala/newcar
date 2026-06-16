@@ -3,10 +3,15 @@
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 
+type Props = {
+  /** Inline form on dark footer middle band */
+  variant?: "default" | "footer-middle";
+};
+
 /**
  * Subscribes email via BFF to Laravel POST /api/v1/newsletter/subscribe.
  */
-export function FooterNewsletterForm() {
+export function FooterNewsletterForm({ variant = "default" }: Props) {
   const t = useTranslations("Footer");
   const locale = useLocale();
   const [status, setStatus] = useState<"idle" | "ok" | "err">("idle");
@@ -38,6 +43,38 @@ export function FooterNewsletterForm() {
     } catch {
       setStatus("err");
     }
+  }
+
+  if (variant === "footer-middle") {
+    return (
+      <div className="footer-middle-form-wrap">
+        <form onSubmit={onSubmit} className="footer-middle-form" noValidate>
+          <button type="submit" className="footer-middle-form-submit">
+            {t("newsletterSubmit")}
+          </button>
+          <input
+            id="footer-newsletter-email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            placeholder={t("newsletterPlaceholder")}
+            className="footer-middle-form-input"
+            required
+            aria-label={t("newsletterEmailLabel")}
+          />
+        </form>
+        {status === "ok" ? (
+          <p className="mt-2 text-xs text-green-400" role="status">
+            {t("newsletterSuccess")}
+          </p>
+        ) : null}
+        {status === "err" ? (
+          <p className="mt-2 text-xs text-red-400" role="alert">
+            {t("newsletterError")}
+          </p>
+        ) : null}
+      </div>
+    );
   }
 
   return (

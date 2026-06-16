@@ -1,0 +1,3 @@
+/* اسم التطبيق تحت الأيقونة — هايبرد (عربي + إنجليزي) لجميع المستخدمين */
+CFBundleDisplayName = "نيو كار - New Car";
+CFBundleName = "نيو كار - New Car";
