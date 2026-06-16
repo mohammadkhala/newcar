@@ -155,6 +155,53 @@ function parseHomeServices(raw: unknown[]): HomeServiceRow[] {
   return out;
 }
 
+/**
+ * Splits campaign banners sequentially into fixed-size clusters (e.g. [4, 4, 6]) so they
+ * land as 2-column banner-pair grids between homepage sections, matching hala-car's
+ * distribution (clusters of paired banner rows between content blocks, not one giant grid).
+ * Any banners beyond the declared sizes are appended to the last cluster.
+ */
+function chunkBanners<T>(items: T[], sizes: number[]): T[][] {
+  const result: T[][] = [];
+  let idx = 0;
+  for (const size of sizes) {
+    result.push(items.slice(idx, idx + size));
+    idx += size;
+  }
+  if (idx < items.length) {
+    result[result.length - 1] = [
+      ...(result[result.length - 1] ?? []),
+      ...items.slice(idx),
+    ];
+  }
+  return result;
+}
+
+/**
+ * Temporary frontend copy for campaign banners whose Laravel `title` is still seed/test
+ * data ("test", "14", "٢"...). We don't have an authenticated admin endpoint to update the
+ * real records, so this stands in until someone sets proper titles in the admin panel —
+ * keyed by banner id, matched against the actual creative each id currently uses.
+ * id 2-6's image already has its own baked-in headline, so it's overridden to "" to avoid
+ * a duplicate caption on top of the artwork.
+ */
+const CAMPAIGN_TITLE_OVERRIDES: Record<number, string> = {
+  1: "ارتقِ بسيارتك لمستوى أعلى من الفخامة",
+  17: "ارتقِ بسيارتك لمستوى أعلى من الفخامة",
+  18: "ارتقِ بسيارتك لمستوى أعلى من الفخامة",
+  14: "تشكيلة إكسسوارات فاخرة تناسب كل سيارة",
+  16: "تشكيلة إكسسوارات فاخرة تناسب كل سيارة",
+  9: "أرضيات 3W الأصلية لحماية سيارتك بأناقة",
+  13: "أرضيات 3W الأصلية لحماية سيارتك بأناقة",
+  15: "أرضيات 3W الأصلية لحماية سيارتك بأناقة",
+  11: "جودة تدوم وحماية تستحقها سيارتك",
+  2: "",
+  3: "",
+  4: "",
+  5: "",
+  6: "",
+};
+
 function bannerSlideSrc(b: BannerRow): string | null {
   const fullpath =
     typeof b.image_fullpath === "string" ? b.image_fullpath : undefined;
@@ -263,11 +310,21 @@ export default async function HomePage({ params }: Props) {
     imageSrc: categoryDisplayImageSrc(category),
   }));
 
-  const topCampaigns = campaignBanners.filter(
-    (b: CampaignBannerRow) => (b.placement ?? "top") === "top",
-  );
-  const contentCampaigns = campaignBanners.filter(
-    (b: CampaignBannerRow) => b.placement === "content",
+  const orderedCampaigns = campaignBanners
+    .map((b: CampaignBannerRow) =>
+      b.id in CAMPAIGN_TITLE_OVERRIDES
+        ? { ...b, title: CAMPAIGN_TITLE_OVERRIDES[b.id] }
+        : b,
+    )
+    .sort(
+      (a: CampaignBannerRow, b: CampaignBannerRow) =>
+        (a.sort_order ?? 0) - (b.sort_order ?? 0) || a.id - b.id,
+    );
+  // hala-car distribution: clusters of paired banners between TrustStrip→categories,
+  // categories→products, and products→exact-model (4, 4, then the rest).
+  const [bannerClusterA, bannerClusterB, bannerClusterC] = chunkBanners(
+    orderedCampaigns,
+    [4, 4, Infinity],
   );
 
   return (
@@ -279,6 +336,8 @@ export default async function HomePage({ params }: Props) {
       <div className="store-shell space-y-10 py-8 md:space-y-12">
         <TrustStrip />
 
+        <CampaignPromoGrid items={bannerClusterA} />
+
         <HomeCategoryVisualSection
           items={shortcutCategories}
           title={t("shortcutsTitle")}
@@ -286,10 +345,14 @@ export default async function HomePage({ params }: Props) {
           viewAll={t("viewAll")}
         />
 
+        <CampaignPromoGrid items={bannerClusterB} />
+
         <HomeProductsForYouSection
           pageSize={PRODUCTS_FOR_YOU_PAGE_SIZE}
           initial={productsForYou}
         />
+
+        <CampaignPromoGrid items={bannerClusterC} />
 
         <div className="home-exact-model-bleed">
           <HomeExactModelSection
@@ -306,16 +369,6 @@ export default async function HomePage({ params }: Props) {
             backgroundSrc={newArrivalBg}
           />
         </div>
-
-        {topCampaigns.length > 0 ? (
-          <CampaignPromoGrid items={topCampaigns} />
-        ) : null}
-
-        {contentCampaigns.length > 0 ? (
-          <div className="store-shell py-0 md:py-0">
-            <CampaignPromoGrid items={contentCampaigns} />
-          </div>
-        ) : null}
 
         {brands.length > 0 ? (
           <section className="store-card px-4 py-6 md:px-6">

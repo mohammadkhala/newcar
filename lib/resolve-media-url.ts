@@ -50,6 +50,11 @@ export function resolveMediaUrl(
   if (file === "def.png" || file === "default.png") {
     return null;
   }
+  // Laravel admin's generic "no image" placeholder (assets/admin/img/{size}/img2.jpg) —
+  // not a real uploaded asset, so callers should fall back to their own UI placeholder.
+  if (file === "img2.jpg" || s.includes("/assets/admin/img/")) {
+    return null;
+  }
   if (s.startsWith("data:") || s.startsWith("blob:")) {
     return s;
   }

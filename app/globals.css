@@ -1,14 +1,16 @@
 @import "tailwindcss";
 
 :root {
+  /* Brand palette sampled directly from the NEW CAR logo (public/logo.png):
+     charcoal #474848 (wordmark/shield) and orange #e35e26 (car icon/stars). */
   --background: #ffffff;
-  --foreground: #4d4d4d;
+  --foreground: #484848;
   --surface: #ffffff;
   --surface-muted: #f6f7f8;
   --border-soft: #eceff2;
-  --primary: #f15a24;
-  --primary-strong: #d63f14;
-  --secondary: #4d4d4d;
+  --primary: #e35e26;
+  --primary-strong: #ba4d1f;
+  --secondary: #484848;
   --secondary-soft: #6b7280;
   --shadow-soft: 0 10px 30px rgba(20, 20, 20, 0.06);
   --radius-card: 1rem;
@@ -26,6 +28,7 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
+
 
 html[lang="ar"] body {
   font-family: var(--font-ar), system-ui, sans-serif;
@@ -228,7 +231,7 @@ textarea {
 
   .home-products-for-you .box-cate-link .item.active .tab-title::before,
   .home-products-for-you .box-cate-link .item:hover .tab-title::before {
-    background: #ffb700;
+    background: var(--primary);
   }
 }
 
@@ -237,7 +240,7 @@ textarea {
   position: relative;
   border: none;
   border-radius: 3px;
-  background: #ffb700;
+  background: var(--primary);
   color: #fff;
   padding: 0.35rem 2rem 0.35rem 0.85rem;
   font-size: 0.8125rem;
@@ -342,7 +345,7 @@ html[dir="rtl"] .home-tab-mobile-toggle {
 
 .home-exact-model.avsb-style-01 {
   color: #fff;
-  background: #ffb700;
+  background: var(--primary);
   border-radius: 5px 5px 0 0;
   overflow: hidden;
 }
@@ -404,7 +407,7 @@ html[dir="rtl"] .home-tab-mobile-toggle {
   min-height: 2.5rem;
   border: none;
   border-radius: 3px;
-  background: #ffb700;
+  background: var(--primary);
   color: #111;
   padding: 0.5rem 1.25rem;
   font-size: 0.875rem;
@@ -417,7 +420,7 @@ html[dir="rtl"] .home-tab-mobile-toggle {
 }
 
 .home-exact-model .actions-toolbar .more-link {
-  color: #ffb700;
+  color: var(--primary);
   font-size: 0.875rem;
   font-weight: 600;
   text-decoration: underline;
@@ -586,7 +589,7 @@ html[dir="rtl"] .home-tab-mobile-toggle {
 
 /* footer-content-top — hala footer-style-15 / service-banner-style04 */
 .footer-content-top {
-  background-color: #ffb700;
+  background-color: var(--primary);
   color: #fff;
   padding-block: 0.625rem;
 }
@@ -818,8 +821,8 @@ html[dir="rtl"] .service-banner-style04 .item-text {
 }
 
 .footer-middle-form-submit:hover {
-  background: #ffb700;
-  border-color: #ffb700;
+  background: var(--primary);
+  border-color: var(--primary);
   color: #111;
 }
 
@@ -843,7 +846,7 @@ html[dir="rtl"] .service-banner-style04 .item-text {
 }
 
 .footer-middle-form-input:focus {
-  border-color: #ffb700;
+  border-color: var(--primary);
 }
 
 .footer-middle-support-group {

@@ -50,7 +50,7 @@ export function StoreHeaderSectionsNav({
   return (
     <div
       id="header-sections-nav"
-      className="relative z-[200] bg-[#EAB308] shadow-[inset_0_-1px_0_rgba(0,0,0,0.08)]"
+      className="sticky top-0 z-[200] bg-primary shadow-[inset_0_-1px_0_rgba(0,0,0,0.08)]"
     >
       <div className="store-shell flex flex-nowrap items-center gap-2 py-2 md:gap-3">
         <div className="order-1 flex shrink-0 items-center gap-2">
@@ -94,11 +94,11 @@ export function StoreHeaderSectionsNav({
 
         <nav
           ref={featuredNavRef}
-          className="order-2 hidden min-h-10 min-w-0 flex-1 md:flex md:items-center md:justify-center"
+          className="order-2 hidden min-h-10 min-w-0 flex-1 md:flex md:items-center"
           aria-label={labels.secondaryNav}
         >
-          <div className="static-wrap relative">
-            <ul className="show-page flex max-w-full flex-nowrap items-center justify-center gap-0.5 overflow-visible px-1 py-1">
+          <div className="static-wrap relative min-w-0 w-full">
+            <ul className="show-page flex w-full flex-nowrap items-center gap-0.5 overflow-x-auto px-1 py-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {DESKTOP_NAV_SCHEMA.map((entry) => {
                 if (entry.kind === "vehicle-panel") {
                   return (

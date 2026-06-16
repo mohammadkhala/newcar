@@ -142,6 +142,7 @@
     "sortLabel": "Sort",
     "submit": "Search",
     "filters": "Filters",
+    "browseBy": "Browse by",
     "clearFilters": "Clear filters",
     "priceMin": "Min price",
     "priceMax": "Max price",
@@ -281,8 +282,8 @@
     "linkPrivacy": "Privacy Policy",
     "linkCompanyAddress": "Company Address",
     "whatsappContact": "Contact us on WhatsApp",
-    "taglineHala": "Hala Car, your first destination for luxury car accessories and professional tuning services",
-    "bottomRights": "Hala Car for Car Accessories and Tuning"
+    "taglineHala": "New Car, your first destination for luxury car accessories and professional tuning services",
+    "bottomRights": "New Car for Car Accessories and Tuning"
   },
   "Auth": {
     "loginTitle": "Sign in",
