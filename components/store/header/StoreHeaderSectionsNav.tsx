@@ -47,9 +47,12 @@ export function StoreHeaderSectionsNav({
   shopRef,
   featuredNavRef,
 }: Props) {
+  const openFeaturedNode = featuredNavItems.find((node) => node.id === openFeaturedId) ?? null;
+
   return (
     <div
       id="header-sections-nav"
+      ref={featuredNavRef as RefObject<HTMLDivElement | null>}
       className="sticky top-0 z-[200] bg-primary shadow-[inset_0_-1px_0_rgba(0,0,0,0.08)]"
     >
       <div className="store-shell flex flex-nowrap items-center gap-2 py-2 md:gap-3">
@@ -93,7 +96,6 @@ export function StoreHeaderSectionsNav({
         </div>
 
         <nav
-          ref={featuredNavRef}
           className="order-2 hidden min-h-10 min-w-0 flex-1 md:flex md:items-center"
           aria-label={labels.secondaryNav}
         >
@@ -114,19 +116,6 @@ export function StoreHeaderSectionsNav({
                       >
                         {labels[entry.labelKey]}
                       </button>
-                      {shopDropdownOpen ? (
-                        <div
-                          className="absolute start-0 top-full z-[160] pt-0"
-                          role="region"
-                          aria-label={labels[entry.labelKey]}
-                        >
-                          <VehicleByCarMegaPanel
-                            brands={vehicleBrands}
-                            apiConfigured={apiConfigured}
-                            onNavigate={closeAllDesktop}
-                          />
-                        </div>
-                      ) : null}
                     </li>
                   );
                 }
@@ -144,13 +133,6 @@ export function StoreHeaderSectionsNav({
                     >
                       {node.name}
                     </button>
-                    {openFeaturedId === node.id ? (
-                      <div className="absolute start-0 top-full z-[160] pt-0">
-                        <div className="w-[min(95vw,48rem)] overflow-hidden rounded-2xl border border-border-soft bg-white shadow-2xl">
-                          <FeaturedPanel node={node} onNavigate={closeAllDesktop} />
-                        </div>
-                      </div>
-                    ) : null}
                   </li>
                 ));
               })}
@@ -158,6 +140,36 @@ export function StoreHeaderSectionsNav({
           </div>
         </nav>
       </div>
+
+      {/* Rendered as a sibling of the scrollable <ul> above (not nested inside it):
+          `overflow-x-auto` on that <ul> forces overflow-y to compute as `auto` too
+          (CSS overflow auto-pairing rule), which clipped these dropdowns to the row's
+          own ~40px height instead of letting them float below it. */}
+      {shopDropdownOpen ? (
+        <div
+          className="store-shell relative"
+          role="region"
+          aria-label={labels.shopByVehicle}
+        >
+          <div className="absolute start-0 top-0 z-[160]">
+            <VehicleByCarMegaPanel
+              brands={vehicleBrands}
+              apiConfigured={apiConfigured}
+              onNavigate={closeAllDesktop}
+            />
+          </div>
+        </div>
+      ) : null}
+
+      {openFeaturedNode ? (
+        <div className="store-shell relative">
+          <div className="absolute start-0 top-0 z-[160]">
+            <div className="w-[min(95vw,48rem)] overflow-hidden rounded-2xl border border-border-soft bg-white shadow-2xl">
+              <FeaturedPanel node={openFeaturedNode} onNavigate={closeAllDesktop} />
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
