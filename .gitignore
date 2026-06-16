@@ -39,3 +39,6 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+
+# local scratch/debug files
+.tmp/

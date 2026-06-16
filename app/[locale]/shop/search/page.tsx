@@ -7,11 +7,13 @@ import {
   fetchProductSearch,
   fetchRootCategories,
   fetchTags,
+  fetchVehicleModels,
   getApiBaseUrl,
 } from "@/lib/api";
 import type { SearchQuery } from "@/lib/api-queries";
 import { Link } from "@/i18n/navigation";
 import { SearchSidebar } from "@/components/store/SearchSidebar";
+import { VehicleModelSlider } from "@/components/store/VehicleModelSlider";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -61,14 +63,20 @@ export default async function ShopSearchPage({ searchParams, params }: PageProps
     in_stock_only: firstString(sp.in_stock_only),
   };
 
-  const [data, tags, attributes, config, rootCategories, brandList] = await Promise.all([
-    apiBase ? fetchProductSearch(query) : Promise.resolve(null),
-    apiBase ? fetchTags() : Promise.resolve([]),
-    apiBase ? fetchAttributes() : Promise.resolve([]),
-    fetchConfig(),
-    apiBase ? fetchRootCategories() : Promise.resolve([]),
-    apiBase ? fetchProductBrands("80", "1") : Promise.resolve(null),
-  ]);
+  const vehicleBrandIdNum = Number(query.vehicle_brand_id ?? "");
+
+  const [data, tags, attributes, config, rootCategories, brandList, vehicleModels] =
+    await Promise.all([
+      apiBase ? fetchProductSearch(query) : Promise.resolve(null),
+      apiBase ? fetchTags() : Promise.resolve([]),
+      apiBase ? fetchAttributes() : Promise.resolve([]),
+      fetchConfig(),
+      apiBase ? fetchRootCategories() : Promise.resolve([]),
+      apiBase ? fetchProductBrands("80", "1") : Promise.resolve(null),
+      apiBase && vehicleBrandIdNum > 0
+        ? fetchVehicleModels(vehicleBrandIdNum)
+        : Promise.resolve([]),
+    ]);
 
   const currencyCode =
     (config?.currency_code as string | undefined) || "ILS";
@@ -135,7 +143,15 @@ export default async function ShopSearchPage({ searchParams, params }: PageProps
   ] as const;
 
   return (
-    <div className="store-shell py-8">
+    <div className="store-shell space-y-6 py-8">
+      {vehicleModels.length > 0 ? (
+        <VehicleModelSlider
+          models={vehicleModels}
+          activeModelId={query.vehicle_model_id}
+          baseQuery={query as Record<string, string | undefined>}
+        />
+      ) : null}
+
       <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
         <SearchSidebar
           initialQuery={query as Record<string, string | undefined>}

@@ -12,12 +12,12 @@ export async function StoreFooter() {
   }[];
 
   return (
-    <footer className="mt-auto bg-[#0a0a0a] text-white border-t border-surface-muted/20">
+    <footer className="mt-auto bg-secondary text-white border-t border-surface-muted/20">
       <div className="mx-auto max-w-7xl px-4 py-12 max-md:pb-[calc(6.5rem+env(safe-area-inset-bottom,0px))]">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
-          {/* Column 1: Hala Car & Apps */}
+          {/* Column 1: New Car & Apps */}
           <div className="flex flex-col gap-6">
-            <h3 className="text-xl font-bold text-white">هلا كار</h3>
+            <h3 className="text-xl font-bold text-white">نيو كار</h3>
             <p className="text-sm leading-relaxed text-neutral-300">
               {t("taglineHala")}
             </p>

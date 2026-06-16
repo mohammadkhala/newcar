@@ -10,6 +10,7 @@ import {
 import { categoryDisplayImageSrc } from "@/lib/category-image";
 import { resolveStoreLogoUrl } from "@/lib/resolve-store-logo";
 import { StoreHeaderBody } from "@/components/store/StoreHeaderBody";
+import { StoreHeaderCategoriesBar } from "@/components/store/header/StoreHeaderCategoriesBar";
 import type {
   CategoryRow,
   CategoryTreeNode,
@@ -17,7 +18,9 @@ import type {
   VehicleBrandsResponse,
 } from "@/lib/types";
 
-const FEATURED_NAV_IDS = [38, 36, 26, 22, 214];
+// 38=تسوق حسب القطعة, 36=ماركات عالمية, 26=راحة وخدمة السائق, 22=العناية وتنظيف السيارة,
+// 37=VIP كماليات فارهه و فاخرة — mirrors hala-car's secondary nav order.
+const FEATURED_NAV_IDS = [38, 36, 26, 22, 37];
 
 function rowToNode(row: CategoryRow): CategoryTreeNode {
   return {
@@ -64,12 +67,6 @@ export async function StoreHeader() {
       (config?.ecommerce_name as string) ||
       "NEW CAR",
   ).trim() || "NEW CAR";
-  const storePhone = String(
-    (config?.phone as string) ||
-      (config?.ecommerce_phone as string) ||
-      "",
-  ).trim();
-
   let navCategories: {
     id: number;
     name: string;
@@ -124,18 +121,26 @@ export async function StoreHeader() {
   }
 
   return (
-    <header className="sticky top-0 z-[300]">
-      <StoreHeaderBody
+    <>
+      <header className="relative z-[300]">
+        <StoreHeaderBody
+          languageOptions={languageOptions}
+          isAuthenticated={isAuthenticated}
+          storeLogoSrc={storeLogoSrc}
+          storeLogoAlt={storeLogoAlt}
+        />
+      </header>
+
+      {/* Sibling of <main>, not nested in the header block above — see
+          StoreHeaderCategoriesBar's docstring for why this is required for `sticky`
+          to keep this bar pinned through the whole page scroll, not just past ~216px. */}
+      <StoreHeaderCategoriesBar
         navCategories={navCategories}
-        languageOptions={languageOptions}
-        isAuthenticated={isAuthenticated}
         featuredNavItems={featuredNavItems}
+        languageOptions={languageOptions}
         vehicleBrands={vehicleBrands}
         apiConfigured={apiConfigured}
-        storeLogoSrc={storeLogoSrc}
-        storeLogoAlt={storeLogoAlt}
-        storePhone={storePhone}
       />
-    </header>
+    </>
   );
 }

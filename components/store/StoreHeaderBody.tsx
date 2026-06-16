@@ -8,21 +8,28 @@ import { HeaderAccountMenu } from "@/components/store/HeaderAccountMenu";
 import { LocaleSwitcher } from "@/components/store/LocaleSwitcher";
 import { useFcmTokenListener } from "@/hooks/use-fcm-token-listener";
 import { setupCapacitorPushNotifications } from "@/lib/capacitor-push";
-import type {
-  StoreHeaderBodyProps,
-} from "@/components/store/header/types";
+import type { LanguageOption } from "@/lib/types";
 
 export type { NavCategoryItem } from "@/components/store/header/types";
 
+type Props = {
+  languageOptions: LanguageOption[] | null;
+  isAuthenticated: boolean;
+  storeLogoSrc: string;
+  storeLogoAlt: string;
+};
+
 /**
- * Main header row, mobile drawer, desktop navigation with category mega menu and featured category flyouts.
+ * Top locale bar + logo/search/cart row. The orange categories nav lives in its own
+ * sticky sibling (StoreHeaderCategoriesBar) so it isn't trapped inside this ~216px-tall
+ * block's containing box — see that component's docstring for why.
  */
 export function StoreHeaderBody({
   languageOptions,
   isAuthenticated,
   storeLogoSrc,
   storeLogoAlt,
-}: StoreHeaderBodyProps) {
+}: Props) {
   useFcmTokenListener(isAuthenticated);
 
   useEffect(() => {

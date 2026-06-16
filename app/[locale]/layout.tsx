@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { GuestInitializer } from "@/components/store/GuestInitializer";
+import { FooterTopPromoStrip } from "@/components/store/FooterTopPromoStrip";
 import { StoreFooter } from "@/components/store/StoreFooter";
 import { StoreHeader } from "@/components/store/StoreHeader";
 import { FloatingWhatsApp } from "@/components/store/FloatingWhatsApp";
@@ -131,9 +132,10 @@ export default async function LocaleLayout({ children, params }: Props) {
             <WishlistProvider>
               <GuestInitializer />
               <StoreHeader />
-              <main className="relative z-0 flex-1 px-0 py-0 max-md:pb-[calc(3.5rem+env(safe-area-inset-bottom,0px))]">
+              <main className="relative z-0 flex-1 overflow-x-clip px-0 py-0 max-md:pb-[calc(3.5rem+env(safe-area-inset-bottom,0px))]">
                 {children}
               </main>
+              <FooterTopPromoStrip />
               <StoreFooter />
               <MobileBottomNav />
               <FloatingWhatsApp whatsapp={whatsappNumber} />
