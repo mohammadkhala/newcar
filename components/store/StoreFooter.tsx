@@ -172,14 +172,14 @@ export async function StoreFooter() {
 
       {/* Bottom Strip */}
       <div className="bg-black py-4 border-t border-neutral-800">
-        <div className="mx-auto max-w-7xl px-4 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="mx-auto max-w-7xl px-4 flex flex-col items-center gap-3">
           <div className="flex gap-3 flex-wrap items-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/Visa-vs-Mastercard.jpg" alt="Visa & Mastercard" className="h-8 w-auto rounded object-contain bg-white" />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/reflect.png" alt="Reflect" className="h-8 w-auto rounded object-contain bg-white" />
           </div>
-          <p className="text-sm text-neutral-500 font-medium">
+          <p className="text-sm text-neutral-500 font-medium text-center">
             برمجة وتطوير{" "}
             <a
               href="https://baitpait.com/"
