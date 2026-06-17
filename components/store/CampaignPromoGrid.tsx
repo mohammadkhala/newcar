@@ -59,6 +59,9 @@ export function CampaignPromoGrid({ items }: Props) {
                     className="object-cover transition-transform duration-300 group-hover:scale-[1.01]"
                   />
                   <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/80 via-black/10 to-transparent" />
+                  <span className="absolute start-2 top-2 z-10 rounded bg-black/60 px-1.5 py-0.5 text-[11px] font-bold leading-none text-white/80 backdrop-blur-sm">
+                    {item.id}
+                  </span>
                   <PromoCardOrnament />
                   {item.title ? (
                     <div className="absolute inset-x-0 bottom-0 p-3">
