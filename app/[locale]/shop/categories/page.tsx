@@ -42,8 +42,15 @@ export default async function CategoriesIndexPage({ params }: Props) {
                         unoptimized
                       />
                     ) : (
-                      <div className="flex h-full items-center justify-center text-3xl font-black text-primary/25">
-                        {label.slice(0, 1)}
+                      <div className="flex h-full items-center justify-center">
+                        <Image
+                          src="/brand/app-icon.png"
+                          alt=""
+                          width={80}
+                          height={80}
+                          unoptimized
+                          className="h-16 w-auto object-contain opacity-40"
+                        />
                       </div>
                     )}
                   </div>

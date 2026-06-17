@@ -39,6 +39,13 @@ export default function LoginPage() {
     return { res, data };
   }
 
+  function resolveError(res: Response, data: { errors?: Array<{ message?: string }>; message?: string }): string {
+    if (res.status === 429) return t("tooManyAttempts");
+    const msg = data.errors?.[0]?.message ?? data.message ?? "";
+    if (/too many attempt/i.test(msg)) return t("tooManyAttempts");
+    return msg || t("error");
+  }
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
@@ -62,8 +69,7 @@ export default function LoginPage() {
         setError(t("needVerify"));
         return;
       }
-      const apiMessage = secondTry.data.errors?.[0]?.message ?? secondTry.data.message;
-      setError(apiMessage || t("error"));
+      setError(resolveError(secondTry.res, secondTry.data));
       return;
     }
 
@@ -71,8 +77,7 @@ export default function LoginPage() {
       setError(t("needVerify"));
       return;
     }
-    const apiMessage = firstTry.data.errors?.[0]?.message ?? firstTry.data.message;
-    setError(apiMessage || t("error"));
+    setError(resolveError(firstTry.res, firstTry.data));
   }
 
   return (

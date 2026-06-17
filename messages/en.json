@@ -303,7 +303,8 @@
     "submitLogin": "Sign in",
     "submitRegister": "Register",
     "needVerify": "Verification required — complete steps via app or admin.",
-    "error": "Request failed. Check your details."
+    "error": "Request failed. Check your details.",
+    "tooManyAttempts": "Too many attempts. Please wait a moment and try again."
   },
   "Account": {
     "title": "My account",
