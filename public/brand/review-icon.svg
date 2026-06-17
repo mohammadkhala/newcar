@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Speech bubble -->
+  <rect x="5" y="5" width="75" height="68" rx="12" ry="12" fill="#e8f8f0" stroke="#1a3a6b" stroke-width="4"/>
+  <!-- Bubble tail -->
+  <polygon points="18,73 10,88 32,73" fill="#e8f8f0" stroke="#1a3a6b" stroke-width="3" stroke-linejoin="round"/>
+
+  <!-- Row 1: green circle + 3 green stars -->
+  <circle cx="22" cy="25" r="7" fill="#4ecb71" stroke="#1a3a6b" stroke-width="2.5"/>
+  <text x="37" y="29.5" font-size="14" fill="#4ecb71">★★★</text>
+
+  <!-- Row 2: yellow circle + 2 yellow stars -->
+  <circle cx="22" cy="44" r="7" fill="#f5c518" stroke="#1a3a6b" stroke-width="2.5"/>
+  <text x="37" y="48.5" font-size="14" fill="#f5c518">★★</text>
+
+  <!-- Row 3: red circle + 1 red star -->
+  <circle cx="22" cy="63" r="7" fill="#ef5350" stroke="#1a3a6b" stroke-width="2.5"/>
+  <text x="37" y="67.5" font-size="14" fill="#ef5350">★</text>
+
+  <!-- Green checkmark badge -->
+  <circle cx="76" cy="72" r="20" fill="#4ecb71" stroke="white" stroke-width="3"/>
+  <polyline points="66,72 73,80 87,64" fill="none" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
