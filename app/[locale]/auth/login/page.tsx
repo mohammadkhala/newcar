@@ -6,13 +6,14 @@ import { useState } from "react";
 import { buildInternationalPhone, normalizePhoneLocal } from "@/lib/phone";
 import { parseAuthApiError, networkErrorResult } from "@/lib/auth-api-message";
 
+const DEFAULT_CC = "+972" as const;
+
 export default function LoginPage() {
   const t = useTranslations("Auth");
   const tNav = useTranslations("Nav");
   const locale = useLocale();
   const router = useRouter();
   const [phone, setPhone] = useState("");
-  const [countryCode, setCountryCode] = useState<"+970" | "+972">("+970");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
@@ -49,9 +50,10 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
 
+    // buildInternationalPhone strips the leading zero automatically
     let firstTry: Awaited<ReturnType<typeof postLogin>>;
     try {
-      firstTry = await postLogin(buildInternationalPhone(phone, countryCode));
+      firstTry = await postLogin(buildInternationalPhone(phone, DEFAULT_CC));
     } catch {
       setError(t(networkErrorResult().key));
       return;
@@ -62,9 +64,9 @@ export default function LoginPage() {
       return;
     }
 
-    // Backward compatibility: some legacy accounts may have been saved with an extra leading zero.
-    const fallbackPhone = `${countryCode}${normalizePhoneLocal(phone)}`;
-    const primaryPhone = buildInternationalPhone(phone, countryCode);
+    // Backward compat: retry keeping the leading zero for legacy accounts
+    const primaryPhone = buildInternationalPhone(phone, DEFAULT_CC);
+    const fallbackPhone = `${DEFAULT_CC}${normalizePhoneLocal(phone)}`;
     if (fallbackPhone !== primaryPhone) {
       try {
         const secondTry = await postLogin(fallbackPhone);
@@ -90,39 +92,22 @@ export default function LoginPage() {
         </h1>
       </header>
       <form onSubmit={onSubmit} className="flex flex-col gap-5">
-        <div className="space-y-2">
-          <span className="block text-sm font-semibold text-secondary" id="login-phone-label">
+        <label className="block space-y-2">
+          <span className="block text-sm font-semibold text-secondary">
             {t("whatsAppPhone")}
           </span>
-          <div
-            className="grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,9.5rem)_minmax(0,1fr)] sm:items-stretch"
-            role="group"
-            aria-labelledby="login-phone-label"
-          >
-            <select
-              value={countryCode}
-              onChange={(e) => setCountryCode(e.target.value as "+970" | "+972")}
-              className="store-input w-full min-w-0 text-sm sm:text-base"
-              aria-label={t("countryCode")}
-              autoComplete="tel-country-code"
-            >
-              <option value="+970">+970 {t("countryPalestine")}</option>
-              <option value="+972">+972 {t("countryIsrael")}</option>
-            </select>
-            <input
-              required
-              inputMode="tel"
-              minLength={8}
-              maxLength={11}
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="store-input min-w-0 w-full"
-              placeholder="59XXXXXXXX"
-              autoComplete="tel-national"
-              aria-label={t("whatsAppPhone")}
-            />
-          </div>
-        </div>
+          <input
+            required
+            inputMode="tel"
+            minLength={9}
+            maxLength={11}
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className="store-input w-full"
+            placeholder="0591234567"
+            autoComplete="tel-national"
+          />
+        </label>
         <label className="block space-y-2">
           <span className="block text-sm font-semibold text-secondary">{t("password")}</span>
           <input
