@@ -3,8 +3,9 @@
 import { useLocale, useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useState } from "react";
-import { buildInternationalPhone } from "@/lib/phone";
+import { buildAuthPhone, normalizePhoneLocal } from "@/lib/phone";
 import { parseAuthApiError, networkErrorResult } from "@/lib/auth-api-message";
+import { AuthPhoneField } from "@/components/auth/AuthPhoneField";
 
 function generateUniqueEmail(seedPhone: string): string {
   const phonePart = normalizePhoneLocal(seedPhone).slice(-6) || "000000";
@@ -42,7 +43,7 @@ export default function RegisterPage() {
           f_name: fName,
           l_name: lName,
           email: generateUniqueEmail(phone),
-          phone: buildInternationalPhone(phone, "+972"),
+          phone: buildAuthPhone(phone),
           password,
         }),
       });
@@ -98,23 +99,7 @@ export default function RegisterPage() {
             suppressHydrationWarning
           />
         </label>
-        <label className="block space-y-2">
-          <span className="block text-sm font-semibold text-secondary">
-            {t("phone")}
-          </span>
-          <input
-            required
-            minLength={9}
-            maxLength={11}
-            inputMode="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            className="store-input w-full"
-            placeholder="0591234567"
-            autoComplete="tel-national"
-            suppressHydrationWarning
-          />
-        </label>
+        <AuthPhoneField value={phone} onChange={setPhone} />
         <label className="block space-y-2">
           <span className="block text-sm font-semibold text-secondary">{t("password")}</span>
           <input

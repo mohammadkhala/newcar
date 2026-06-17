@@ -3,10 +3,9 @@
 import { useLocale, useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useState } from "react";
-import { buildInternationalPhone, normalizePhoneLocal } from "@/lib/phone";
+import { buildAuthPhone, buildInternationalPhone } from "@/lib/phone";
 import { parseAuthApiError, networkErrorResult } from "@/lib/auth-api-message";
-
-const DEFAULT_CC = "+972" as const;
+import { AuthPhoneField } from "@/components/auth/AuthPhoneField";
 
 export default function LoginPage() {
   const t = useTranslations("Auth");
@@ -50,10 +49,10 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
 
-    // buildInternationalPhone strips the leading zero automatically
+    // First attempt: +972 (strip leading zero)
     let firstTry: Awaited<ReturnType<typeof postLogin>>;
     try {
-      firstTry = await postLogin(buildInternationalPhone(phone, DEFAULT_CC));
+      firstTry = await postLogin(buildAuthPhone(phone));
     } catch {
       setError(t(networkErrorResult().key));
       return;
@@ -64,24 +63,18 @@ export default function LoginPage() {
       return;
     }
 
-    // Backward compat: retry keeping the leading zero for legacy accounts
-    const primaryPhone = buildInternationalPhone(phone, DEFAULT_CC);
-    const fallbackPhone = `${DEFAULT_CC}${normalizePhoneLocal(phone)}`;
-    if (fallbackPhone !== primaryPhone) {
-      try {
-        const secondTry = await postLogin(fallbackPhone);
-        if (secondTry.res.ok && secondTry.data.status === true) {
-          router.push("/account");
-          return;
-        }
-        applyError(secondTry.res.status, secondTry.data);
-      } catch {
-        setError(t(networkErrorResult().key));
+    // Fallback: +970 for legacy Palestinian accounts
+    const fallbackPhone = buildInternationalPhone(phone, "+970");
+    try {
+      const secondTry = await postLogin(fallbackPhone);
+      if (secondTry.res.ok && secondTry.data.status === true) {
+        router.push("/account");
+        return;
       }
-      return;
+      applyError(secondTry.res.status, secondTry.data);
+    } catch {
+      setError(t(networkErrorResult().key));
     }
-
-    applyError(firstTry.res.status, firstTry.data);
   }
 
   return (
@@ -92,23 +85,7 @@ export default function LoginPage() {
         </h1>
       </header>
       <form onSubmit={onSubmit} className="flex flex-col gap-5">
-        <label className="block space-y-2">
-          <span className="block text-sm font-semibold text-secondary">
-            {t("whatsAppPhone")}
-          </span>
-          <input
-            required
-            inputMode="tel"
-            minLength={9}
-            maxLength={11}
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            className="store-input w-full"
-            placeholder="0591234567"
-            autoComplete="tel-national"
-            suppressHydrationWarning
-          />
-        </label>
+        <AuthPhoneField value={phone} onChange={setPhone} />
         <label className="block space-y-2">
           <span className="block text-sm font-semibold text-secondary">{t("password")}</span>
           <input

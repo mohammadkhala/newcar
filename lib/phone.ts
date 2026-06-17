@@ -34,3 +34,8 @@ export function buildInternationalPhone(
   local = local.replace(/^0+/, "");
   return `${countryCode}${local}`;
 }
+
+/** Builds the canonical +972 international phone for the store. */
+export function buildAuthPhone(phoneLocal: string): string {
+  return buildInternationalPhone(phoneLocal, "+972");
+}
