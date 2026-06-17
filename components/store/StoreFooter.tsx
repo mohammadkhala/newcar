@@ -20,21 +20,21 @@ export async function StoreFooter() {
             <p className="text-sm leading-relaxed text-neutral-300">
               {t("taglineHala")}
             </p>
-            <div className="flex flex-wrap gap-2">
-              <a href="https://apps.apple.com/ae/app/%D9%86%D9%8A%D9%88-%D9%83%D8%A7%D8%B1-newcar/id6767830089" target="_blank" rel="noopener noreferrer" className="inline-block" aria-label="Download on the App Store">
+            <div className="flex flex-row gap-2">
+              <a href="https://apps.apple.com/ae/app/%D9%86%D9%8A%D9%88-%D9%83%D8%A7%D8%B1-newcar/id6767830089" target="_blank" rel="noopener noreferrer" className="flex-1" aria-label="Download on the App Store">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src="/assets/app-store.svg"
                   alt="App Store"
-                  className="h-10 w-auto object-contain"
+                  className="h-9 w-full object-contain"
                 />
               </a>
-              <a href="https://play.google.com/store/apps/details?id=com.newcarpal.app" target="_blank" rel="noopener noreferrer" className="inline-block" aria-label="Get it on Google Play">
+              <a href="https://play.google.com/store/apps/details?id=com.newcarpal.app" target="_blank" rel="noopener noreferrer" className="flex-1" aria-label="Get it on Google Play">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src="/assets/google-play.svg"
                   alt="Google Play"
-                  className="h-10 w-auto object-contain"
+                  className="h-9 w-full object-contain"
                 />
               </a>
             </div>
