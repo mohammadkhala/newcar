@@ -68,7 +68,7 @@ export default function LoginPage() {
       {/* Logo + title */}
       <div className="flex flex-col items-center gap-3 text-center">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/assets/logo.png" alt="نيو كار" className="h-12 w-auto object-contain" />
+        <img src="/logo.png" alt="نيو كار" className="h-12 w-auto object-contain" />
         <div>
           <h1 className="text-xl font-bold text-secondary">{t("loginTitle")}</h1>
           <p className="mt-1 text-sm text-secondary/50">أهلاً بك! سجّل دخولك للمتابعة</p>
