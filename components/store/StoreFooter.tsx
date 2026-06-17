@@ -173,27 +173,11 @@ export async function StoreFooter() {
       {/* Bottom Strip */}
       <div className="bg-black py-4 border-t border-neutral-800">
         <div className="mx-auto max-w-7xl px-4 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex gap-2 flex-wrap items-center">
-            <span className="w-12 h-8 bg-white rounded flex items-center justify-center">
-              {/* Mastercard */}
-              <svg className="h-5" viewBox="0 0 44 32" fill="none"><circle cx="16" cy="16" r="15" fill="#EB001B" /><circle cx="28" cy="16" r="15" fill="#F79E1B" fillOpacity="0.8" /></svg>
-            </span>
-            <span className="w-12 h-8 bg-white rounded flex items-center justify-center">
-              {/* Visa */}
-              <svg className="h-4" viewBox="0 0 80 26" fill="none"><path d="M30 2L24 24h-6L24 2h6zm26 14.8l3.2-8.8 1.8 8.8H56zM63 24l-1.4-4H53l-1.4 4h-6L54 2h7l7 22h-5zM44 2l-8.6 14.6L34 2h-6l2 22h6l14-22h-6z" fill="#1A1F71"/></svg>
-            </span>
-            <span className="w-12 h-8 bg-white rounded flex items-center justify-center">
-              {/* Amex */}
-              <svg className="h-4 text-[#002663]" viewBox="0 0 100 32" fill="currentColor"><path d="M10 24L0 8h5l7 11 7-11h5L14 24h-4zm20 0V8h12v4H34v3h7v4h-7v5h-4zm22 0V8h8l5 6 5-6h8v16h-4v-9l-5 6h-8l-5-6v9h-4zm32 0l-5-7-5 7h-5l8-10-7-9h5l4 6 4-6h5l-7 9 8 10h-5z"/></svg>
-            </span>
-            {/* Reflect */}
-            <span className="h-8 bg-white rounded px-2 flex items-center justify-center gap-1">
-              <svg className="h-5 w-5" viewBox="0 0 40 40" fill="none">
-                <circle cx="20" cy="20" r="20" fill="#6B21A8"/>
-                <path d="M14 10h8a6 6 0 0 1 0 12h-4l6 8h-5l-6-8v8h-4V10h5zm1 4v6h6a3 3 0 0 0 0-6h-6z" fill="white"/>
-              </svg>
-              <span className="text-[10px] font-bold text-[#6B21A8] leading-none">Reflect</span>
-            </span>
+          <div className="flex gap-3 flex-wrap items-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/Visa-vs-Mastercard.jpeg" alt="Visa & Mastercard" className="h-8 w-auto rounded object-contain bg-white" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/reflect.png" alt="Reflect" className="h-8 w-auto rounded object-contain bg-white" />
           </div>
           <p className="text-sm text-neutral-500 font-medium">
             {t("bottomRights")}
