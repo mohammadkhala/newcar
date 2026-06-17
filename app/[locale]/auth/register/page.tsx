@@ -4,6 +4,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useState } from "react";
 import { buildInternationalPhone, normalizePhoneLocal } from "@/lib/phone";
+import { authApiErrorMessage } from "@/lib/auth-api-message";
 
 function generateUniqueEmail(seedPhone: string): string {
   const phonePart = normalizePhoneLocal(seedPhone).slice(-6) || "000000";
@@ -52,8 +53,7 @@ export default function RegisterPage() {
       message?: string;
     };
     if (!res.ok) {
-      const apiMessage = data.errors?.[0]?.message ?? data.message;
-      setError(apiMessage || t("error"));
+      setError(authApiErrorMessage(res, data, t));
       return;
     }
     if (data.ok) {

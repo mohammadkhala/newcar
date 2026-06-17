@@ -4,6 +4,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useState } from "react";
 import { buildInternationalPhone, normalizePhoneLocal } from "@/lib/phone";
+import { authApiErrorMessage } from "@/lib/auth-api-message";
 
 export default function LoginPage() {
   const t = useTranslations("Auth");
@@ -62,8 +63,8 @@ export default function LoginPage() {
         setError(t("needVerify"));
         return;
       }
-      const apiMessage = secondTry.data.errors?.[0]?.message ?? secondTry.data.message;
-      setError(apiMessage || t("error"));
+      const apiMessage = authApiErrorMessage(secondTry.res, secondTry.data, t);
+      setError(apiMessage);
       return;
     }
 
@@ -71,8 +72,7 @@ export default function LoginPage() {
       setError(t("needVerify"));
       return;
     }
-    const apiMessage = firstTry.data.errors?.[0]?.message ?? firstTry.data.message;
-    setError(apiMessage || t("error"));
+    setError(authApiErrorMessage(firstTry.res, firstTry.data, t));
   }
 
   return (
