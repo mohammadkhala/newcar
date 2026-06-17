@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { resolveMediaUrl } from "@/lib/resolve-media-url";
@@ -18,6 +18,42 @@ function brandHref(brandId: number | null): string {
 
 export function VehicleBrandSlider({ brands, activeBrandId }: Props) {
   const scrollerRef = useRef<HTMLDivElement>(null);
+  const autoIndexRef = useRef(0);
+
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el || brands.length === 0) return;
+
+    let paused = false;
+
+    const tick = () => {
+      if (paused) return;
+      autoIndexRef.current = (autoIndexRef.current + 1) % brands.length;
+      const items = el.querySelectorAll<HTMLElement>(":scope > a");
+      items[autoIndexRef.current]?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "center",
+      });
+    };
+
+    const id = setInterval(tick, 2500);
+    const pause = () => { paused = true; };
+    const resume = () => { paused = false; };
+
+    el.addEventListener("mouseenter", pause);
+    el.addEventListener("touchstart", pause, { passive: true });
+    el.addEventListener("mouseleave", resume);
+    el.addEventListener("touchend", resume, { passive: true });
+
+    return () => {
+      clearInterval(id);
+      el.removeEventListener("mouseenter", pause);
+      el.removeEventListener("touchstart", pause);
+      el.removeEventListener("mouseleave", resume);
+      el.removeEventListener("touchend", resume);
+    };
+  }, [brands.length]);
 
   if (brands.length === 0) return null;
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "@/i18n/navigation";
 import type { CategoryTreeNode } from "@/lib/types";
 
@@ -14,12 +14,6 @@ const ROW =
 
 export function FeaturedPanel({ node, onNavigate }: Props) {
   const [selectedPath, setSelectedPath] = useState<number[]>([]);
-
-  // Auto-select the first child that itself has children so col 2 shows immediately
-  useEffect(() => {
-    const first = node.children.find((c) => c.children.length > 0) ?? node.children[0];
-    if (first) setSelectedPath([first.id]);
-  }, [node.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const columns: Array<{
     level: number;

@@ -1,13 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { Link } from "@/i18n/navigation";
-import { CategoryMegaGrid } from "@/components/store/header/CategoryMegaGrid";
-import { HeaderShopLinks } from "@/components/store/header/StoreHeaderSectionsNav";
-import { MOBILE_DRAWER_SECTION_SCHEMA } from "@/components/store/header/nav-schema";
 import type { HeaderNavLabels, NavCategoryItem } from "@/components/store/header/types";
-import { LocaleSwitcher } from "@/components/store/LocaleSwitcher";
-import { HeaderSearch } from "@/components/store/HeaderSearch";
-import { VehicleFitmentPicker } from "@/components/vehicle/VehicleFitmentPicker";
 import type { CategoryTreeNode, LanguageOption, VehicleBrandsResponse } from "@/lib/types";
 
 type Props = {
@@ -21,129 +16,146 @@ type Props = {
   onClose: () => void;
 };
 
+const ROW =
+  "flex min-h-[3.25rem] w-full items-center justify-between gap-3 border-b border-gray-100 px-5 text-[0.95rem] font-semibold text-secondary transition-colors hover:bg-gray-50 active:bg-gray-100";
+
 export function StoreHeaderMobileDrawer({
   menuOpen,
   labels,
-  languageOptions,
-  navCategories,
   featuredNavItems,
-  vehicleBrands,
-  apiConfigured,
   onClose,
 }: Props) {
-  if (!menuOpen) {
-    return null;
-  }
+  const [activeTabId, setActiveTabId] = useState<number | null>(
+    featuredNavItems[0]?.id ?? null,
+  );
+  const [expandedId, setExpandedId] = useState<number | null>(null);
+
+  if (!menuOpen) return null;
+
+  const activeNode = featuredNavItems.find((n) => n.id === activeTabId);
 
   return (
     <div className="fixed inset-0 z-[400] md:hidden" id="store-mobile-nav">
+      {/* Backdrop */}
       <button
         type="button"
-        className="absolute inset-0 bg-black/40"
+        className="absolute inset-0 bg-black/50"
         aria-label={labels.closeMenu}
         onClick={onClose}
       />
 
-      <div
-        className="absolute start-0 top-0 flex h-full w-[min(100%,20rem)] flex-col bg-white shadow-xl"
-        dir="auto"
-      >
-        <div className="flex items-center justify-between border-b border-surface-muted px-4 py-3">
-          <span className="text-sm font-semibold text-secondary">
-            {labels.allPartsByCategory}
-          </span>
+      {/* Panel */}
+      <div className="absolute inset-y-0 start-0 flex w-[min(100%,22rem)] flex-col shadow-2xl">
+        {/* Yellow tab bar */}
+        <div className="flex shrink-0 overflow-x-auto bg-[#EAB308] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {featuredNavItems.map((node) => {
+            const active = activeTabId === node.id;
+            return (
+              <button
+                key={node.id}
+                type="button"
+                onClick={() => {
+                  setActiveTabId(node.id);
+                  setExpandedId(null);
+                }}
+                className={`flex min-w-[5rem] flex-1 shrink-0 items-center justify-center px-4 py-3.5 text-sm font-black transition-colors ${
+                  active
+                    ? "bg-black/15 text-white"
+                    : "text-yellow-950/70 hover:text-yellow-950"
+                }`}
+              >
+                {node.name}
+              </button>
+            );
+          })}
+          {/* Close X */}
           <button
             type="button"
-            className="rounded-lg px-3 py-1 text-sm font-medium text-primary"
             onClick={onClose}
+            aria-label={labels.closeMenu}
+            className="shrink-0 px-4 py-3 text-lg font-bold text-yellow-950/60 hover:text-yellow-950"
           >
-            {labels.closeMenu}
+            ✕
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-4 py-4">
-          <HeaderSearch variant="light" />
+        {/* White content list */}
+        <div className="flex-1 overflow-y-auto bg-white">
+          {activeNode ? (
+            <ul>
+              {activeNode.children.map((item) => {
+                const hasChildren = item.children.length > 0;
+                const expanded = expandedId === item.id;
 
-          <div className="mt-3 flex items-center justify-end gap-2">
-            <LocaleSwitcher languageOptions={languageOptions} variant="topBar" />
-          </div>
-
-          {MOBILE_DRAWER_SECTION_SCHEMA.map((section) => {
-            if (section.id === "vehicleLinks") {
-              return (
-                <div key={section.id}>
-                  <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-secondary/70">
-                    {labels[section.titleKey]}
-                  </p>
-                  <HeaderShopLinks labels={labels} onNavigate={onClose} />
-                  {apiConfigured && vehicleBrands.length > 0 ? (
-                    <div className="mt-4 border-t border-surface-muted pt-4">
-                      <VehicleFitmentPicker
-                        brands={vehicleBrands}
-                        apiConfigured={apiConfigured}
-                        onSearch={onClose}
-                      />
-                    </div>
-                  ) : null}
-                </div>
-              );
-            }
-
-            if (section.id === "categoriesGrid") {
-              return (
-                <div key={section.id}>
-                  <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-secondary/70">
-                    {labels[section.titleKey]}
-                  </p>
-                  <CategoryMegaGrid
-                    navCategories={navCategories}
-                    emptyLabel={labels.allCategories}
-                    onNavigate={onClose}
-                  />
-                </div>
-              );
-            }
-
-            if (featuredNavItems.length === 0) {
-              return null;
-            }
-
-            return (
-              <div key={section.id}>
-                <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-secondary/70">
-                  {labels[section.titleKey]}
-                </p>
-                <ul className="mt-2 space-y-3 text-sm">
-                  {featuredNavItems.map((node) => (
-                    <li key={node.id}>
-                      <Link
-                        href={`/shop/categories/${node.id}`}
-                        className="font-bold text-secondary hover:text-primary"
-                        onClick={onClose}
+                if (hasChildren) {
+                  return (
+                    <li key={item.id}>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setExpandedId(expanded ? null : item.id)
+                        }
+                        className={`${ROW} ${expanded ? "text-[#EAB308]" : ""}`}
                       >
-                        {node.name}
-                      </Link>
-                      {node.children.length > 0 ? (
-                        <ul className="ms-2 mt-1 space-y-1 border-s border-border-soft ps-2">
-                          {node.children.map((child) => (
+                        <span
+                          aria-hidden
+                          className={`shrink-0 text-lg leading-none transition-transform ${
+                            expanded
+                              ? "rotate-90 text-[#EAB308]"
+                              : "text-secondary/30"
+                          }`}
+                        >
+                          ‹
+                        </span>
+                        <span className="flex-1 truncate text-end">
+                          {item.name}
+                        </span>
+                      </button>
+                      {expanded && (
+                        <ul className="bg-gray-50">
+                          {item.children.map((child) => (
                             <li key={child.id}>
                               <Link
                                 href={`/shop/categories/${child.id}`}
-                                className="text-secondary/90 hover:text-primary"
                                 onClick={onClose}
+                                className="flex min-h-[2.75rem] items-center justify-end border-b border-gray-100 px-8 text-sm text-secondary/80 hover:text-primary"
                               >
                                 {child.name}
                               </Link>
                             </li>
                           ))}
                         </ul>
-                      ) : null}
+                      )}
                     </li>
-                  ))}
-                </ul>
-              </div>
-            );
-          })}
+                  );
+                }
+
+                return (
+                  <li key={item.id}>
+                    <Link
+                      href={`/shop/categories/${item.id}`}
+                      onClick={onClose}
+                      className={ROW}
+                    >
+                      <span
+                        aria-hidden
+                        className="shrink-0 text-lg leading-none text-secondary/30"
+                      >
+                        ‹
+                      </span>
+                      <span className="flex-1 truncate text-end">
+                        {item.name}
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <div className="p-8 text-center text-sm text-secondary/40">
+              {labels.allCategories}
+            </div>
+          )}
         </div>
       </div>
     </div>
