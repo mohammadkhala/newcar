@@ -108,11 +108,23 @@ export default async function ShopProductPage({ params }: PageProps) {
             <p className="mt-3 text-xs text-secondary/60">{t("descriptionTrusted")}</p>
           </div>
 
-          {p.description && (
+          {p.description && p.description.replace(/<[^>]*>/g, "").trim().length > 0 && (
             <section className="store-card p-5 md:p-6">
               <h2 className="text-base font-bold text-secondary">{t("descriptionTitle")}</h2>
               <div
-                className="mt-3 max-w-none text-sm leading-relaxed text-secondary/90 [&_img]:max-w-full"
+                className="mt-3 text-sm leading-relaxed text-secondary/90
+                  [&_p]:mb-3 [&_p:last-child]:mb-0
+                  [&_ul]:mb-3 [&_ul]:list-disc [&_ul]:ps-5
+                  [&_ol]:mb-3 [&_ol]:list-decimal [&_ol]:ps-5
+                  [&_li]:mb-1
+                  [&_strong]:font-bold [&_b]:font-bold
+                  [&_em]:italic [&_i]:italic
+                  [&_h1]:mb-2 [&_h1]:text-xl [&_h1]:font-bold [&_h1]:text-secondary
+                  [&_h2]:mb-2 [&_h2]:text-lg [&_h2]:font-bold [&_h2]:text-secondary
+                  [&_h3]:mb-1 [&_h3]:text-base [&_h3]:font-bold [&_h3]:text-secondary
+                  [&_a]:text-primary [&_a]:underline
+                  [&_blockquote]:border-s-4 [&_blockquote]:border-primary/30 [&_blockquote]:ps-4 [&_blockquote]:text-secondary/70
+                  [&_img]:max-w-full [&_img]:rounded-lg"
                 dangerouslySetInnerHTML={{ __html: p.description }}
               />
             </section>
