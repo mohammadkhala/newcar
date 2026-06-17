@@ -4,6 +4,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useState } from "react";
 import { buildInternationalPhone, normalizePhoneLocal } from "@/lib/phone";
+import { parseAuthApiError } from "@/lib/auth-api-message";
 
 export default function LoginPage() {
   const t = useTranslations("Auth");
@@ -39,11 +40,12 @@ export default function LoginPage() {
     return { res, data };
   }
 
-  function resolveError(res: Response, data: { errors?: Array<{ message?: string }>; message?: string }): string {
-    if (res.status === 429) return t("tooManyAttempts");
-    const msg = data.errors?.[0]?.message ?? data.message ?? "";
-    if (/too many attempt/i.test(msg)) return t("tooManyAttempts");
-    return msg || t("error");
+  function applyError(status: number, data: { temporary_token?: string; errors?: Array<{ message?: string }>; message?: string }) {
+    const result = parseAuthApiError(status, data);
+    if (result.type === "tooManyAttempts") { setError(t("tooManyAttempts")); return; }
+    if (result.type === "needVerify") { setError(t("needVerify")); return; }
+    if (result.type === "raw") { setError(result.message); return; }
+    setError(t("error"));
   }
 
   async function onSubmit(e: React.FormEvent) {
@@ -65,19 +67,11 @@ export default function LoginPage() {
         router.push("/account");
         return;
       }
-      if (secondTry.data.temporary_token) {
-        setError(t("needVerify"));
-        return;
-      }
-      setError(resolveError(secondTry.res, secondTry.data));
+      applyError(secondTry.res.status, secondTry.data);
       return;
     }
 
-    if (firstTry.data.temporary_token) {
-      setError(t("needVerify"));
-      return;
-    }
-    setError(resolveError(firstTry.res, firstTry.data));
+    applyError(firstTry.res.status, firstTry.data);
   }
 
   return (
