@@ -11,7 +11,8 @@ import {
   getApiBaseUrl,
 } from "@/lib/api";
 import { formatMoney } from "@/lib/format-price";
-import { productPrimaryImageSrc } from "@/lib/product-image";
+import { productAllImageSrcs } from "@/lib/product-image";
+import { ProductImageGallery } from "@/components/store/ProductImageGallery";
 
 type PageProps = {
   params: Promise<{ locale: string; id: string }>;
@@ -43,7 +44,7 @@ export default async function ShopProductPage({ params }: PageProps) {
     (config?.currency_code as string | undefined) || "ILS";
 
   const p = payload.product;
-  const img = productPrimaryImageSrc(p.image);
+  const images = productAllImageSrcs(p.image, p.image_fullpath);
   const related = payload.related_products ?? [];
   const also = payload.customers_also_bought ?? [];
   const ratingBlock = payload.overall_rating as
@@ -67,19 +68,12 @@ export default async function ShopProductPage({ params }: PageProps) {
       </nav>
 
       <div className="grid gap-8 lg:grid-cols-12">
-        <div className="store-card aspect-square overflow-hidden bg-surface-muted lg:col-span-7">
-          {img ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={img}
-              alt=""
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <div className="flex h-full items-center justify-center text-secondary/50">
-              {t("noImage")}
-            </div>
-          )}
+        <div className="lg:col-span-7">
+          <ProductImageGallery
+            images={images}
+            alt={p.name ?? ""}
+            noImageLabel={t("noImage")}
+          />
         </div>
         <div className="space-y-4 lg:col-span-5">
           <div className="store-card p-5 md:p-6">
