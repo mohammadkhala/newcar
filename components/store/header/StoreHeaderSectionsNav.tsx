@@ -47,8 +47,6 @@ export function StoreHeaderSectionsNav({
   shopRef,
   featuredNavRef,
 }: Props) {
-  const openFeaturedNode = featuredNavItems.find((node) => node.id === openFeaturedId) ?? null;
-
   return (
     <div
       id="header-sections-nav"
@@ -144,12 +142,14 @@ export function StoreHeaderSectionsNav({
           (CSS overflow auto-pairing rule), which clipped these dropdowns to the row's
           own ~40px height instead of letting them float below it. */}
 
-      {openFeaturedNode ? (
+      {openFeaturedId && featuredNavItems.length > 0 ? (
         <div className="store-shell relative">
           <div className="absolute start-0 top-0 z-[160]">
-            <div className="w-[min(95vw,48rem)] overflow-hidden rounded-2xl border border-border-soft bg-white shadow-2xl">
-              <FeaturedPanel node={openFeaturedNode} onNavigate={closeAllDesktop} />
-            </div>
+            <FeaturedPanel
+              items={featuredNavItems}
+              initialId={openFeaturedId}
+              onNavigate={closeAllDesktop}
+            />
           </div>
         </div>
       ) : null}
