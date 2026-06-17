@@ -381,7 +381,7 @@ export default async function HomePage({ params }: Props) {
               </p>
             </div>
             <ul className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-              {brands.slice(0, 12).map((brand) => {
+              {brands.slice(0, 24).map((brand) => {
                 const src = resolveMediaUrl(
                   brand.image_full_url ?? brand.image ?? null,
                   { defaultFolder: "vehicle-brand" },
@@ -394,16 +394,18 @@ export default async function HomePage({ params }: Props) {
                       className="store-panel flex min-h-[110px] flex-col items-center justify-center gap-2 px-3 py-3 text-center hover:border-primary/30"
                     >
                       {src ? (
-                        <Image
-                          src={src}
-                          alt={brand.name}
-                          width={56}
-                          height={56}
-                          unoptimized
-                          className="h-14 w-14 rounded-full border border-border-soft bg-white object-cover"
-                        />
+                        <div className="relative h-16 w-full">
+                          <Image
+                            src={src}
+                            alt={brand.name}
+                            fill
+                            unoptimized
+                            sizes="120px"
+                            className="object-contain p-1.5"
+                          />
+                        </div>
                       ) : (
-                        <span className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-lg font-bold text-primary">
+                        <span className="inline-flex h-16 w-full items-center justify-center rounded-lg bg-primary/10 text-lg font-bold text-primary">
                           {brand.name.slice(0, 1)}
                         </span>
                       )}

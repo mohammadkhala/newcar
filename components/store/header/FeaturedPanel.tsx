@@ -9,35 +9,33 @@ type Props = {
   onNavigate: () => void;
 };
 
+const ROW =
+  "flex min-h-[3rem] w-full items-center justify-between gap-2 px-5 py-2 text-[1rem] font-semibold tracking-tight transition-colors";
+
 export function FeaturedPanel({ node, onNavigate }: Props) {
   const [selectedPath, setSelectedPath] = useState<number[]>([]);
-
-  const listItemClass =
-    "flex min-h-[3.2rem] w-full items-center justify-between gap-2 px-5 py-2 text-[1.06rem] font-semibold tracking-tight transition-colors";
 
   const columns: Array<{
     level: number;
     title: string;
+    parentId: number;
     items: CategoryTreeNode[];
     selectedId: number | null;
   }> = [];
 
   let cursor = node.children;
   let title = node.name;
+  let parentId = node.id;
   let level = 0;
   while (cursor.length > 0 && level < 5) {
     const selectedId = selectedPath[level] ?? null;
-    columns.push({
-      level,
-      title,
-      items: cursor,
-      selectedId,
-    });
+    columns.push({ level, title, parentId, items: cursor, selectedId });
     if (!selectedId) break;
-    const selectedNode = cursor.find((it) => it.id === selectedId);
-    if (!selectedNode || selectedNode.children.length === 0) break;
-    title = selectedNode.name;
-    cursor = selectedNode.children;
+    const selected = cursor.find((it) => it.id === selectedId);
+    if (!selected || selected.children.length === 0) break;
+    title = selected.name;
+    parentId = selected.id;
+    cursor = selected.children;
     level += 1;
   }
 
@@ -50,38 +48,57 @@ export function FeaturedPanel({ node, onNavigate }: Props) {
   };
 
   return (
-    <div className="w-[min(96vw,74rem)] overflow-x-auto border border-border-soft bg-white shadow-lg">
-      <div className="flex min-w-max divide-x divide-border-soft rtl:divide-x-reverse">
+    <div className="w-[min(96vw,64rem)] overflow-hidden border border-border-soft bg-white shadow-2xl">
+      <div className="flex divide-x divide-border-soft rtl:divide-x-reverse">
         {columns.map((col) => (
-          <section key={col.level} className="min-w-[22rem]">
-            <div className="border-b border-border-soft px-5 py-3.5">
-              <p className="inline-flex items-center gap-2 text-[1.25rem] font-black text-secondary">
-                <span aria-hidden className="text-sm">
-                  ↖
-                </span>
-                <span>اذهب إلى {col.title}</span>
-              </p>
+          <section
+            key={col.level}
+            className={col.level === 0 ? "w-60 shrink-0" : "min-w-[13rem] flex-1"}
+          >
+            {/* Column header */}
+            <div className="flex min-h-[3rem] items-center justify-between gap-2 border-b border-border-soft px-5 py-2.5">
+              <Link
+                href={`/shop/categories/${col.parentId}`}
+                onClick={onNavigate}
+                className="text-sm font-black text-secondary hover:text-primary transition-colors"
+              >
+                {col.title}
+              </Link>
+              {col.level > 0 && (
+                <Link
+                  href={`/shop/categories/${col.parentId}`}
+                  onClick={onNavigate}
+                  className="shrink-0 rounded bg-[#EAB308] px-2.5 py-1 text-xs font-bold text-black transition hover:brightness-105"
+                >
+                  تسوق الكل
+                </Link>
+              )}
             </div>
-            <ul className="max-h-[24rem] overflow-y-auto">
+
+            {/* Items list */}
+            <ul className="max-h-[22rem] overflow-y-auto [scrollbar-color:var(--color-border-soft)_transparent] [scrollbar-width:thin]">
               {col.items.map((item) => {
                 const active = col.selectedId === item.id;
                 const hasChildren = item.children.length > 0;
+
                 if (hasChildren) {
                   return (
                     <li key={item.id}>
                       <button
                         type="button"
-                        className={`${listItemClass} ${
+                        onClick={() => selectAtLevel(col.level, item.id)}
+                        className={`${ROW} ${
                           active
                             ? "text-[#EAB308]"
-                            : "text-secondary/45 hover:bg-surface-muted hover:text-secondary/80"
+                            : "text-secondary/60 hover:bg-surface-muted hover:text-secondary"
                         }`}
-                        onClick={() => selectAtLevel(col.level, item.id)}
                       >
                         <span className="truncate">{item.name}</span>
                         <span
                           aria-hidden
-                          className={active ? "text-[#EAB308]" : "text-secondary/40"}
+                          className={`shrink-0 text-base leading-none ${
+                            active ? "text-[#EAB308]" : "text-secondary/30"
+                          }`}
                         >
                           ‹
                         </span>
@@ -89,15 +106,16 @@ export function FeaturedPanel({ node, onNavigate }: Props) {
                     </li>
                   );
                 }
+
                 return (
                   <li key={item.id}>
                     <Link
                       href={`/shop/categories/${item.id}`}
-                      className={`${listItemClass} text-secondary/45 hover:bg-surface-muted hover:text-secondary/80`}
                       onClick={onNavigate}
+                      className={`${ROW} text-secondary/60 hover:bg-surface-muted hover:text-secondary`}
                     >
                       <span className="truncate">{item.name}</span>
-                      <span aria-hidden className="text-secondary/40">
+                      <span aria-hidden className="shrink-0 text-base leading-none text-secondary/30">
                         ‹
                       </span>
                     </Link>

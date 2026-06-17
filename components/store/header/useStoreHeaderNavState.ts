@@ -70,6 +70,27 @@ export function useStoreHeaderNavState() {
     setOpenFeaturedId(null);
   };
 
+  // Only one desktop dropdown should ever be open at a time — all three panels now
+  // overlap the same screen position (absolute start-0/top-0 under the bar), so leaving
+  // a previous one open while a second opens stacks them visibly on top of each other.
+  const toggleCategories = () => {
+    setShopDropdownOpen(false);
+    setOpenFeaturedId(null);
+    setCategoriesDropdownOpen((open) => !open);
+  };
+
+  const toggleShop = () => {
+    setCategoriesDropdownOpen(false);
+    setOpenFeaturedId(null);
+    setShopDropdownOpen((open) => !open);
+  };
+
+  const toggleFeatured = (id: number) => {
+    setCategoriesDropdownOpen(false);
+    setShopDropdownOpen(false);
+    setOpenFeaturedId((current) => (current === id ? null : id));
+  };
+
   return {
     state: {
       menuOpen,
@@ -84,9 +105,9 @@ export function useStoreHeaderNavState() {
     },
     actions: {
       setMenuOpen,
-      setCategoriesDropdownOpen,
-      setShopDropdownOpen,
-      setOpenFeaturedId,
+      toggleCategories,
+      toggleShop,
+      toggleFeatured,
       closeAllDesktop,
     },
   };
