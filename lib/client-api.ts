@@ -68,15 +68,17 @@ export async function clientFetchVehicleModels(
   if (!base || brandId <= 0) {
     return [];
   }
-  const res = await fetch(
-    `${base}/vehicles/models?brand_id=${encodeURIComponent(String(brandId))}`,
-    { headers: { ...clientLocalizationHeaders(locale), Accept: "application/json" } },
-  );
-  if (!res.ok) {
+  try {
+    const res = await fetch(
+      `${base}/vehicles/models?brand_id=${encodeURIComponent(String(brandId))}`,
+      { headers: { ...clientLocalizationHeaders(locale), Accept: "application/json" } },
+    );
+    if (!res.ok) return [];
+    const data = (await res.json()) as { models?: VehicleModelRow[] };
+    return data.models ?? [];
+  } catch {
     return [];
   }
-  const data = (await res.json()) as { models?: VehicleModelRow[] };
-  return data.models ?? [];
 }
 
 /**
@@ -90,13 +92,15 @@ export async function clientFetchVehicleYears(
   if (!base || modelId <= 0) {
     return [];
   }
-  const res = await fetch(
-    `${base}/vehicles/years?model_id=${encodeURIComponent(String(modelId))}`,
-    { headers: { ...clientLocalizationHeaders(locale), Accept: "application/json" } },
-  );
-  if (!res.ok) {
+  try {
+    const res = await fetch(
+      `${base}/vehicles/years?model_id=${encodeURIComponent(String(modelId))}`,
+      { headers: { ...clientLocalizationHeaders(locale), Accept: "application/json" } },
+    );
+    if (!res.ok) return [];
+    const data = (await res.json()) as { years?: VehicleYearRow[] };
+    return data.years ?? [];
+  } catch {
     return [];
   }
-  const data = (await res.json()) as { years?: VehicleYearRow[] };
-  return data.years ?? [];
 }
