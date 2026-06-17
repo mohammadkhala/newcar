@@ -185,6 +185,8 @@
     "descriptionTrusted": "Description from admin — rendered as provided.",
     "descriptionTitle": "Product description",
     "reviewItem": "Review",
+    "outOf5": "out of 5",
+    "anonymousReviewer": "Anonymous",
     "unauthorizedWishlist": "Please sign in to manage your wishlist",
     "inStockBadge": "In stock",
     "outOfStock": "Out of stock",

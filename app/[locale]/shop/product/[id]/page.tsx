@@ -126,25 +126,71 @@ export default async function ShopProductPage({ params }: PageProps) {
         </div>
       </div>
 
-      <section className="store-card space-y-3 p-5 md:p-6">
-        <h2 className="text-lg font-semibold text-secondary">{t("reviews")}</h2>
+      <section className="store-card space-y-4 p-5 md:p-6">
+        <div className="flex items-center justify-between gap-4">
+          <h2 className="text-lg font-semibold text-secondary">{t("reviews")}</h2>
+          {avgRating != null && (
+            <div className="flex items-center gap-2">
+              <span className="text-2xl font-black text-primary">{avgRating.toFixed(1)}</span>
+              <div className="flex gap-0.5" aria-label={`${avgRating} ${t("outOf5")}`}>
+                {Array.from({ length: 5 }, (_, i) => (
+                  <svg
+                    key={i}
+                    className={`h-4 w-4 ${i < Math.round(avgRating) ? "text-amber-400" : "text-border-soft"}`}
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                    aria-hidden="true"
+                  >
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                ))}
+              </div>
+              <span className="text-sm text-secondary/60">({reviewCount})</span>
+            </div>
+          )}
+        </div>
         {reviews.length === 0 ? (
           <p className="text-sm text-secondary/70">{t("noReviews")}</p>
         ) : (
-          <ul className="space-y-3">
-            {reviews.map((row, i) => (
-              <li
-                key={i}
-                className="store-panel p-3 text-sm"
-              >
-                <details>
-                  <summary className="cursor-pointer font-semibold text-secondary/90">
-                    {t("reviewItem")} #{i + 1}
-                  </summary>
-                  <pre className="mt-2 whitespace-pre-wrap font-sans text-secondary/80">
-                    {JSON.stringify(row, null, 2)}
-                  </pre>
-                </details>
+          <ul className="divide-y divide-border-soft">
+            {reviews.map((row: {
+              id?: number;
+              rating?: number;
+              comment?: string;
+              customer?: { f_name?: string; l_name?: string };
+              created_at?: string;
+            }, i) => (
+              <li key={row.id ?? i} className="py-4 first:pt-0 last:pb-0">
+                <div className="flex items-start gap-3">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
+                    {row.customer?.f_name?.slice(0, 1) ?? "؟"}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-semibold text-secondary text-sm">
+                        {[row.customer?.f_name, row.customer?.l_name].filter(Boolean).join(" ") || t("anonymousReviewer")}
+                      </span>
+                      {row.rating != null && (
+                        <div className="flex gap-0.5" aria-label={`${row.rating} ${t("outOf5")}`}>
+                          {Array.from({ length: 5 }, (_, si) => (
+                            <svg
+                              key={si}
+                              className={`h-3.5 w-3.5 ${si < row.rating! ? "text-amber-400" : "text-border-soft"}`}
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                              aria-hidden="true"
+                            >
+                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    {row.comment && (
+                      <p className="mt-1 text-sm leading-relaxed text-secondary/80">{row.comment}</p>
+                    )}
+                  </div>
+                </div>
               </li>
             ))}
           </ul>

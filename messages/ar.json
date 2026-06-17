@@ -185,6 +185,8 @@
     "descriptionTrusted": "الوصف من لوحة التحكم — يُعرض كما أدخلته الإدارة.",
     "descriptionTitle": "وصف المنتج",
     "reviewItem": "مراجعة",
+    "outOf5": "من 5",
+    "anonymousReviewer": "مجهول",
     "unauthorizedWishlist": "يرجى تسجيل الدخول لإضافة المنتجات للمفضلة",
     "inStockBadge": "متوفر",
     "outOfStock": "غير متوفر",
