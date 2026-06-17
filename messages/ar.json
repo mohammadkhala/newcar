@@ -343,7 +343,21 @@
     "status": "الحالة",
     "paymentMethod": "الدفع",
     "empty": "لا توجد طلبات سابقة.",
-    "viewDetails": "التفاصيل"
+    "viewDetails": "التفاصيل",
+    "statuses": {
+      "pending": "قيد الانتظار",
+      "confirmed": "مؤكد",
+      "processing": "قيد التجهيز",
+      "out_for_delivery": "في الطريق",
+      "delivered": "تم التوصيل",
+      "canceled": "ملغي",
+      "returned": "مُعاد"
+    },
+    "payments": {
+      "cash_on_delivery": "الدفع عند الاستلام",
+      "digital_payment": "دفع إلكتروني",
+      "offline_payment": "دفع يدوي"
+    }
   },
   "Cart": {
     "title": "سلة التسوق",

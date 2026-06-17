@@ -13,11 +13,23 @@ type Order = {
   created_at: string;
 };
 
+const STATUS_KEYS = ["pending","confirmed","processing","out_for_delivery","delivered","canceled","returned"] as const;
+const PAYMENT_KEYS = ["cash_on_delivery","digital_payment","offline_payment"] as const;
+type StatusKey = typeof STATUS_KEYS[number];
+type PaymentKey = typeof PAYMENT_KEYS[number];
+
 export default function AccountOrdersPage() {
   const t = useTranslations("AccountOrders");
   const tNav = useTranslations("Nav");
   const tAccount = useTranslations("Account");
   const locale = useLocale();
+
+  function tStatus(s: string) {
+    return STATUS_KEYS.includes(s as StatusKey) ? t(`statuses.${s as StatusKey}`) : s.replace(/_/g, " ");
+  }
+  function tPayment(p: string) {
+    return PAYMENT_KEYS.includes(p as PaymentKey) ? t(`payments.${p as PaymentKey}`) : p.replace(/_/g, " ");
+  }
   
   const [orders, setOrders] = useState<Order[] | null>(null);
   const [unauthorized, setUnauthorized] = useState(false);
@@ -119,12 +131,12 @@ export default function AccountOrdersPage() {
                       <td className="whitespace-nowrap px-6 py-4 font-semibold text-primary">
                         {order.order_amount.toFixed(2)} ILS
                       </td>
-                      <td className="whitespace-nowrap px-6 py-4 capitalize">
-                        {order.payment_method.replace(/_/g, " ")}
+                      <td className="whitespace-nowrap px-6 py-4">
+                        {tPayment(order.payment_method)}
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
-                        <span className="inline-flex rounded-full bg-secondary/10 px-2.5 py-0.5 text-xs font-bold capitalize text-secondary">
-                          {order.order_status.replace(/_/g, " ")}
+                        <span className="inline-flex rounded-full bg-secondary/10 px-2.5 py-0.5 text-xs font-bold text-secondary">
+                          {tStatus(order.order_status)}
                         </span>
                       </td>
                     </tr>

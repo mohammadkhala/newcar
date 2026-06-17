@@ -343,7 +343,21 @@
     "status": "סטטוס",
     "paymentMethod": "תשלום",
     "empty": "לא נמצאו הזמנות קודמות.",
-    "viewDetails": "פרטים"
+    "viewDetails": "פרטים",
+    "statuses": {
+      "pending": "ממתין",
+      "confirmed": "מאושר",
+      "processing": "בעיבוד",
+      "out_for_delivery": "בדרך",
+      "delivered": "נמסר",
+      "canceled": "בוטל",
+      "returned": "הוחזר"
+    },
+    "payments": {
+      "cash_on_delivery": "תשלום במסירה",
+      "digital_payment": "תשלום דיגיטלי",
+      "offline_payment": "תשלום ידני"
+    }
   },
   "Cart": {
     "title": "עגלת קניות",

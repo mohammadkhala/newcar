@@ -343,7 +343,21 @@
     "status": "Status",
     "paymentMethod": "Payment",
     "empty": "No past orders found.",
-    "viewDetails": "Details"
+    "viewDetails": "Details",
+    "statuses": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "processing": "Processing",
+      "out_for_delivery": "Out for delivery",
+      "delivered": "Delivered",
+      "canceled": "Canceled",
+      "returned": "Returned"
+    },
+    "payments": {
+      "cash_on_delivery": "Cash on delivery",
+      "digital_payment": "Digital payment",
+      "offline_payment": "Manual payment"
+    }
   },
   "Cart": {
     "title": "Shopping cart",
