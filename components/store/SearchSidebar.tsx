@@ -65,6 +65,7 @@ function FacetOption({
   count,
   checked,
   onChange,
+  onDeselect,
 }: {
   name: string;
   value: string;
@@ -72,9 +73,18 @@ function FacetOption({
   count?: number;
   checked: boolean;
   onChange: () => void;
+  onDeselect?: () => void;
 }) {
   return (
-    <label className="flex cursor-pointer items-center justify-between gap-2 rounded-md px-1 py-1 text-sm text-secondary/85 hover:bg-surface-muted">
+    <label
+      className="flex cursor-pointer items-center justify-between gap-2 rounded-md px-1 py-1 text-sm text-secondary/85 hover:bg-surface-muted"
+      onClick={(e) => {
+        if (checked && onDeselect) {
+          e.preventDefault();
+          onDeselect();
+        }
+      }}
+    >
       <span className="flex min-w-0 items-center gap-2">
         <input
           type="radio"
@@ -155,6 +165,13 @@ export function SearchSidebar({
     applyFilters();
   };
 
+  const clearField = useCallback((fieldName: string) => {
+    const q = new URLSearchParams(searchParams.toString());
+    q.set("offset", "1");
+    q.delete(fieldName);
+    router.push(`${pathname}?${q.toString()}`, { scroll: false });
+  }, [pathname, router, searchParams]);
+
   return (
     <aside className="store-card h-fit overflow-hidden p-0 lg:sticky lg:top-24">
       <div className="flex items-center justify-between gap-2 bg-primary px-4 py-3">
@@ -198,13 +215,6 @@ export function SearchSidebar({
         </div>
 
         <FilterGroup title={tNav("categories")}>
-          <FacetOption
-            name="category_ids"
-            value=""
-            label={t("clearFilters")}
-            checked={!initialQuery.category_ids}
-            onChange={handleDirectChange}
-          />
           {rootCategories.map((category) => (
             <FacetOption
               key={category.id}
@@ -214,18 +224,12 @@ export function SearchSidebar({
               count={category.products_count}
               checked={String(initialQuery.category_ids ?? "") === String(category.id)}
               onChange={handleDirectChange}
+              onDeselect={() => clearField("category_ids")}
             />
           ))}
         </FilterGroup>
 
         <FilterGroup title={tNav("brands")}>
-          <FacetOption
-            name="product_brand_id"
-            value=""
-            label={t("clearFilters")}
-            checked={!initialQuery.product_brand_id}
-            onChange={handleDirectChange}
-          />
           {productBrands.map((brand) => (
             <FacetOption
               key={brand.id}
@@ -235,6 +239,7 @@ export function SearchSidebar({
               count={brand.products_count}
               checked={String(initialQuery.product_brand_id ?? "") === String(brand.id)}
               onChange={handleDirectChange}
+              onDeselect={() => clearField("product_brand_id")}
             />
           ))}
         </FilterGroup>
