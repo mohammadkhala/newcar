@@ -175,7 +175,7 @@ export async function StoreFooter() {
         <div className="mx-auto max-w-7xl px-4 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex gap-3 flex-wrap items-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/Visa-vs-Mastercard.jpeg" alt="Visa & Mastercard" className="h-8 w-auto rounded object-contain bg-white" />
+            <img src="/Visa-vs-Mastercard.jpg" alt="Visa & Mastercard" className="h-8 w-auto rounded object-contain bg-white" />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/reflect.png" alt="Reflect" className="h-8 w-auto rounded object-contain bg-white" />
           </div>

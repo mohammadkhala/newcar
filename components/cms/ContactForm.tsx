@@ -126,6 +126,7 @@ export function ContactForm() {
         type="submit"
         disabled={status === "loading"}
         className="store-btn-primary w-full py-3 font-semibold disabled:opacity-60"
+        suppressHydrationWarning
       >
         {status === "loading" ? (
           <span className="flex items-center justify-center gap-2">
