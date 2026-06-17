@@ -304,7 +304,13 @@
     "submitRegister": "Register",
     "needVerify": "Verification required — complete steps via app or admin.",
     "error": "Request failed. Check your details.",
-    "tooManyAttempts": "Too many attempts. Please wait a moment and try again."
+    "tooManyAttempts": "Too many attempts. Please wait a moment and try again.",
+    "networkError": "Could not reach the server. Check your connection and try again.",
+    "invalidCredentials": "Incorrect login details.",
+    "phoneTaken": "This phone number is already registered.",
+    "emailTaken": "This email address is already registered.",
+    "weakPassword": "Password is too short — minimum 6 characters.",
+    "serverError": "Server error. Please try again later."
   },
   "Account": {
     "title": "My account",

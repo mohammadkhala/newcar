@@ -4,7 +4,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useState } from "react";
 import { buildInternationalPhone, normalizePhoneLocal } from "@/lib/phone";
-import { parseAuthApiError } from "@/lib/auth-api-message";
+import { parseAuthApiError, networkErrorResult } from "@/lib/auth-api-message";
 
 function generateUniqueEmail(seedPhone: string): string {
   const phonePart = normalizePhoneLocal(seedPhone).slice(-6) || "000000";
@@ -32,31 +32,30 @@ export default function RegisterPage() {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-localization": locale,
-      },
-      body: JSON.stringify({
-        f_name: fName,
-        l_name: lName,
-        email: generateUniqueEmail(phone),
-        phone: buildInternationalPhone(phone, countryCode),
-        password,
-      }),
-    });
-    const data = (await res.json()) as {
-      ok?: boolean;
-      temporary_token?: string;
-      errors?: Array<{ message?: string }>;
-      message?: string;
-    };
+
+    let res: Response;
+    let data: { ok?: boolean; temporary_token?: string; errors?: Array<{ message?: string }>; message?: string };
+    try {
+      res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-localization": locale },
+        body: JSON.stringify({
+          f_name: fName,
+          l_name: lName,
+          email: generateUniqueEmail(phone),
+          phone: buildInternationalPhone(phone, countryCode),
+          password,
+        }),
+      });
+      data = (await res.json()) as typeof data;
+    } catch {
+      setError(t(networkErrorResult().key));
+      return;
+    }
+
     if (!res.ok) {
       const result = parseAuthApiError(res.status, data);
-      if (result.type === "tooManyAttempts") { setError(t("tooManyAttempts")); return; }
-      if (result.type === "raw") { setError(result.message); return; }
-      setError(t("error"));
+      setError(result.type === "raw" ? result.message : t(result.key));
       return;
     }
     if (data.ok) {

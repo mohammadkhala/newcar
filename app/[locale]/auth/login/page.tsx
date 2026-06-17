@@ -4,7 +4,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useState } from "react";
 import { buildInternationalPhone, normalizePhoneLocal } from "@/lib/phone";
-import { parseAuthApiError } from "@/lib/auth-api-message";
+import { parseAuthApiError, networkErrorResult } from "@/lib/auth-api-message";
 
 export default function LoginPage() {
   const t = useTranslations("Auth");
@@ -42,17 +42,20 @@ export default function LoginPage() {
 
   function applyError(status: number, data: { temporary_token?: string; errors?: Array<{ message?: string }>; message?: string }) {
     const result = parseAuthApiError(status, data);
-    if (result.type === "tooManyAttempts") { setError(t("tooManyAttempts")); return; }
-    if (result.type === "needVerify") { setError(t("needVerify")); return; }
-    if (result.type === "raw") { setError(result.message); return; }
-    setError(t("error"));
+    setError(result.type === "raw" ? result.message : t(result.key));
   }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-    const primaryPhone = buildInternationalPhone(phone, countryCode);
-    const firstTry = await postLogin(primaryPhone);
+
+    let firstTry: Awaited<ReturnType<typeof postLogin>>;
+    try {
+      firstTry = await postLogin(buildInternationalPhone(phone, countryCode));
+    } catch {
+      setError(t(networkErrorResult().key));
+      return;
+    }
 
     if (firstTry.res.ok && firstTry.data.status === true) {
       router.push("/account");
@@ -61,13 +64,18 @@ export default function LoginPage() {
 
     // Backward compatibility: some legacy accounts may have been saved with an extra leading zero.
     const fallbackPhone = `${countryCode}${normalizePhoneLocal(phone)}`;
+    const primaryPhone = buildInternationalPhone(phone, countryCode);
     if (fallbackPhone !== primaryPhone) {
-      const secondTry = await postLogin(fallbackPhone);
-      if (secondTry.res.ok && secondTry.data.status === true) {
-        router.push("/account");
-        return;
+      try {
+        const secondTry = await postLogin(fallbackPhone);
+        if (secondTry.res.ok && secondTry.data.status === true) {
+          router.push("/account");
+          return;
+        }
+        applyError(secondTry.res.status, secondTry.data);
+      } catch {
+        setError(t(networkErrorResult().key));
       }
-      applyError(secondTry.res.status, secondTry.data);
       return;
     }
 
