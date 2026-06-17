@@ -396,18 +396,7 @@ export default function CheckoutPage() {
     }
   }
 
-  if (lines.length === 0) {
-    return (
-      <div className="mx-auto max-w-lg space-y-4 py-16 text-center">
-        <p className="text-4xl">🛒</p>
-        <h1 className="text-xl font-bold text-secondary">{tCart("empty")}</h1>
-      </div>
-    );
-  }
-
-  const canPlaceOrder = addresses.length > 0 && selectedId !== "" && !showAddressForm;
-
-  // Success screen — shown after order is placed
+  // Success screen — shown after order is placed (must come before the empty-cart guard)
   if (orderResult && status === "ok") {
     return (
       <div className="mx-auto max-w-4xl flex flex-col items-center gap-6 py-12 text-center">
@@ -463,6 +452,17 @@ export default function CheckoutPage() {
       </div>
     );
   }
+
+  if (lines.length === 0) {
+    return (
+      <div className="mx-auto max-w-lg space-y-4 py-16 text-center">
+        <p className="text-4xl">🛒</p>
+        <h1 className="text-xl font-bold text-secondary">{tCart("empty")}</h1>
+      </div>
+    );
+  }
+
+  const canPlaceOrder = addresses.length > 0 && selectedId !== "" && !showAddressForm;
 
   return (
     <div className="mx-auto max-w-4xl">
