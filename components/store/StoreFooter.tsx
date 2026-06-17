@@ -182,7 +182,7 @@ export async function StoreFooter() {
           <p className="text-sm text-neutral-500 font-medium">
             برمجة وتطوير{" "}
             <a
-              href="https://wa.me/972592781819"
+              href="https://baitpait.com/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-neutral-400 hover:text-white transition-colors"
