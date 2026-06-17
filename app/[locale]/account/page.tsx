@@ -247,14 +247,22 @@ export default function AccountPage() {
         <main className="space-y-6">
           {/* Welcome banner */}
           <div className="relative overflow-hidden rounded-2xl bg-gradient-to-l from-primary via-amber-400 to-yellow-300 p-6 text-black">
-            <div className="relative z-10">
+            <div className="relative z-10 max-w-[60%]">
               <p className="text-sm font-semibold opacity-75">مرحباً بك</p>
               <h1 className="mt-0.5 text-2xl font-black md:text-3xl">
                 {loading ? "..." : (fullName || "عزيزي العميل")} 👋
               </h1>
               <p className="mt-1.5 text-sm opacity-70">إدارة حسابك وطلباتك من مكان واحد</p>
             </div>
-            {/* Decorative circle */}
+            {/* Company logo */}
+            <div className="absolute end-5 top-1/2 z-10 -translate-y-1/2">
+              <img
+                src="/logo.png"
+                alt="NEW CAR"
+                className="h-20 w-auto object-contain drop-shadow-md md:h-24"
+              />
+            </div>
+            {/* Decorative circles */}
             <div className="absolute -end-8 -top-8 h-36 w-36 rounded-full bg-white/10" />
             <div className="absolute -bottom-10 end-16 h-24 w-24 rounded-full bg-white/10" />
           </div>
