@@ -66,7 +66,9 @@ export function StoreHeaderCategoriesBar({
         onToggleMobileMenu={() => actions.setMenuOpen(true)}
         onToggleCategories={actions.toggleCategories}
         onToggleShop={actions.toggleShop}
-        onToggleFeatured={actions.toggleFeatured}
+        onOpenFeatured={actions.openFeatured}
+        onScheduledCloseFeatured={actions.scheduledCloseFeatured}
+        onCancelCloseFeatured={actions.cancelCloseFeatured}
         closeAllDesktop={actions.closeAllDesktop}
         categoriesRef={refs.categoriesRef}
         shopRef={refs.shopRef}

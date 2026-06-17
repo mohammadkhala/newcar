@@ -22,7 +22,7 @@ export async function StoreFooter() {
               {t("taglineHala")}
             </p>
             <div className="flex flex-wrap gap-2">
-              <a href="#" className="inline-block" aria-label="Download on the App Store">
+              <a href="https://apps.apple.com/ae/app/%D9%86%D9%8A%D9%88-%D9%83%D8%A7%D8%B1-newcar/id6767830089" target="_blank" rel="noopener noreferrer" className="inline-block" aria-label="Download on the App Store">
                 <Image
                   src="/assets/app-store.svg"
                   alt="App Store"
@@ -32,7 +32,7 @@ export async function StoreFooter() {
                   className="h-10 w-auto object-contain"
                 />
               </a>
-              <a href="#" className="inline-block" aria-label="Get it on Google Play">
+              <a href="https://play.google.com/store/apps/details?id=com.newcarpal.app" target="_blank" rel="noopener noreferrer" className="inline-block" aria-label="Get it on Google Play">
                 <Image
                   src="/assets/google-play.svg"
                   alt="Google Play"

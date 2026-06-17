@@ -11,56 +11,74 @@ type Props = {
 };
 
 export function FeaturedPanel({ items, initialId, onNavigate }: Props) {
-  const [activeId, setActiveId] = useState(initialId);
+  const [hoveredL2Id, setHoveredL2Id] = useState<number | null>(null);
 
   useEffect(() => {
-    setActiveId(initialId);
+    setHoveredL2Id(null);
   }, [initialId]);
 
-  const activeNode = items.find((n) => n.id === activeId);
+  const activeNode = items.find((n) => n.id === initialId);
+  const l2Children = activeNode?.children ?? [];
+  const hoveredL2 = l2Children.find((c) => c.id === hoveredL2Id);
+  const l3Children = hoveredL2?.children ?? [];
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-border-soft shadow-2xl">
-      {/* Yellow tab bar */}
-      <div className="flex overflow-x-auto bg-[#EAB308] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {items.map((node) => {
-          const active = node.id === activeId;
-          return (
-            <button
-              key={node.id}
-              type="button"
-              onClick={() => setActiveId(node.id)}
-              className={`flex min-w-[6rem] flex-1 shrink-0 items-center justify-center px-4 py-3 text-sm font-black transition-colors ${
-                active
-                  ? "bg-black/15 text-white"
-                  : "text-yellow-950/70 hover:text-yellow-950"
-              }`}
-            >
-              {node.name}
-            </button>
-          );
-        })}
-      </div>
+    <div className="flex overflow-hidden rounded-2xl border border-border-soft bg-white shadow-2xl">
+      {/* Level 2 — direct children */}
+      {l2Children.length > 0 && (
+        <ul className="min-w-[14rem] divide-y divide-gray-100">
+          {l2Children.map((item) => {
+            const hasKids = item.children.length > 0;
+            const isActive = item.id === hoveredL2Id;
+            return (
+              <li key={item.id}>
+                <Link
+                  href={`/shop/categories/${item.id}`}
+                  onClick={onNavigate}
+                  onMouseEnter={() => setHoveredL2Id(hasKids ? item.id : null)}
+                  className={`flex min-h-[3rem] items-center justify-between gap-3 px-5 text-[0.95rem] font-semibold transition-colors ${
+                    isActive
+                      ? "bg-amber-50 text-primary"
+                      : "text-secondary hover:bg-gray-50"
+                  }`}
+                >
+                  <span className="flex-1 truncate">{item.name}</span>
+                  {hasKids && (
+                    <span aria-hidden className="shrink-0 text-base leading-none text-secondary/30">
+                      ‹
+                    </span>
+                  )}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      )}
 
-      {/* White item list */}
-      {activeNode && activeNode.children.length > 0 ? (
-        <ul className="max-h-[22rem] overflow-y-auto bg-white divide-y divide-gray-100 [scrollbar-color:var(--color-border-soft)_transparent] [scrollbar-width:thin]">
-          {activeNode.children.map((item) => (
+      {/* Level 3 — shown when a L2 item with children is hovered */}
+      {l3Children.length > 0 && (
+        <ul className="min-w-[14rem] divide-y divide-gray-100 border-s border-gray-100">
+          {l3Children.map((item) => (
             <li key={item.id}>
               <Link
                 href={`/shop/categories/${item.id}`}
                 onClick={onNavigate}
                 className="flex min-h-[3rem] items-center justify-between gap-3 px-5 text-[0.95rem] font-semibold text-secondary transition-colors hover:bg-gray-50"
               >
-                <span aria-hidden className="shrink-0 text-base leading-none text-secondary/30">
-                  ‹
-                </span>
-                <span className="flex-1 truncate text-end">{item.name}</span>
+                <span className="flex-1 truncate">{item.name}</span>
+                {item.children.length > 0 && (
+                  <span aria-hidden className="shrink-0 text-base leading-none text-secondary/30">
+                    ‹
+                  </span>
+                )}
               </Link>
             </li>
           ))}
         </ul>
-      ) : (
+      )}
+
+      {/* Fallback: top-level link when no children */}
+      {l2Children.length === 0 && (
         <div className="bg-white px-5 py-4 text-sm text-secondary/40">
           <Link
             href={`/shop/categories/${activeNode?.id ?? ""}`}

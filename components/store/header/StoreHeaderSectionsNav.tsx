@@ -8,6 +8,7 @@ import { SHOP_NAV_LINKS } from "@/components/store/header/nav-config";
 import { DESKTOP_NAV_SCHEMA } from "@/components/store/header/nav-schema";
 import type { HeaderNavLabels, NavCategoryItem } from "@/components/store/header/types";
 import type { CategoryTreeNode, VehicleBrandsResponse } from "@/lib/types";
+import { useRef, useState } from "react";
 import type { RefObject } from "react";
 
 type Props = {
@@ -22,7 +23,9 @@ type Props = {
   onToggleMobileMenu: () => void;
   onToggleCategories: () => void;
   onToggleShop: () => void;
-  onToggleFeatured: (id: number) => void;
+  onOpenFeatured: (id: number) => void;
+  onScheduledCloseFeatured: () => void;
+  onCancelCloseFeatured: () => void;
   closeAllDesktop: () => void;
   categoriesRef: RefObject<HTMLDivElement | null>;
   shopRef: RefObject<HTMLLIElement | null>;
@@ -41,19 +44,38 @@ export function StoreHeaderSectionsNav({
   onToggleMobileMenu,
   onToggleCategories,
   onToggleShop,
-  onToggleFeatured,
+  onOpenFeatured,
+  onScheduledCloseFeatured,
+  onCancelCloseFeatured,
   closeAllDesktop,
   categoriesRef,
   shopRef,
   featuredNavRef,
 }: Props) {
+  const navShellRef = useRef<HTMLDivElement | null>(null);
+  const [panelInsetStart, setPanelInsetStart] = useState(0);
+
+  const handleFeaturedHover = (id: number, e: React.MouseEvent<HTMLButtonElement>) => {
+    onOpenFeatured(id);
+    const shell = navShellRef.current;
+    if (shell) {
+      const shellRect = shell.getBoundingClientRect();
+      const btnRect = e.currentTarget.getBoundingClientRect();
+      const isRtl = window.getComputedStyle(shell).direction === "rtl";
+      setPanelInsetStart(
+        isRtl ? shellRect.right - btnRect.right : btnRect.left - shellRect.left
+      );
+    }
+  };
+
   return (
     <div
       id="header-sections-nav"
       ref={featuredNavRef as RefObject<HTMLDivElement | null>}
       className="sticky top-0 z-[200] bg-primary shadow-[inset_0_-1px_0_rgba(0,0,0,0.08)]"
+      onMouseLeave={onScheduledCloseFeatured}
     >
-      <div className="store-shell flex flex-nowrap items-center gap-2 py-2 md:gap-3">
+      <div ref={navShellRef} className="store-shell flex flex-nowrap items-center gap-2 py-2 md:gap-3">
         <div className="order-1 flex shrink-0 items-center gap-2">
           <div ref={categoriesRef} className="hidden md:block">
             <div className="relative">
@@ -119,7 +141,7 @@ export function StoreHeaderSectionsNav({
                   <li key={node.id} className="relative shrink-0">
                     <button
                       type="button"
-                      onClick={() => onToggleFeatured(node.id)}
+                      onMouseEnter={(e) => handleFeaturedHover(node.id, e)}
                       suppressHydrationWarning
                       className={`inline-flex min-h-[2.25rem] max-w-[9rem] truncate rounded-md px-3 text-sm font-bold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-black/30 sm:max-w-[12rem] ${
                         openFeaturedId === node.id
@@ -143,8 +165,11 @@ export function StoreHeaderSectionsNav({
           own ~40px height instead of letting them float below it. */}
 
       {openFeaturedId && featuredNavItems.length > 0 ? (
-        <div className="store-shell relative">
-          <div className="absolute start-0 top-0 z-[160]">
+        <div className="store-shell relative" onMouseEnter={onCancelCloseFeatured}>
+          <div
+            className="absolute top-0 z-[160]"
+            style={{ insetInlineStart: panelInsetStart }}
+          >
             <FeaturedPanel
               items={featuredNavItems}
               initialId={openFeaturedId}

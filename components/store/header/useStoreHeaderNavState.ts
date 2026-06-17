@@ -11,6 +11,13 @@ export function useStoreHeaderNavState() {
   const categoriesRef = useRef<HTMLDivElement | null>(null);
   const shopRef = useRef<HTMLLIElement | null>(null);
   const featuredNavRef = useRef<HTMLElement | null>(null);
+  const featuredCloseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (featuredCloseTimerRef.current) clearTimeout(featuredCloseTimerRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (!menuOpen) {
@@ -91,6 +98,21 @@ export function useStoreHeaderNavState() {
     setOpenFeaturedId((current) => (current === id ? null : id));
   };
 
+  const openFeatured = (id: number) => {
+    if (featuredCloseTimerRef.current) clearTimeout(featuredCloseTimerRef.current);
+    setCategoriesDropdownOpen(false);
+    setShopDropdownOpen(false);
+    setOpenFeaturedId(id);
+  };
+
+  const scheduledCloseFeatured = () => {
+    featuredCloseTimerRef.current = setTimeout(() => setOpenFeaturedId(null), 150);
+  };
+
+  const cancelCloseFeatured = () => {
+    if (featuredCloseTimerRef.current) clearTimeout(featuredCloseTimerRef.current);
+  };
+
   return {
     state: {
       menuOpen,
@@ -108,6 +130,9 @@ export function useStoreHeaderNavState() {
       toggleCategories,
       toggleShop,
       toggleFeatured,
+      openFeatured,
+      scheduledCloseFeatured,
+      cancelCloseFeatured,
       closeAllDesktop,
     },
   };
