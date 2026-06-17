@@ -173,17 +173,14 @@ export async function StoreFooter() {
       {/* Bottom Strip */}
       <div className="bg-primary py-4">
         <div className="mx-auto max-w-7xl px-4 flex flex-col items-center gap-1">
-          <p className="text-sm font-medium text-white/80 text-center">
-            برمجة وتطوير{" "}
-            <a
-              href="https://baitpait.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white font-semibold hover:underline transition-colors"
-            >
-              بيت البرمجيات وتكنولوجيا المعلومات
-            </a>
-          </p>
+          <a
+            href="https://baitpait.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm font-medium text-white/80 text-center hover:text-white transition-colors"
+          >
+            برمجة وتطوير بيت البرمجيات وتكنولوجيا المعلومات
+          </a>
         </div>
       </div>
     </footer>
