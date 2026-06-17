@@ -30,11 +30,13 @@ export function VehicleBrandSlider({ brands, activeBrandId }: Props) {
       if (paused) return;
       autoIndexRef.current = (autoIndexRef.current + 1) % brands.length;
       const items = el.querySelectorAll<HTMLElement>(":scope > a");
-      items[autoIndexRef.current]?.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-        inline: "center",
-      });
+      const item = items[autoIndexRef.current];
+      if (item) {
+        el.scrollTo({
+          left: item.offsetLeft - (el.clientWidth - item.clientWidth) / 2,
+          behavior: "smooth",
+        });
+      }
     };
 
     const id = setInterval(tick, 2500);
