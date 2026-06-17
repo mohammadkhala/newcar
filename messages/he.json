@@ -300,6 +300,7 @@
     "lastName": "שם משפחה",
     "email": "אימייל",
     "phone": "טלפון",
+    "phonePlaceholder": "05XXXXXXXX",
     "submitLogin": "התחברות",
     "submitRegister": "הרשמה",
     "needVerify": "נדרש אימות — השלימו דרך האפליקציה או הניהול.",

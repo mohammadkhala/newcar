@@ -300,6 +300,7 @@
     "lastName": "اسم العائلة",
     "email": "البريد",
     "phone": "الجوال",
+    "phonePlaceholder": "05XXXXXXXX",
     "submitLogin": "دخول",
     "submitRegister": "تسجيل",
     "needVerify": "يُطلب التحقق — أكمل الخطوات من التطبيق أو الأدمن.",

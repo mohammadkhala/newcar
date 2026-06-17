@@ -300,6 +300,7 @@
     "lastName": "Last name",
     "email": "Email",
     "phone": "Phone",
+    "phonePlaceholder": "05XXXXXXXX",
     "submitLogin": "Sign in",
     "submitRegister": "Register",
     "needVerify": "Verification required — complete steps via app or admin.",

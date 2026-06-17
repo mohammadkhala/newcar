@@ -3,7 +3,8 @@
 import { useLocale, useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useState } from "react";
-import { buildInternationalPhone, normalizePhoneLocal } from "@/lib/phone";
+import { buildAuthPhone, buildInternationalPhone } from "@/lib/phone";
+import { AuthPhoneField } from "@/components/auth/AuthPhoneField";
 import { authApiErrorMessage } from "@/lib/auth-api-message";
 
 export default function LoginPage() {
@@ -12,7 +13,6 @@ export default function LoginPage() {
   const locale = useLocale();
   const router = useRouter();
   const [phone, setPhone] = useState("");
-  const [countryCode, setCountryCode] = useState<"+970" | "+972">("+970");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
@@ -43,7 +43,7 @@ export default function LoginPage() {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-    const primaryPhone = buildInternationalPhone(phone, countryCode);
+    const primaryPhone = buildAuthPhone(phone);
     const firstTry = await postLogin(primaryPhone);
 
     if (firstTry.res.ok && firstTry.data.status === true) {
@@ -51,10 +51,10 @@ export default function LoginPage() {
       return;
     }
 
-    // Backward compatibility: some legacy accounts may have been saved with an extra leading zero.
-    const fallbackPhone = `${countryCode}${normalizePhoneLocal(phone)}`;
-    if (fallbackPhone !== primaryPhone) {
-      const secondTry = await postLogin(fallbackPhone);
+    // حسابات قديمة سُجّلت بمقدمة +970
+    const legacyPhone = buildInternationalPhone(phone, "+970");
+    if (legacyPhone !== primaryPhone) {
+      const secondTry = await postLogin(legacyPhone);
       if (secondTry.res.ok && secondTry.data.status === true) {
         router.push("/account");
         return;
@@ -83,39 +83,13 @@ export default function LoginPage() {
         </h1>
       </header>
       <form onSubmit={onSubmit} className="flex flex-col gap-5">
-        <div className="space-y-2">
-          <span className="block text-sm font-semibold text-secondary" id="login-phone-label">
-            {t("whatsAppPhone")}
-          </span>
-          <div
-            className="grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,9.5rem)_minmax(0,1fr)] sm:items-stretch"
-            role="group"
-            aria-labelledby="login-phone-label"
-          >
-            <select
-              value={countryCode}
-              onChange={(e) => setCountryCode(e.target.value as "+970" | "+972")}
-              className="store-input w-full min-w-0 text-sm sm:text-base"
-              aria-label={t("countryCode")}
-              autoComplete="tel-country-code"
-            >
-              <option value="+970">+970 {t("countryPalestine")}</option>
-              <option value="+972">+972 {t("countryIsrael")}</option>
-            </select>
-            <input
-              required
-              inputMode="tel"
-              minLength={8}
-              maxLength={11}
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="store-input min-w-0 w-full"
-              placeholder="59XXXXXXXX"
-              autoComplete="tel-national"
-              aria-label={t("whatsAppPhone")}
-            />
-          </div>
-        </div>
+        <AuthPhoneField
+          id="login-phone"
+          label={t("whatsAppPhone")}
+          value={phone}
+          onChange={setPhone}
+          placeholder={t("phonePlaceholder")}
+        />
         <label className="block space-y-2">
           <span className="block text-sm font-semibold text-secondary">{t("password")}</span>
           <input

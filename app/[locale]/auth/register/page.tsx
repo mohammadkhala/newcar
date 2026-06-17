@@ -3,7 +3,8 @@
 import { useLocale, useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useState } from "react";
-import { buildInternationalPhone, normalizePhoneLocal } from "@/lib/phone";
+import { buildAuthPhone, buildInternationalPhone, normalizePhoneLocal } from "@/lib/phone";
+import { AuthPhoneField } from "@/components/auth/AuthPhoneField";
 import { authApiErrorMessage } from "@/lib/auth-api-message";
 
 function generateUniqueEmail(seedPhone: string): string {
@@ -24,7 +25,6 @@ export default function RegisterPage() {
   const router = useRouter();
   const [fName, setFName] = useState("");
   const [lName, setLName] = useState("");
-  const [countryCode, setCountryCode] = useState<"+970" | "+972">("+970");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -42,7 +42,7 @@ export default function RegisterPage() {
         f_name: fName,
         l_name: lName,
         email: generateUniqueEmail(phone),
-        phone: buildInternationalPhone(phone, countryCode),
+        phone: buildAuthPhone(phone),
         password,
       }),
     });
@@ -95,39 +95,13 @@ export default function RegisterPage() {
             autoComplete="family-name"
           />
         </label>
-        <div className="space-y-2">
-          <span className="block text-sm font-semibold text-secondary" id="register-phone-label">
-            {t("phone")}
-          </span>
-          <div
-            className="grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,9.5rem)_minmax(0,1fr)] sm:items-stretch"
-            role="group"
-            aria-labelledby="register-phone-label"
-          >
-            <select
-              value={countryCode}
-              onChange={(e) => setCountryCode(e.target.value as "+970" | "+972")}
-              className="store-input w-full min-w-0 text-sm sm:text-base"
-              aria-label={t("countryCode")}
-              autoComplete="tel-country-code"
-            >
-              <option value="+970">+970 {t("countryPalestine")}</option>
-              <option value="+972">+972 {t("countryIsrael")}</option>
-            </select>
-            <input
-              required
-              minLength={8}
-              maxLength={11}
-              inputMode="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="store-input min-w-0 w-full"
-              placeholder="59XXXXXXXX"
-              autoComplete="tel-national"
-              aria-label={t("phone")}
-            />
-          </div>
-        </div>
+        <AuthPhoneField
+          id="register-phone"
+          label={t("phone")}
+          value={phone}
+          onChange={setPhone}
+          placeholder={t("phonePlaceholder")}
+        />
         <label className="block space-y-2">
           <span className="block text-sm font-semibold text-secondary">{t("password")}</span>
           <input
