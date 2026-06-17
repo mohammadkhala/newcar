@@ -11,16 +11,18 @@ export default async function ContactPage() {
   const email = String((config?.email as string) || (config?.business_email as string) || "").trim();
   const address = String((config?.address as string) || (config?.business_address as string) || "").trim();
 
-  // Map embed: admin panel stores it as map_embed_code or map
+  // Map embed: try all common admin panel key names, fallback to hardcoded location
+  const FALLBACK_MAP_SRC = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d343.16883266297424!2d34.97270067124331!3d31.40790509884865!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1502f6ca725c325f%3A0x1cd8554b7b8b2737!2z2KjZhtmDINmB2YTYs9i32YrZhg!5e1!3m2!1sar!2s!4v1781702447494!5m2!1sar!2s";
+
   const rawMap = String(
     (config?.map_embed_code as string) ||
     (config?.map as string) ||
     (config?.google_map as string) ||
+    (config?.iframe_map as string) ||
     ""
   ).trim();
 
-  // Accept either a full <iframe> tag or a plain src URL
-  let mapSrc = "";
+  let mapSrc = FALLBACK_MAP_SRC;
   if (rawMap.startsWith("<iframe")) {
     const m = rawMap.match(/src="([^"]+)"/);
     if (m) mapSrc = m[1];
