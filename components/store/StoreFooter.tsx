@@ -180,7 +180,15 @@ export async function StoreFooter() {
             <img src="/reflect.png" alt="Reflect" className="h-8 w-auto rounded object-contain bg-white" />
           </div>
           <p className="text-sm text-neutral-500 font-medium">
-            {t("bottomRights")}
+            برمجة وتطوير{" "}
+            <a
+              href="https://wa.me/972592781819"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-neutral-400 hover:text-white transition-colors"
+            >
+              بيت البرمجيات وتكنولوجيا المعلومات
+            </a>
           </p>
         </div>
       </div>
