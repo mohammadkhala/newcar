@@ -21,9 +21,9 @@ export function HeaderStoreLogo({ logoSrc, imageAlt }: Props) {
       <Image
         src={logoSrc}
         alt={imageAlt}
-        width={200}
-        height={64}
-        className="h-9 w-auto max-w-full object-contain object-center sm:h-11"
+        width={120}
+        height={130}
+        className="h-12 w-auto max-w-full object-contain object-center sm:h-14 lg:h-16"
         unoptimized
         priority
       />

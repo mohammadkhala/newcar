@@ -44,7 +44,14 @@ export function useStoreHeaderNavState() {
         setCategoriesDropdownOpen(false);
       }
 
-      if (shopDropdownOpen && shopRef.current && !shopRef.current.contains(target)) {
+      // shopDropdownOpen's panel now renders as a sibling of the trigger button inside
+      // featuredNavRef's wrapper (see StoreHeaderSectionsNav), not inside shopRef's <li>,
+      // so check against featuredNavRef to avoid closing the panel on clicks inside it.
+      if (
+        shopDropdownOpen &&
+        featuredNavRef.current &&
+        !featuredNavRef.current.contains(target)
+      ) {
         setShopDropdownOpen(false);
       }
 
