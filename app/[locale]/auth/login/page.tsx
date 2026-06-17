@@ -106,6 +106,7 @@ export default function LoginPage() {
             className="store-input w-full"
             placeholder="0591234567"
             autoComplete="tel-national"
+            suppressHydrationWarning
           />
         </label>
         <label className="block space-y-2">
@@ -117,6 +118,7 @@ export default function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
             className="store-input w-full"
             autoComplete="current-password"
+            suppressHydrationWarning
           />
         </label>
         {error ? (
@@ -127,7 +129,7 @@ export default function LoginPage() {
             {error}
           </p>
         ) : null}
-        <button type="submit" className="store-btn-primary w-full">
+        <button type="submit" className="store-btn-primary w-full" suppressHydrationWarning>
           {t("submitLogin")}
         </button>
       </form>

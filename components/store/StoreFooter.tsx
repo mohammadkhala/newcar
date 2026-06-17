@@ -30,6 +30,7 @@ export async function StoreFooter() {
                   height={40}
                   unoptimized
                   className="h-10 w-auto object-contain"
+                  style={{ width: "auto" }}
                 />
               </a>
               <a href="https://play.google.com/store/apps/details?id=com.newcarpal.app" target="_blank" rel="noopener noreferrer" className="inline-block" aria-label="Get it on Google Play">
@@ -40,6 +41,7 @@ export async function StoreFooter() {
                   height={40}
                   unoptimized
                   className="h-10 w-auto object-contain"
+                  style={{ width: "auto" }}
                 />
               </a>
             </div>

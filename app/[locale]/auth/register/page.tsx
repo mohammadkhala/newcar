@@ -84,6 +84,7 @@ export default function RegisterPage() {
             onChange={(e) => setFName(e.target.value)}
             className="store-input w-full"
             autoComplete="given-name"
+            suppressHydrationWarning
           />
         </label>
         <label className="block space-y-2">
@@ -94,6 +95,7 @@ export default function RegisterPage() {
             onChange={(e) => setLName(e.target.value)}
             className="store-input w-full"
             autoComplete="family-name"
+            suppressHydrationWarning
           />
         </label>
         <label className="block space-y-2">
@@ -110,6 +112,7 @@ export default function RegisterPage() {
             className="store-input w-full"
             placeholder="0591234567"
             autoComplete="tel-national"
+            suppressHydrationWarning
           />
         </label>
         <label className="block space-y-2">
@@ -122,6 +125,7 @@ export default function RegisterPage() {
             onChange={(e) => setPassword(e.target.value)}
             className="store-input w-full"
             autoComplete="new-password"
+            suppressHydrationWarning
           />
         </label>
         {error ? (
@@ -132,7 +136,7 @@ export default function RegisterPage() {
             {error}
           </p>
         ) : null}
-        <button type="submit" className="store-btn-primary w-full">
+        <button type="submit" className="store-btn-primary w-full" suppressHydrationWarning>
           {t("submitRegister")}
         </button>
       </form>
