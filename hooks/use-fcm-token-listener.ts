@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useLocale } from "next-intl";
+import { useParams } from "next/navigation";
 import { bffFetch } from "@/lib/bff-client";
 
 declare global {
@@ -16,7 +16,8 @@ declare global {
  * and sends the token to the Laravel backend.
  */
 export function useFcmTokenListener(isAuthenticated: boolean) {
-  const locale = useLocale();
+  const params = useParams();
+  const locale = String(params?.locale ?? "ar");
 
   useEffect(() => {
     const normalizedLocale = String(locale || "ar").toLowerCase();

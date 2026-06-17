@@ -62,6 +62,7 @@ export function StoreHeaderSectionsNav({
               <button
                 type="button"
                 onClick={onToggleCategories}
+                suppressHydrationWarning
                 className={`inline-flex min-h-[2.5rem] max-w-[min(100vw-2rem,16rem)] items-center gap-2 truncate rounded-md px-4 text-sm font-bold text-black shadow-sm outline-none transition-all focus-visible:ring-2 focus-visible:ring-black/30 sm:max-w-none ${
                   categoriesDropdownOpen ? "bg-gray-100" : "bg-white hover:bg-gray-50"
                 }`}
@@ -104,18 +105,14 @@ export function StoreHeaderSectionsNav({
               {DESKTOP_NAV_SCHEMA.map((entry) => {
                 if (entry.kind === "vehicle-panel") {
                   return (
-                    <li key={entry.id} ref={shopRef} className="relative shrink-0">
-                      <button
-                        type="button"
-                        onClick={onToggleShop}
-                        className={`inline-flex min-h-[2.25rem] whitespace-nowrap rounded-md px-3 text-sm font-bold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-black/30 ${
-                          shopDropdownOpen
-                            ? "bg-black/15 text-black"
-                            : "text-black hover:bg-black/10"
-                        }`}
+                    <li key={entry.id} className="relative shrink-0">
+                      <Link
+                        href="/shop/search"
+                        onClick={closeAllDesktop}
+                        className="inline-flex min-h-[2.25rem] whitespace-nowrap rounded-md px-3 text-sm font-bold text-black transition-colors hover:bg-black/10"
                       >
                         {labels[entry.labelKey]}
-                      </button>
+                      </Link>
                     </li>
                   );
                 }
@@ -125,6 +122,7 @@ export function StoreHeaderSectionsNav({
                     <button
                       type="button"
                       onClick={() => onToggleFeatured(node.id)}
+                      suppressHydrationWarning
                       className={`inline-flex min-h-[2.25rem] max-w-[9rem] truncate rounded-md px-3 text-sm font-bold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-black/30 sm:max-w-[12rem] ${
                         openFeaturedId === node.id
                           ? "bg-black/15 text-black"
@@ -145,21 +143,6 @@ export function StoreHeaderSectionsNav({
           `overflow-x-auto` on that <ul> forces overflow-y to compute as `auto` too
           (CSS overflow auto-pairing rule), which clipped these dropdowns to the row's
           own ~40px height instead of letting them float below it. */}
-      {shopDropdownOpen ? (
-        <div
-          className="store-shell relative"
-          role="region"
-          aria-label={labels.shopByVehicle}
-        >
-          <div className="absolute start-0 top-0 z-[160]">
-            <VehicleByCarMegaPanel
-              brands={vehicleBrands}
-              apiConfigured={apiConfigured}
-              onNavigate={closeAllDesktop}
-            />
-          </div>
-        </div>
-      ) : null}
 
       {openFeaturedNode ? (
         <div className="store-shell relative">
