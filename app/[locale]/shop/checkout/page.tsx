@@ -407,89 +407,65 @@ export default function CheckoutPage() {
 
   const canPlaceOrder = addresses.length > 0 && selectedId !== "" && !showAddressForm;
 
-  return (
-    <div className="mx-auto max-w-4xl">
-      {/* ══════════ ORDER SUCCESS SCREEN ══════════ */}
-      {orderResult && status === "ok" && (
-        <div className="flex flex-col items-center gap-6 py-12 text-center">
-          {/* Success illustration */}
-          <div className="relative">
-            <svg viewBox="0 0 160 160" className="h-40 w-40" fill="none" xmlns="http://www.w3.org/2000/svg">
-              {/* Outer ring */}
-              <circle cx="80" cy="80" r="76" stroke="#F97316" strokeWidth="3" strokeDasharray="8 4" opacity="0.3" />
-              {/* Main circle */}
-              <circle cx="80" cy="80" r="64" fill="#FFF7ED" stroke="#F97316" strokeWidth="2" />
-              {/* Inner circle */}
-              <circle cx="80" cy="80" r="50" fill="#F97316" opacity="0.12" />
-              {/* Checkmark */}
-              <path d="M52 80 L70 98 L108 60" stroke="#F97316" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
-              {/* Stars decoration */}
-              <circle cx="30" cy="40" r="4" fill="#F97316" opacity="0.5" />
-              <circle cx="130" cy="38" r="3" fill="#F97316" opacity="0.4" />
-              <circle cx="140" cy="110" r="5" fill="#F97316" opacity="0.3" />
-              <circle cx="22" cy="115" r="3.5" fill="#F97316" opacity="0.4" />
-              {/* Small sparks */}
-              <path d="M24 60 L26 54 L28 60 L34 62 L28 64 L26 70 L24 64 L18 62Z" fill="#F97316" opacity="0.35" />
-              <path d="M128 95 L130 90 L132 95 L137 97 L132 99 L130 104 L128 99 L123 97Z" fill="#F97316" opacity="0.35" />
-            </svg>
-          </div>
-
-          {/* Heading */}
-          <div className="space-y-2">
-            <h1 className="text-2xl font-bold text-secondary">{t("success")}</h1>
-            <p className="text-secondary/60 text-sm max-w-xs mx-auto">
-              شكراً لك! سيتم التواصل معك لتأكيد الطلب وترتيب التوصيل.
-            </p>
-          </div>
-
-          {/* Order details card */}
-          <div className="w-full max-w-sm rounded-2xl border border-border-soft bg-white p-5 shadow-sm text-start space-y-3">
-            {(orderResult.order_id ?? orderResult.id) && (
-              <div className="flex items-center justify-between border-b border-border-soft pb-3">
-                <span className="text-sm text-secondary/60">رقم الطلب</span>
-                <span className="font-bold text-secondary">#{orderResult.order_id ?? orderResult.id}</span>
-              </div>
-            )}
-            {orderResult.total_price != null && (
-              <div className="flex items-center justify-between border-b border-border-soft pb-3">
-                <span className="text-sm text-secondary/60">{tCart("total")}</span>
-                <span className="font-bold text-primary">
-                  {formatMoney(Number(orderResult.total_price), locale, currencyCode)}
-                </span>
-              </div>
-            )}
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-secondary/60">{t("paymentCod")}</span>
-              <span className="flex items-center gap-1.5 rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700 border border-green-200">
-                <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-                تم الاستلام
+  // Success screen — shown after order is placed
+  if (orderResult && status === "ok") {
+    return (
+      <div className="mx-auto max-w-4xl flex flex-col items-center gap-6 py-12 text-center">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/assets/order-success.avif"
+          alt=""
+          className="h-52 w-auto object-contain"
+          aria-hidden="true"
+        />
+        <div className="space-y-2">
+          <h1 className="text-2xl font-bold text-secondary">{t("success")}</h1>
+          <p className="text-sm text-secondary/60 max-w-xs mx-auto">
+            شكراً لك! سيتم التواصل معك لتأكيد الطلب وترتيب التوصيل.
+          </p>
+        </div>
+        <div className="w-full max-w-sm rounded-2xl border border-border-soft bg-white p-5 shadow-sm text-start space-y-3">
+          {(orderResult.order_id ?? orderResult.id) && (
+            <div className="flex items-center justify-between border-b border-border-soft pb-3">
+              <span className="text-sm text-secondary/60">رقم الطلب</span>
+              <span className="font-bold text-secondary">#{orderResult.order_id ?? orderResult.id}</span>
+            </div>
+          )}
+          {orderResult.total_price != null && (
+            <div className="flex items-center justify-between border-b border-border-soft pb-3">
+              <span className="text-sm text-secondary/60">{tCart("total")}</span>
+              <span className="font-bold text-primary">
+                {formatMoney(Number(orderResult.total_price), locale, currencyCode)}
               </span>
             </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex flex-col gap-3 w-full max-w-sm">
-            <Link
-              href="/"
-              className="store-btn-primary w-full py-3 text-center font-semibold"
-            >
-              العودة للرئيسية
-            </Link>
-            <Link
-              href="/account/orders"
-              className="w-full rounded-xl border border-border-soft py-3 text-center text-sm font-medium text-secondary transition-colors hover:bg-surface-muted"
-            >
-              متابعة طلباتي
-            </Link>
+          )}
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-secondary/60">{t("paymentCod")}</span>
+            <span className="flex items-center gap-1.5 rounded-full bg-green-50 border border-green-200 px-2.5 py-0.5 text-xs font-medium text-green-700">
+              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              تم الاستلام
+            </span>
           </div>
         </div>
-      )}
+        <div className="flex flex-col gap-3 w-full max-w-sm">
+          <Link href="/" className="store-btn-primary w-full py-3 text-center font-semibold">
+            العودة للرئيسية
+          </Link>
+          <Link
+            href="/account/orders"
+            className="w-full rounded-xl border border-border-soft py-3 text-center text-sm font-medium text-secondary transition-colors hover:bg-surface-muted"
+          >
+            متابعة طلباتي
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
-      {/* ══════════ CHECKOUT FORM ══════════ */}
-      {!orderResult && (
-      <>
+  return (
+    <div className="mx-auto max-w-4xl">
       {/* Page title */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-secondary">{t("title")}</h1>
@@ -867,15 +843,13 @@ export default function CheckoutPage() {
               </button>
             </form>
 
-            {!canPlaceOrder && !showAddressForm && addresses.length === 0 && (
+            {!canPlaceOrder && !showAddressForm && addresses.length === 0 ? (
               <p className="mt-2 text-center text-xs text-secondary/60">{t("needAddressFirst")}</p>
-            )}
+            ) : null}
           </div>
         </div>
 
       </div>
-      </>
-      )}
     </div>
   );
 }
