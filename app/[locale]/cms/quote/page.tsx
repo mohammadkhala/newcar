@@ -34,21 +34,26 @@ export default function QuotePage() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h2 className="text-xl font-black text-secondary">تم إرسال طلبك بنجاح!</h2>
-          <p className="mt-2 text-sm text-secondary/60">
-            سيتواصل معك فريقنا في أقرب وقت ممكن
-          </p>
+          <h2 className="text-xl font-black text-secondary">{t("quoteSuccessTitle")}</h2>
+          <p className="mt-2 text-sm text-secondary/60">{t("quoteSuccessBody")}</p>
           <button
             type="button"
             onClick={() => setStatus("idle")}
             className="store-btn-primary mt-6 inline-flex w-full items-center justify-center text-sm"
           >
-            إرسال طلب جديد
+            {t("quoteSuccessReset")}
           </button>
         </div>
       </div>
     );
   }
+
+  const sideCards = [
+    { icon: "⚡", title: t("quoteSideSpeedTitle"), desc: t("quoteSideSpeedDesc") },
+    { icon: "💯", title: t("quoteSidePriceTitle"), desc: t("quoteSidePriceDesc") },
+    { icon: "🚚", title: t("quoteSideDeliveryTitle"), desc: t("quoteSideDeliveryDesc") },
+    { icon: "🔒", title: t("quoteSidePrivacyTitle"), desc: t("quoteSidePrivacyDesc") },
+  ];
 
   return (
     <div className="store-shell py-10 md:py-14">
@@ -60,9 +65,7 @@ export default function QuotePage() {
             💬
           </div>
           <h1 className="text-3xl font-black">{t("quoteTitle")}</h1>
-          <p className="mt-2 text-sm font-medium opacity-75">
-            أرسل لنا تفاصيل احتياجك وسنرد عليك بأفضل عرض سعر
-          </p>
+          <p className="mt-2 text-sm font-medium opacity-75">{t("quoteSubtitle")}</p>
         </div>
         <div className="absolute -end-10 -top-10 h-40 w-40 rounded-full bg-white/10" />
         <div className="absolute -bottom-12 end-20 h-28 w-28 rounded-full bg-white/10" />
@@ -72,7 +75,7 @@ export default function QuotePage() {
 
         {/* Form */}
         <div className="store-card p-6 md:p-8">
-          <h2 className="mb-6 text-lg font-black text-secondary">بيانات الطلب</h2>
+          <h2 className="mb-6 text-lg font-black text-secondary">{t("quoteFormTitle")}</h2>
           <form onSubmit={onSubmit} className="space-y-5">
 
             <div>
@@ -83,7 +86,7 @@ export default function QuotePage() {
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="الاسم الكامل"
+                placeholder={t("quoteNamePlaceholder")}
                 className="store-input w-full"
                 autoComplete="name"
                 suppressHydrationWarning
@@ -131,13 +134,11 @@ export default function QuotePage() {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 rows={6}
-                placeholder="اذكر تفاصيل القطعة أو الكمالية المطلوبة، موديل سيارتك، وأي تفاصيل إضافية..."
+                placeholder={t("quoteMessagePlaceholder")}
                 className="store-input w-full resize-none"
                 autoComplete="off"
               />
-              <p className="mt-1 text-xs text-secondary/40">
-                كلما كانت التفاصيل أوضح، كان ردنا أسرع وأدق
-              </p>
+              <p className="mt-1 text-xs text-secondary/40">{t("quoteMessageHint")}</p>
             </div>
 
             {status === "err" && (
@@ -156,7 +157,7 @@ export default function QuotePage() {
               {status === "loading" ? (
                 <>
                   <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-black/20 border-t-black" />
-                  جاري الإرسال...
+                  {t("quoteSending")}
                 </>
               ) : (
                 t("quoteSubmit")
@@ -167,12 +168,7 @@ export default function QuotePage() {
 
         {/* Side info */}
         <aside className="space-y-4">
-          {[
-            { icon: "⚡", title: "رد سريع", desc: "نرد على طلبات عروض الأسعار خلال ساعات قليلة في أيام العمل." },
-            { icon: "💯", title: "أسعار تنافسية", desc: "نقدم أفضل الأسعار مع ضمان الجودة الأصلية للمنتجات." },
-            { icon: "🚚", title: "توصيل لبابك", desc: "بعد الموافقة على العرض نوصل طلبك مباشرةً إلى عنوانك." },
-            { icon: "🔒", title: "بياناتك محمية", desc: "جميع معلوماتك سرية ولن تُشارَك مع أي طرف ثالث." },
-          ].map((card) => (
+          {sideCards.map((card) => (
             <div key={card.title} className="store-card flex gap-4 p-4">
               <span className="shrink-0 text-2xl leading-none">{card.icon}</span>
               <div>
