@@ -229,20 +229,65 @@ export function SearchSidebar({
           ))}
         </FilterGroup>
 
-        <FilterGroup title={tNav("brands")}>
-          {productBrands.map((brand) => (
-            <FacetOption
-              key={brand.id}
-              name="product_brand_id"
-              value={String(brand.id)}
-              label={brand.name}
-              count={brand.products_count}
-              checked={String(initialQuery.product_brand_id ?? "") === String(brand.id)}
-              onChange={handleDirectChange}
-              onDeselect={() => clearField("product_brand_id")}
-            />
-          ))}
-        </FilterGroup>
+        {productBrands.length > 0 && (
+          <details
+            className="group border-b border-border-soft py-3 first:pt-0 last:border-b-0"
+            open
+          >
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-sm font-bold text-secondary">
+              {tNav("brands")}
+              <GroupChevron />
+            </summary>
+            <div className="mt-3 grid grid-cols-3 gap-1.5 max-h-56 overflow-y-auto pe-1">
+              {productBrands.map((brand) => {
+                const imgSrc = brand.image_full_url ?? brand.image ?? null;
+                const active = String(initialQuery.product_brand_id ?? "") === String(brand.id);
+                return (
+                  <button
+                    key={brand.id}
+                    type="button"
+                    title={brand.name}
+                    onClick={() => {
+                      if (active) {
+                        clearField("product_brand_id");
+                      } else {
+                        const q = new URLSearchParams(searchParams.toString());
+                        q.set("offset", "1");
+                        q.set("product_brand_id", String(brand.id));
+                        router.push(`${pathname}?${q.toString()}`, { scroll: false });
+                      }
+                    }}
+                    className={`flex flex-col items-center justify-center gap-1 rounded-lg border-2 p-1.5 transition-all ${
+                      active
+                        ? "border-primary bg-primary/5"
+                        : "border-border-soft bg-white hover:border-primary/30"
+                    }`}
+                  >
+                    {imgSrc ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img
+                        src={imgSrc}
+                        alt={brand.name}
+                        className="h-8 w-full object-contain"
+                        onError={(e) => {
+                          e.currentTarget.style.display = "none";
+                          const fallback = e.currentTarget.nextElementSibling as HTMLElement | null;
+                          if (fallback) fallback.style.display = "block";
+                        }}
+                      />
+                    ) : null}
+                    <span
+                      className={`text-center text-[10px] font-bold leading-tight truncate w-full ${active ? "text-primary" : "text-secondary"}`}
+                      style={imgSrc ? { display: "none" } : {}}
+                    >
+                      {brand.name}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </details>
+        )}
 
         <FilterGroup title={t("priceMin") + " / " + t("priceMax")} defaultOpen={false}>
           <div className="grid grid-cols-2 gap-2 px-1">
