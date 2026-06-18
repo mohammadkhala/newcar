@@ -44,6 +44,6 @@ export function parseAuthApiError(
   return { type: "key", key: "error" };
 }
 
-export function networkErrorResult(): AuthApiErrorResult {
+export function networkErrorResult(): { type: "key"; key: AuthApiErrorKey } {
   return { type: "key", key: "networkError" };
 }
