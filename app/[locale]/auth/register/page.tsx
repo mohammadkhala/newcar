@@ -1,7 +1,7 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { Link, useRouter } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import { useState } from "react";
 import { buildAuthPhone, normalizePhoneLocal } from "@/lib/phone";
 import { parseAuthApiError, networkErrorResult } from "@/lib/auth-api-message";
@@ -21,7 +21,6 @@ export default function RegisterPage() {
   const t = useTranslations("Auth");
   const tNav = useTranslations("Nav");
   const locale = useLocale();
-  const router = useRouter();
   const [fName, setFName] = useState("");
   const [lName, setLName] = useState("");
   const [phone, setPhone] = useState("");
@@ -72,7 +71,7 @@ export default function RegisterPage() {
           body: JSON.stringify({ email_or_phone: buildAuthPhone(phone), password, type: "phone" }),
         });
       } catch { /* ignore — navigate anyway, cookie from registration may still work */ }
-      router.push("/account");
+      window.location.href = `/${locale}/account`;
       return;
     }
     if (data.temporary_token) { setError(t("needVerify")); return; }

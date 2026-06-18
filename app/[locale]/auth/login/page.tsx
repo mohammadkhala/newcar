@@ -1,7 +1,7 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { Link, useRouter } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import { useState } from "react";
 import { buildAuthPhone, buildInternationalPhone } from "@/lib/phone";
 import { parseAuthApiError, networkErrorResult } from "@/lib/auth-api-message";
@@ -11,7 +11,6 @@ export default function LoginPage() {
   const t = useTranslations("Auth");
   const tNav = useTranslations("Nav");
   const locale = useLocale();
-  const router = useRouter();
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -46,13 +45,13 @@ export default function LoginPage() {
     try {
       const firstTry = await postLogin(buildAuthPhone(phone));
       if (firstTry.res.ok && firstTry.data.status === true) {
-        router.push("/account");
+        window.location.href = `/${locale}/account`;
         return;
       }
       // Fallback: +970 for legacy Palestinian accounts
       const secondTry = await postLogin(buildInternationalPhone(phone, "+970"));
       if (secondTry.res.ok && secondTry.data.status === true) {
-        router.push("/account");
+        window.location.href = `/${locale}/account`;
         return;
       }
       applyError(secondTry.res.status, secondTry.data);
