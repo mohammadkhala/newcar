@@ -76,6 +76,11 @@ export async function StoreFooter() {
                 </Link>
               </li>
               <li>
+                <Link href="/cms/return-policy" className="hover:text-white transition-colors">
+                  سياسة الإرجاع
+                </Link>
+              </li>
+              <li>
                 <Link href="/cms/contact" className="hover:text-white transition-colors">
                   {t("linkCompanyAddress")}
                 </Link>
