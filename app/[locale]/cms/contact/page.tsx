@@ -12,7 +12,7 @@ export default async function ContactPage() {
   const address = String((config?.address as string) || (config?.business_address as string) || "").trim();
 
   // Map embed: try all common admin panel key names, fallback to hardcoded location
-  const FALLBACK_MAP_SRC = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d343.16883266297424!2d34.97270067124331!3d31.40790509884865!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1502f6ca725c325f%3A0x1cd8554b7b8b2737!2z2KjZhtmDINmB2YTYs9i32YrZhg!5e1!3m2!1sar!2s!4v1781702447494!5m2!1sar!2s";
+  const FALLBACK_MAP_SRC = "https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d323.9081682588714!2d34.972699627952046!3d31.407928931184586!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1502f6ca725c325f%3A0x1cd8554b7b8b2737!2z2KjZhtmDINmB2YTYs9i32YrZhg!5e1!3m2!1sar!2sus!4v1781770531222!5m2!1sar!2sus";
 
   const rawMap = String(
     (config?.map_embed_code as string) ||
