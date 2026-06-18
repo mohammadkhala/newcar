@@ -97,6 +97,9 @@ export function StoreHeaderMobileDrawer({
                         }
                         className={`${ROW} ${expanded ? "text-[#EAB308]" : ""}`}
                       >
+                        <span className="flex-1 truncate">
+                          {item.name}
+                        </span>
                         <span
                           aria-hidden
                           className={`shrink-0 text-lg leading-none transition-transform ${
@@ -106,9 +109,6 @@ export function StoreHeaderMobileDrawer({
                           }`}
                         >
                           ‹
-                        </span>
-                        <span className="flex-1 truncate text-end">
-                          {item.name}
                         </span>
                       </button>
                       {expanded && (
