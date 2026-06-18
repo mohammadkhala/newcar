@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { productPrimaryImageSrc } from "@/lib/product-image";
 import type { StoreProductListItem } from "@/lib/types";
+import { FallbackImg } from "@/components/store/FallbackImg";
 
 type Props = {
   product: StoreProductListItem;
@@ -38,22 +39,16 @@ export function CatalogProductCard({ product }: Props) {
   return (
     <article className="flex h-full flex-col overflow-hidden bg-surface-muted">
       <Link href={href} className="relative block aspect-square bg-white">
-        {src ? (
-          // eslint-disable-next-line @next/next/no-img-element -- remote API hosts vary
-          <img
-            src={src}
-            alt=""
-            width={400}
-            height={400}
-            loading="lazy"
-            decoding="async"
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center text-sm text-secondary/50">
-            {t("noImage")}
-          </div>
-        )}
+        <FallbackImg
+          src={src ?? "/logo.png"}
+          alt=""
+          width={400}
+          height={400}
+          loading="lazy"
+          decoding="async"
+          className="h-full w-full object-cover"
+          fallbackClassName="h-full w-full object-contain p-6 opacity-60"
+        />
       </Link>
       <div className="flex flex-1 flex-col gap-3 px-3 pb-3 pt-3 text-center">
         <Link

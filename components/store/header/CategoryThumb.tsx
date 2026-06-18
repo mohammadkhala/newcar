@@ -35,7 +35,7 @@ export function CategoryThumb({ imageSrc, label, size = 44 }: Props) {
       aria-hidden
     >
       <Image
-        src="/brand/app-icon.png"
+        src="/logo.png"
         alt=""
         width={size}
         height={size}

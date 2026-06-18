@@ -50,6 +50,10 @@ export function ProductImageGallery({ images, alt, noImageLabel }: Props) {
                 src={src}
                 alt={i === activeIdx ? alt : ""}
                 className="h-full w-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.src = "/logo.png";
+                  e.currentTarget.className = "h-full w-full object-contain p-8 opacity-60";
+                }}
               />
             </div>
           ))}

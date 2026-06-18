@@ -1,5 +1,5 @@
-import Image from "next/image";
 import { Link } from "@/i18n/navigation";
+import { FallbackImg } from "@/components/store/FallbackImg";
 
 type HomeCategoryVisualItem = {
   id: number;
@@ -43,25 +43,14 @@ export function HomeCategoryVisualSection({
                 className="store-card flex min-h-[7.5rem] flex-col items-center justify-center gap-2 px-3 py-3 text-center hover:border-primary/30"
               >
                 <div className="flex h-[3.5rem] w-full items-center justify-center">
-                  {item.imageSrc ? (
-                    <Image
-                      src={item.imageSrc}
-                      alt={item.name}
-                      width={120}
-                      height={56}
-                      unoptimized
-                      className="h-14 w-auto object-contain"
-                    />
-                  ) : (
-                    <Image
-                      src="/brand/app-icon.png"
-                      alt=""
-                      width={56}
-                      height={56}
-                      unoptimized
-                      className="h-14 w-auto object-contain opacity-50"
-                    />
-                  )}
+                  <FallbackImg
+                    src={item.imageSrc ?? "/logo.png"}
+                    alt={item.name}
+                    width={120}
+                    height={56}
+                    className="h-14 w-auto object-contain"
+                    fallbackClassName="h-14 w-auto object-contain opacity-60"
+                  />
                 </div>
                 <span className="line-clamp-2 text-sm font-semibold text-black">
                   {item.name}

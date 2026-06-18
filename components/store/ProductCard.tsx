@@ -8,6 +8,7 @@ import { productPrimaryImageSrc } from "@/lib/product-image";
 import type { StoreProductListItem } from "@/lib/types";
 import { AddToCartButton } from "@/components/store/AddToCartButton";
 import { WishlistToggleButton } from "@/components/store/WishlistToggleButton";
+import { FallbackImg } from "@/components/store/FallbackImg";
 
 type Props = {
   product: StoreProductListItem;
@@ -30,22 +31,16 @@ export function ProductCard({
     <article className="store-card group flex h-full flex-col overflow-hidden transition-transform hover:-translate-y-0.5">
       <div className="relative">
         <Link href={href} className="relative block aspect-[4/3] bg-surface-muted">
-          {src ? (
-            // eslint-disable-next-line @next/next/no-img-element -- remote API hosts vary
-            <img
-              src={src}
-              alt=""
-              width={800}
-              height={600}
-              loading="lazy"
-              decoding="async"
-              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-            />
-          ) : (
-            <div className="flex h-full items-center justify-center text-sm text-secondary/50">
-              {t("noImage")}
-            </div>
-          )}
+          <FallbackImg
+            src={src ?? "/logo.png"}
+            alt=""
+            width={800}
+            height={600}
+            loading="lazy"
+            decoding="async"
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+            fallbackClassName="h-full w-full object-contain p-6 opacity-60"
+          />
         </Link>
         <div className="absolute start-2 top-2 z-10 flex flex-col gap-1">
           {/* Stock badge removed */}

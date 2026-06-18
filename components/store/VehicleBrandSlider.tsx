@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { resolveMediaUrl } from "@/lib/resolve-media-url";
 import type { VehicleBrandsResponse } from "@/lib/types";
@@ -98,23 +97,24 @@ export function VehicleBrandSlider({ brands, activeBrandId }: Props) {
             >
               {src ? (
                 <div className="flex h-14 w-[4.5rem] items-center justify-center">
-                  <Image
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
                     src={src}
                     alt={brand.name}
                     width={72}
                     height={56}
-                    unoptimized
                     className="max-h-14 w-full object-contain"
+                    onError={(e) => {
+                      e.currentTarget.src = "/logo.png";
+                      e.currentTarget.className = "max-h-10 w-auto object-contain opacity-50";
+                    }}
                   />
                 </div>
               ) : (
-                <span
-                  className={`inline-flex h-14 w-[4.5rem] items-center justify-center rounded-lg text-lg font-bold ${
-                    active ? "text-primary" : "text-secondary/50"
-                  }`}
-                >
-                  {[...brand.name].find((c) => /\S/u.test(c)) ?? "?"}
-                </span>
+                <div className="flex h-14 w-[4.5rem] items-center justify-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/logo.png" alt="" className="max-h-12 w-auto object-contain opacity-50" />
+                </div>
               )}
               <span
                 className={`max-w-[4.5rem] truncate text-center text-xs font-semibold ${
