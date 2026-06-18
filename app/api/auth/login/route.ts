@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
   if (!res.ok) {
     return NextResponse.json(data, { status: res.status });
   }
-  if (typeof data.token === "string" && data.status === true) {
+  if (typeof data.token === "string" && !!data.status) {
     const out = NextResponse.json({ status: true });
     out.cookies.set(TOKEN_COOKIE, data.token, {
       httpOnly: true,

@@ -63,7 +63,18 @@ export default function RegisterPage() {
       setError(result.type === "raw" ? result.message : t(result.key));
       return;
     }
-    if (data.ok) { router.push("/account"); return; }
+    if (data.ok) {
+      // Registration token may not work for session API calls — auto-login to get a proper session
+      try {
+        await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "X-localization": locale },
+          body: JSON.stringify({ email_or_phone: buildAuthPhone(phone), password, type: "phone" }),
+        });
+      } catch { /* ignore — navigate anyway, cookie from registration may still work */ }
+      router.push("/account");
+      return;
+    }
     if (data.temporary_token) { setError(t("needVerify")); return; }
     setError(t("error"));
   }
