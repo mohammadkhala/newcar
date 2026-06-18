@@ -76,7 +76,7 @@ export default function RegisterPage() {
         <img src="/logo.png" alt="نيو كار" className="h-12 w-auto object-contain" />
         <div>
           <h1 className="text-xl font-bold text-secondary">{t("registerTitle")}</h1>
-          <p className="mt-1 text-sm text-secondary/50">أنشئ حسابك وابدأ التسوق</p>
+          <p className="mt-1 text-sm text-secondary/50">{t("registerSubtitle")}</p>
         </div>
       </div>
 
@@ -134,7 +134,7 @@ export default function RegisterPage() {
               onClick={() => setShowPassword((v) => !v)}
               className="absolute inset-y-0 end-3 flex items-center text-secondary/40 hover:text-secondary/70 transition-colors"
               tabIndex={-1}
-              aria-label={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
+              aria-label={showPassword ? t("hidePassword") : t("showPassword")}
             >
               {showPassword ? (
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -171,14 +171,14 @@ export default function RegisterPage() {
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
               </svg>
-              جاري إنشاء الحساب...
+              {t("registerLoading")}
             </span>
           ) : t("submitRegister")}
         </button>
       </form>
 
       <p className="border-t border-border-soft pt-5 text-center text-sm text-secondary/60">
-        لديك حساب بالفعل؟{" "}
+        {t("hasAccount")}{" "}
         <Link href="/auth/login" className="font-semibold text-primary hover:underline">
           {tNav("login")}
         </Link>
