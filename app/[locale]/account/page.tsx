@@ -76,9 +76,9 @@ export default function AccountPage() {
 
   const helpLinks = [
     { href: "/cms/contact", label: t("contactUs") },
-    { href: "/cms/pages", label: t("aboutUs") },
+    { href: "/cms/about", label: t("aboutUs") },
     { href: "/cms/pages?slug=terms-and-conditions", label: t("terms") },
-    { href: "/cms/pages?slug=privacy-policy", label: t("privacy") },
+    { href: "/cms/privacy", label: t("privacy") },
   ];
 
   const mainCards = [
