@@ -34,6 +34,7 @@ export type StoreProductListItem = {
   total_stock?: number;
   unit?: string;
   image?: unknown;
+  image_fullpath?: unknown;
 };
 
 export type FlashSaleInfo = {
@@ -68,6 +69,13 @@ export type ProductSearchResponse = {
   highest_price?: number;
   products: StoreProductListItem[];
   sort_by?: string | null;
+};
+
+export type ProductReview = {
+  id?: number;
+  rating?: number;
+  comment?: string;
+  customer?: { f_name?: string; l_name?: string };
 };
 
 export type ProductDetailPayload = {
