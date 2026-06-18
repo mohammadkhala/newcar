@@ -86,6 +86,7 @@ export default function QuotePage() {
                 placeholder="الاسم الكامل"
                 className="store-input w-full"
                 autoComplete="name"
+                suppressHydrationWarning
               />
             </div>
 
@@ -101,6 +102,7 @@ export default function QuotePage() {
                   className="store-input w-full"
                   autoComplete="tel"
                   dir="ltr"
+                  suppressHydrationWarning
                 />
               </div>
               <div>
@@ -115,6 +117,7 @@ export default function QuotePage() {
                   className="store-input w-full"
                   autoComplete="email"
                   dir="ltr"
+                  suppressHydrationWarning
                 />
               </div>
             </div>
@@ -148,6 +151,7 @@ export default function QuotePage() {
               type="submit"
               disabled={status === "loading"}
               className="store-btn-primary flex w-full items-center justify-center gap-2 text-sm disabled:opacity-60"
+              suppressHydrationWarning
             >
               {status === "loading" ? (
                 <>
