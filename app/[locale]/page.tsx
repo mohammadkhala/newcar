@@ -80,7 +80,7 @@ async function fetchProductsForYouInitial(): Promise<
   const limit = String(PRODUCTS_FOR_YOU_PAGE_SIZE);
   const [all, mostViewed, bestSelling] = await Promise.all([
     fetchProductSearch({ sort_by: "a_to_z", limit, offset: "1" }),
-    fetchProductSearch({ sort_by: "most_viewed", limit, offset: "1" }),
+    fetchProductSearch({ sort_by: "new_arrival", limit, offset: "1" }),
     fetchProductSearch({ sort_by: "best_selling", limit, offset: "1" }),
   ]);
 

@@ -50,7 +50,7 @@ export function HomeHeroCarousel({ slides }: Props) {
       onTouchStart={() => { pausedRef.current = true; }}
       onTouchEnd={() => { pausedRef.current = false; }}
     >
-      <div className="relative w-full overflow-hidden">
+      <div className="relative w-full overflow-hidden" dir="ltr">
         {/* Film strip — always LTR so translateX is consistent */}
         <div
           dir="ltr"

@@ -21,7 +21,7 @@ type Props = {
 
 const TAB_SORT: Record<ProductsForYouTabKey, string> = {
   all: "a_to_z",
-  mostViewed: "most_viewed",
+  mostViewed: "new_arrival",
   bestSelling: "best_selling",
 };
 
