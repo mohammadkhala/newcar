@@ -11,6 +11,13 @@ export function useStoreHeaderNavState() {
   const categoriesRef = useRef<HTMLDivElement | null>(null);
   const shopRef = useRef<HTMLLIElement | null>(null);
   const featuredNavRef = useRef<HTMLElement | null>(null);
+  const featuredCloseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (featuredCloseTimerRef.current) clearTimeout(featuredCloseTimerRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (!menuOpen) {
@@ -44,7 +51,14 @@ export function useStoreHeaderNavState() {
         setCategoriesDropdownOpen(false);
       }
 
-      if (shopDropdownOpen && shopRef.current && !shopRef.current.contains(target)) {
+      // shopDropdownOpen's panel now renders as a sibling of the trigger button inside
+      // featuredNavRef's wrapper (see StoreHeaderSectionsNav), not inside shopRef's <li>,
+      // so check against featuredNavRef to avoid closing the panel on clicks inside it.
+      if (
+        shopDropdownOpen &&
+        featuredNavRef.current &&
+        !featuredNavRef.current.contains(target)
+      ) {
         setShopDropdownOpen(false);
       }
 
@@ -63,6 +77,42 @@ export function useStoreHeaderNavState() {
     setOpenFeaturedId(null);
   };
 
+  // Only one desktop dropdown should ever be open at a time — all three panels now
+  // overlap the same screen position (absolute start-0/top-0 under the bar), so leaving
+  // a previous one open while a second opens stacks them visibly on top of each other.
+  const toggleCategories = () => {
+    setShopDropdownOpen(false);
+    setOpenFeaturedId(null);
+    setCategoriesDropdownOpen((open) => !open);
+  };
+
+  const toggleShop = () => {
+    setCategoriesDropdownOpen(false);
+    setOpenFeaturedId(null);
+    setShopDropdownOpen((open) => !open);
+  };
+
+  const toggleFeatured = (id: number) => {
+    setCategoriesDropdownOpen(false);
+    setShopDropdownOpen(false);
+    setOpenFeaturedId((current) => (current === id ? null : id));
+  };
+
+  const openFeatured = (id: number) => {
+    if (featuredCloseTimerRef.current) clearTimeout(featuredCloseTimerRef.current);
+    setCategoriesDropdownOpen(false);
+    setShopDropdownOpen(false);
+    setOpenFeaturedId(id);
+  };
+
+  const scheduledCloseFeatured = () => {
+    featuredCloseTimerRef.current = setTimeout(() => setOpenFeaturedId(null), 150);
+  };
+
+  const cancelCloseFeatured = () => {
+    if (featuredCloseTimerRef.current) clearTimeout(featuredCloseTimerRef.current);
+  };
+
   return {
     state: {
       menuOpen,
@@ -77,9 +127,12 @@ export function useStoreHeaderNavState() {
     },
     actions: {
       setMenuOpen,
-      setCategoriesDropdownOpen,
-      setShopDropdownOpen,
-      setOpenFeaturedId,
+      toggleCategories,
+      toggleShop,
+      toggleFeatured,
+      openFeatured,
+      scheduledCloseFeatured,
+      cancelCloseFeatured,
       closeAllDesktop,
     },
   };

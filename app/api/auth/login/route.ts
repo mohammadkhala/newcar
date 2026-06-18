@@ -10,18 +10,37 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: "API not configured" }, { status: 500 });
   }
   const loc = req.headers.get("x-localization") ?? "ar";
-  const body = await req.text();
-  const res = await fetch(`${base}/auth/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-localization": loc,
-      Accept: "application/json",
-      ...forwardClientIpHeaders(req),
-    },
-    body,
-  });
-  const raw = await res.text();
+  let body: string;
+  try {
+    body = await req.text();
+  } catch {
+    return NextResponse.json({ message: "Invalid request body" }, { status: 400 });
+  }
+  let res: Response;
+  try {
+    res = await fetch(`${base}/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-localization": loc,
+        Accept: "application/json",
+        ...forwardClientIpHeaders(req),
+      },
+      body,
+    });
+  } catch (err) {
+    const detail = err instanceof Error ? err.message : "fetch failed";
+    return NextResponse.json(
+      { message: "Could not reach login API", detail },
+      { status: 502 },
+    );
+  }
+  let raw: string;
+  try {
+    raw = await res.text();
+  } catch {
+    return NextResponse.json({ message: "Failed to read login response" }, { status: 502 });
+  }
   let data: {
     token?: string;
     status?: boolean;

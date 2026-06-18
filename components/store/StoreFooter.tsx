@@ -1,5 +1,4 @@
 import { getTranslations } from "next-intl/server";
-import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { fetchServices } from "@/lib/api";
 
@@ -21,25 +20,21 @@ export async function StoreFooter() {
             <p className="text-sm leading-relaxed text-neutral-300">
               {t("taglineHala")}
             </p>
-            <div className="flex flex-wrap gap-2">
-              <a href="#" className="inline-block" aria-label="Download on the App Store">
-                <Image
+            <div className="flex flex-row gap-2">
+              <a href="https://apps.apple.com/ae/app/%D9%86%D9%8A%D9%88-%D9%83%D8%A7%D8%B1-newcar/id6767830089" target="_blank" rel="noopener noreferrer" className="flex-1" aria-label="Download on the App Store">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
                   src="/assets/app-store.svg"
                   alt="App Store"
-                  width={120}
-                  height={40}
-                  unoptimized
-                  className="h-10 w-auto object-contain"
+                  className="h-9 w-full object-contain"
                 />
               </a>
-              <a href="#" className="inline-block" aria-label="Get it on Google Play">
-                <Image
+              <a href="https://play.google.com/store/apps/details?id=com.newcarpal.app" target="_blank" rel="noopener noreferrer" className="flex-1" aria-label="Get it on Google Play">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
                   src="/assets/google-play.svg"
                   alt="Google Play"
-                  width={120}
-                  height={40}
-                  unoptimized
-                  className="h-10 w-auto object-contain"
+                  className="h-9 w-full object-contain"
                 />
               </a>
             </div>
@@ -78,6 +73,11 @@ export async function StoreFooter() {
               <li>
                 <Link href="/cms/privacy" className="hover:text-white transition-colors">
                   {t("linkPrivacy")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/cms/return-policy" className="hover:text-white transition-colors">
+                  سياسة الإرجاع
                 </Link>
               </li>
               <li>
@@ -176,21 +176,16 @@ export async function StoreFooter() {
       </div>
 
       {/* Bottom Strip */}
-      <div className="bg-black py-4 border-t border-neutral-800">
-        <div className="mx-auto max-w-7xl px-4 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex gap-2">
-            <span className="w-12 h-8 bg-white rounded flex items-center justify-center">
-              {/* Fake Mastercard Icon */}
-              <svg className="h-5" viewBox="0 0 44 32" fill="none"><circle cx="16" cy="16" r="15" fill="#EB001B" /><circle cx="28" cy="16" r="15" fill="#F79E1B" fillOpacity="0.8" /></svg>
-            </span>
-            <span className="w-12 h-8 bg-white rounded flex items-center justify-center">
-              {/* Fake Amex Icon */}
-              <svg className="h-5 text-[#002663]" viewBox="0 0 100 32" fill="currentColor"><path d="M10 24L0 8h5l7 11 7-11h5L14 24h-4zm20 0V8h12v4H34v3h7v4h-7v5h-4zm22 0V8h8l5 6 5-6h8v16h-4v-9l-5 6h-8l-5-6v9h-4zm32 0l-5-7-5 7h-5l8-10-7-9h5l4 6 4-6h5l-7 9 8 10h-5z"/></svg>
-            </span>
-          </div>
-          <p className="text-sm text-neutral-500 font-medium">
-            {t("bottomRights")}
-          </p>
+      <div className="bg-primary py-4">
+        <div className="mx-auto max-w-7xl px-4 flex flex-col items-center gap-1">
+          <a
+            href="https://baitpait.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm font-medium text-white/80 text-center hover:text-white transition-colors"
+          >
+            برمجة وتطوير بيت البرمجيات وتكنولوجيا المعلومات
+          </a>
         </div>
       </div>
     </footer>

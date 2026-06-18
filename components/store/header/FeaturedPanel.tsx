@@ -1,113 +1,126 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import type { CategoryTreeNode } from "@/lib/types";
 
 type Props = {
-  node: CategoryTreeNode;
+  items: CategoryTreeNode[];
+  initialId: number;
   onNavigate: () => void;
 };
 
-export function FeaturedPanel({ node, onNavigate }: Props) {
-  const [selectedPath, setSelectedPath] = useState<number[]>([]);
+// Arrow pointing RIGHT (›) — in RTL this visually points toward the submenu
+// which opens on the start side (right side of the screen)
+const SubArrow = () => (
+  <span aria-hidden className="shrink-0 text-base leading-none">›</span>
+);
 
-  const listItemClass =
-    "flex min-h-[3.2rem] w-full items-center justify-between gap-2 px-5 py-2 text-[1.06rem] font-semibold tracking-tight transition-colors";
+type ColProps = {
+  items: CategoryTreeNode[];
+  activeId: number | null;
+  onHover: (id: number | null, hasKids: boolean) => void;
+  onNavigate: () => void;
+  bordered?: boolean;
+};
 
-  const columns: Array<{
-    level: number;
-    title: string;
-    items: CategoryTreeNode[];
-    selectedId: number | null;
-  }> = [];
+function MenuColumn({ items, activeId, onHover, onNavigate, bordered }: ColProps) {
+  return (
+    <ul className={`min-w-[14rem] divide-y divide-gray-100 ${bordered ? "border-s border-gray-100" : ""}`}>
+      {items.map((item) => {
+        const hasKids = item.children.length > 0;
+        const isActive = item.id === activeId;
+        return (
+          <li key={item.id}>
+            <Link
+              href={`/shop/categories/${item.id}`}
+              onClick={onNavigate}
+              onMouseEnter={() => onHover(item.id, hasKids)}
+              className={`flex min-h-[3rem] items-center justify-between gap-3 px-5 text-[0.95rem] font-semibold transition-colors ${
+                isActive
+                  ? "bg-amber-50 text-primary"
+                  : "text-secondary hover:bg-gray-50"
+              }`}
+            >
+              <span className="flex-1 truncate">{item.name}</span>
+              {hasKids && (
+                <span className={isActive ? "text-primary" : "text-secondary/30"}>
+                  <SubArrow />
+                </span>
+              )}
+            </Link>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
 
-  let cursor = node.children;
-  let title = node.name;
-  let level = 0;
-  while (cursor.length > 0 && level < 5) {
-    const selectedId = selectedPath[level] ?? null;
-    columns.push({
-      level,
-      title,
-      items: cursor,
-      selectedId,
-    });
-    if (!selectedId) break;
-    const selectedNode = cursor.find((it) => it.id === selectedId);
-    if (!selectedNode || selectedNode.children.length === 0) break;
-    title = selectedNode.name;
-    cursor = selectedNode.children;
-    level += 1;
-  }
+export function FeaturedPanel({ items, initialId, onNavigate }: Props) {
+  const [hoveredL2Id, setHoveredL2Id] = useState<number | null>(null);
+  const [hoveredL3Id, setHoveredL3Id] = useState<number | null>(null);
 
-  const selectAtLevel = (targetLevel: number, itemId: number) => {
-    setSelectedPath((prev) => {
-      const next = prev.slice(0, targetLevel);
-      next[targetLevel] = itemId;
-      return next;
-    });
-  };
+  useEffect(() => {
+    setHoveredL2Id(null);
+    setHoveredL3Id(null);
+  }, [initialId]);
+
+  const activeNode = items.find((n) => n.id === initialId);
+  const l2Items = activeNode?.children ?? [];
+  const hoveredL2 = l2Items.find((c) => c.id === hoveredL2Id);
+  const l3Items = hoveredL2?.children ?? [];
+  const hoveredL3 = l3Items.find((c) => c.id === hoveredL3Id);
+  const l4Items = hoveredL3?.children ?? [];
 
   return (
-    <div className="w-[min(96vw,74rem)] overflow-x-auto border border-border-soft bg-white shadow-lg">
-      <div className="flex min-w-max divide-x divide-border-soft rtl:divide-x-reverse">
-        {columns.map((col) => (
-          <section key={col.level} className="min-w-[22rem]">
-            <div className="border-b border-border-soft px-5 py-3.5">
-              <p className="inline-flex items-center gap-2 text-[1.25rem] font-black text-secondary">
-                <span aria-hidden className="text-sm">
-                  ↖
-                </span>
-                <span>اذهب إلى {col.title}</span>
-              </p>
-            </div>
-            <ul className="max-h-[24rem] overflow-y-auto">
-              {col.items.map((item) => {
-                const active = col.selectedId === item.id;
-                const hasChildren = item.children.length > 0;
-                if (hasChildren) {
-                  return (
-                    <li key={item.id}>
-                      <button
-                        type="button"
-                        className={`${listItemClass} ${
-                          active
-                            ? "text-[#EAB308]"
-                            : "text-secondary/45 hover:bg-surface-muted hover:text-secondary/80"
-                        }`}
-                        onClick={() => selectAtLevel(col.level, item.id)}
-                      >
-                        <span className="truncate">{item.name}</span>
-                        <span
-                          aria-hidden
-                          className={active ? "text-[#EAB308]" : "text-secondary/40"}
-                        >
-                          ‹
-                        </span>
-                      </button>
-                    </li>
-                  );
-                }
-                return (
-                  <li key={item.id}>
-                    <Link
-                      href={`/shop/categories/${item.id}`}
-                      className={`${listItemClass} text-secondary/45 hover:bg-surface-muted hover:text-secondary/80`}
-                      onClick={onNavigate}
-                    >
-                      <span className="truncate">{item.name}</span>
-                      <span aria-hidden className="text-secondary/40">
-                        ‹
-                      </span>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
-        ))}
-      </div>
+    <div className="flex overflow-hidden rounded-2xl border border-border-soft bg-white shadow-2xl">
+      {/* Level 2 */}
+      {l2Items.length > 0 && (
+        <MenuColumn
+          items={l2Items}
+          activeId={hoveredL2Id}
+          onHover={(id, hasKids) => {
+            setHoveredL2Id(hasKids ? id : null);
+            setHoveredL3Id(null);
+          }}
+          onNavigate={onNavigate}
+        />
+      )}
+
+      {/* Level 3 */}
+      {l3Items.length > 0 && (
+        <MenuColumn
+          items={l3Items}
+          activeId={hoveredL3Id}
+          onHover={(id, hasKids) => setHoveredL3Id(hasKids ? id : null)}
+          onNavigate={onNavigate}
+          bordered
+        />
+      )}
+
+      {/* Level 4 */}
+      {l4Items.length > 0 && (
+        <MenuColumn
+          items={l4Items}
+          activeId={null}
+          onHover={() => {}}
+          onNavigate={onNavigate}
+          bordered
+        />
+      )}
+
+      {/* Fallback when no children */}
+      {l2Items.length === 0 && (
+        <div className="bg-white px-5 py-4 text-sm text-secondary/40">
+          <Link
+            href={`/shop/categories/${activeNode?.id ?? ""}`}
+            onClick={onNavigate}
+            className="font-semibold text-primary hover:underline"
+          >
+            تصفح الكل
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

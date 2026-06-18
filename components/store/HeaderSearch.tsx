@@ -39,6 +39,7 @@ export function HeaderSearch({ variant = "light" }: Props) {
         <button
           type="submit"
           aria-label={t("submit")}
+          suppressHydrationWarning
           className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#EAB308] text-white transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:h-10 sm:w-10"
         >
           <IconSearch className="h-5 w-5" aria-hidden />

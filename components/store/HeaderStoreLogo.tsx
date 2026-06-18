@@ -18,15 +18,17 @@ export function HeaderStoreLogo({ logoSrc, imageAlt }: Props) {
       href="/"
       className="store-header-wordmark group flex min-w-0 max-w-[13rem] shrink-0 flex-col items-center sm:max-w-[15rem] sm:items-start rtl:sm:items-end"
     >
-      <Image
-        src={logoSrc}
-        alt={imageAlt}
-        width={200}
-        height={64}
-        className="h-9 w-auto max-w-full object-contain object-center sm:h-11"
-        unoptimized
-        priority
-      />
+      <span className="flex items-center justify-center rounded-xl bg-white px-3 py-1.5">
+        <Image
+          src={logoSrc}
+          alt={imageAlt}
+          width={120}
+          height={130}
+          className="h-10 w-auto max-w-full object-contain object-center sm:h-12 lg:h-14"
+          unoptimized
+          priority
+        />
+      </span>
     </Link>
   );
 }

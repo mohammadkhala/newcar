@@ -3,7 +3,9 @@
 import { useLocale, useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useState } from "react";
-import { buildInternationalPhone, normalizePhoneLocal } from "@/lib/phone";
+import { buildAuthPhone, normalizePhoneLocal } from "@/lib/phone";
+import { parseAuthApiError, networkErrorResult } from "@/lib/auth-api-message";
+import { AuthPhoneField } from "@/components/auth/AuthPhoneField";
 
 function generateUniqueEmail(seedPhone: string): string {
   const phonePart = normalizePhoneLocal(seedPhone).slice(-6) || "000000";
@@ -12,7 +14,6 @@ function generateUniqueEmail(seedPhone: string): string {
     typeof crypto !== "undefined" && "randomUUID" in crypto
       ? crypto.randomUUID().replace(/-/g, "").slice(0, 10)
       : Math.random().toString(36).slice(2, 12);
-
   return `nc-${phonePart}-${timePart}-${randomPart}@auto.newcar`;
 }
 
@@ -23,136 +24,155 @@ export default function RegisterPage() {
   const router = useRouter();
   const [fName, setFName] = useState("");
   const [lName, setLName] = useState("");
-  const [countryCode, setCountryCode] = useState<"+970" | "+972">("+970");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-localization": locale,
-      },
-      body: JSON.stringify({
-        f_name: fName,
-        l_name: lName,
-        email: generateUniqueEmail(phone),
-        phone: buildInternationalPhone(phone, countryCode),
-        password,
-      }),
-    });
-    const data = (await res.json()) as {
-      ok?: boolean;
-      temporary_token?: string;
-      errors?: Array<{ message?: string }>;
-      message?: string;
-    };
+    setLoading(true);
+
+    let res: Response;
+    let data: { ok?: boolean; temporary_token?: string; errors?: Array<{ message?: string }>; message?: string };
+    try {
+      res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-localization": locale },
+        body: JSON.stringify({
+          f_name: fName,
+          l_name: lName,
+          email: generateUniqueEmail(phone),
+          phone: buildAuthPhone(phone),
+          password,
+        }),
+      });
+      data = (await res.json()) as typeof data;
+    } catch {
+      setError(t(networkErrorResult().key));
+      setLoading(false);
+      return;
+    }
+
+    setLoading(false);
+
     if (!res.ok) {
-      const apiMessage = data.errors?.[0]?.message ?? data.message;
-      setError(apiMessage || t("error"));
+      const result = parseAuthApiError(res.status, data);
+      setError(result.type === "raw" ? result.message : t(result.key));
       return;
     }
-    if (data.ok) {
-      router.push("/account");
-      return;
-    }
-    if (data.temporary_token) {
-      setError(t("needVerify"));
-      return;
-    }
+    if (data.ok) { router.push("/account"); return; }
+    if (data.temporary_token) { setError(t("needVerify")); return; }
     setError(t("error"));
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <header className="space-y-1 text-center">
-        <h1 className="text-2xl font-bold tracking-tight text-secondary">
-          {t("registerTitle")}
-        </h1>
-      </header>
-      <form onSubmit={onSubmit} className="flex flex-col gap-5">
-        <label className="block space-y-2">
-          <span className="block text-sm font-semibold text-secondary">{t("firstName")}</span>
-          <input
-            required
-            value={fName}
-            onChange={(e) => setFName(e.target.value)}
-            className="store-input w-full"
-            autoComplete="given-name"
-          />
-        </label>
-        <label className="block space-y-2">
-          <span className="block text-sm font-semibold text-secondary">{t("lastName")}</span>
-          <input
-            required
-            value={lName}
-            onChange={(e) => setLName(e.target.value)}
-            className="store-input w-full"
-            autoComplete="family-name"
-          />
-        </label>
-        <div className="space-y-2">
-          <span className="block text-sm font-semibold text-secondary" id="register-phone-label">
-            {t("phone")}
-          </span>
-          <div
-            className="grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,9.5rem)_minmax(0,1fr)] sm:items-stretch"
-            role="group"
-            aria-labelledby="register-phone-label"
-          >
-            <select
-              value={countryCode}
-              onChange={(e) => setCountryCode(e.target.value as "+970" | "+972")}
-              className="store-input w-full min-w-0 text-sm sm:text-base"
-              aria-label={t("countryCode")}
-              autoComplete="tel-country-code"
-            >
-              <option value="+970">+970 {t("countryPalestine")}</option>
-              <option value="+972">+972 {t("countryIsrael")}</option>
-            </select>
+    <div className="flex flex-col gap-7">
+      {/* Logo + title */}
+      <div className="flex flex-col items-center gap-3 text-center">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/logo.png" alt="نيو كار" className="h-12 w-auto object-contain" />
+        <div>
+          <h1 className="text-xl font-bold text-secondary">{t("registerTitle")}</h1>
+          <p className="mt-1 text-sm text-secondary/50">أنشئ حسابك وابدأ التسوق</p>
+        </div>
+      </div>
+
+      <form onSubmit={onSubmit} className="flex flex-col gap-4">
+        {/* First name + Last name side by side */}
+        <div className="grid grid-cols-2 gap-3">
+          <label className="block space-y-2">
+            <span className="block text-sm font-semibold text-secondary">{t("firstName")}</span>
             <input
               required
-              minLength={8}
-              maxLength={11}
-              inputMode="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="store-input min-w-0 w-full"
-              placeholder="59XXXXXXXX"
-              autoComplete="tel-national"
-              aria-label={t("phone")}
+              value={fName}
+              onChange={(e) => setFName(e.target.value)}
+              className="store-input w-full"
+              autoComplete="given-name"
+              suppressHydrationWarning
             />
-          </div>
+          </label>
+          <label className="block space-y-2">
+            <span className="block text-sm font-semibold text-secondary">{t("lastName")}</span>
+            <input
+              required
+              value={lName}
+              onChange={(e) => setLName(e.target.value)}
+              className="store-input w-full"
+              autoComplete="family-name"
+              suppressHydrationWarning
+            />
+          </label>
         </div>
+
+        <AuthPhoneField value={phone} onChange={setPhone} />
+
+        {/* Password with show/hide toggle */}
         <label className="block space-y-2">
           <span className="block text-sm font-semibold text-secondary">{t("password")}</span>
-          <input
-            type="password"
-            required
-            minLength={6}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="store-input w-full"
-            autoComplete="new-password"
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              required
+              minLength={6}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="store-input w-full pe-10"
+              autoComplete="new-password"
+              suppressHydrationWarning
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              className="absolute inset-y-0 end-3 flex items-center text-secondary/40 hover:text-secondary/70 transition-colors"
+              tabIndex={-1}
+              aria-label={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
+            >
+              {showPassword ? (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              )}
+            </button>
+          </div>
         </label>
+
         {error ? (
-          <p
-            className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
-            role="alert"
-          >
-            {error}
-          </p>
+          <div className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 px-3 py-2.5" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" className="mt-0.5 h-4 w-4 shrink-0 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
+            <p className="text-sm text-red-700">{error}</p>
+          </div>
         ) : null}
-        <button type="submit" className="store-btn-primary w-full">
-          {t("submitRegister")}
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="store-btn-primary w-full py-3 font-semibold disabled:opacity-60"
+          suppressHydrationWarning
+        >
+          {loading ? (
+            <span className="flex items-center justify-center gap-2">
+              <svg className="h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+              جاري إنشاء الحساب...
+            </span>
+          ) : t("submitRegister")}
         </button>
       </form>
-      <p className="border-t border-border-soft pt-5 text-center text-sm text-secondary/80">
+
+      <p className="border-t border-border-soft pt-5 text-center text-sm text-secondary/60">
+        لديك حساب بالفعل؟{" "}
         <Link href="/auth/login" className="font-semibold text-primary hover:underline">
           {tNav("login")}
         </Link>

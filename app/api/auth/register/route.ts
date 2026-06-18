@@ -35,7 +35,12 @@ export async function POST(req: NextRequest) {
       { status: 502 },
     );
   }
-  const raw = await res.text();
+  let raw: string;
+  try {
+    raw = await res.text();
+  } catch {
+    return NextResponse.json({ message: "Failed to read registration response" }, { status: 502 });
+  }
   let data: {
     token?: string;
     temporary_token?: string;

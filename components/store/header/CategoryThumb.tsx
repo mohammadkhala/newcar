@@ -22,15 +22,20 @@ export function CategoryThumb({ imageSrc, label, size = 44 }: Props) {
     );
   }
 
-  const letter = label.slice(0, 1) || "?";
-  const small = size <= 32;
   return (
     <span
-      className={`flex shrink-0 items-center justify-center rounded-md bg-primary/15 font-bold text-primary ${small ? "text-[10px]" : "text-sm"}`}
+      className="flex shrink-0 items-center justify-center rounded-md bg-white p-1"
       style={{ width: size, height: size }}
       aria-hidden
     >
-      {letter}
+      <Image
+        src="/brand/app-icon.png"
+        alt=""
+        width={size}
+        height={size}
+        className="h-full w-full object-contain opacity-60"
+        unoptimized
+      />
     </span>
   );
 }

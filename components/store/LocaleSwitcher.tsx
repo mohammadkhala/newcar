@@ -131,6 +131,7 @@ export function LocaleSwitcher({ languageOptions, variant = "light" }: Props) {
           setOpen((v) => !v);
         }}
         className={triggerClass}
+        suppressHydrationWarning
       >
         {isTop || isNewCarTop ? (
           <>

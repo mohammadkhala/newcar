@@ -11,7 +11,9 @@ import {
   getApiBaseUrl,
 } from "@/lib/api";
 import { formatMoney } from "@/lib/format-price";
-import { productPrimaryImageSrc } from "@/lib/product-image";
+import { productAllImageSrcs } from "@/lib/product-image";
+import { ProductImageGallery } from "@/components/store/ProductImageGallery";
+import { ReviewsCarousel } from "@/components/store/ReviewsCarousel";
 
 type PageProps = {
   params: Promise<{ locale: string; id: string }>;
@@ -43,7 +45,7 @@ export default async function ShopProductPage({ params }: PageProps) {
     (config?.currency_code as string | undefined) || "ILS";
 
   const p = payload.product;
-  const img = productPrimaryImageSrc(p.image);
+  const images = productAllImageSrcs(p.image, p.image_fullpath);
   const related = payload.related_products ?? [];
   const also = payload.customers_also_bought ?? [];
   const ratingBlock = payload.overall_rating as
@@ -67,19 +69,12 @@ export default async function ShopProductPage({ params }: PageProps) {
       </nav>
 
       <div className="grid gap-8 lg:grid-cols-12">
-        <div className="store-card aspect-square overflow-hidden bg-surface-muted lg:col-span-7">
-          {img ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={img}
-              alt=""
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <div className="flex h-full items-center justify-center text-secondary/50">
-              {t("noImage")}
-            </div>
-          )}
+        <div className="lg:col-span-7">
+          <ProductImageGallery
+            images={images}
+            alt={p.name ?? ""}
+            noImageLabel={t("noImage")}
+          />
         </div>
         <div className="space-y-4 lg:col-span-5">
           <div className="store-card p-5 md:p-6">
@@ -108,11 +103,23 @@ export default async function ShopProductPage({ params }: PageProps) {
             <p className="mt-3 text-xs text-secondary/60">{t("descriptionTrusted")}</p>
           </div>
 
-          {p.description && (
+          {p.description && p.description.replace(/<[^>]*>/g, "").trim().length > 0 && (
             <section className="store-card p-5 md:p-6">
               <h2 className="text-base font-bold text-secondary">{t("descriptionTitle")}</h2>
               <div
-                className="mt-3 max-w-none text-sm leading-relaxed text-secondary/90 [&_img]:max-w-full"
+                className="mt-3 text-sm leading-relaxed text-secondary/90
+                  [&_p]:mb-3 [&_p:last-child]:mb-0
+                  [&_ul]:mb-3 [&_ul]:list-disc [&_ul]:ps-5
+                  [&_ol]:mb-3 [&_ol]:list-decimal [&_ol]:ps-5
+                  [&_li]:mb-1
+                  [&_strong]:font-bold [&_b]:font-bold
+                  [&_em]:italic [&_i]:italic
+                  [&_h1]:mb-2 [&_h1]:text-xl [&_h1]:font-bold [&_h1]:text-secondary
+                  [&_h2]:mb-2 [&_h2]:text-lg [&_h2]:font-bold [&_h2]:text-secondary
+                  [&_h3]:mb-1 [&_h3]:text-base [&_h3]:font-bold [&_h3]:text-secondary
+                  [&_a]:text-primary [&_a]:underline
+                  [&_blockquote]:border-s-4 [&_blockquote]:border-primary/30 [&_blockquote]:ps-4 [&_blockquote]:text-secondary/70
+                  [&_img]:max-w-full [&_img]:rounded-lg"
                 dangerouslySetInnerHTML={{ __html: p.description }}
               />
             </section>
@@ -120,28 +127,31 @@ export default async function ShopProductPage({ params }: PageProps) {
         </div>
       </div>
 
-      <section className="store-card space-y-3 p-5 md:p-6">
-        <h2 className="text-lg font-semibold text-secondary">{t("reviews")}</h2>
+      <section className="store-card space-y-4 p-5 md:p-6">
+        <div className="flex items-center justify-between gap-4">
+          <h2 className="text-lg font-semibold text-secondary">{t("reviews")}</h2>
+          {avgRating != null && (
+            <div className="flex items-center gap-2">
+              <span className="text-2xl font-black text-primary">{avgRating.toFixed(1)}</span>
+              <div className="flex gap-0.5" aria-label={`${avgRating} ${t("outOf5")}`}>
+                {Array.from({ length: 5 }, (_, i) => (
+                  <svg key={i} className={`h-4 w-4 ${i < Math.round(avgRating) ? "text-amber-400" : "text-border-soft"}`} fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                ))}
+              </div>
+              <span className="text-sm text-secondary/60">({reviewCount})</span>
+            </div>
+          )}
+        </div>
         {reviews.length === 0 ? (
           <p className="text-sm text-secondary/70">{t("noReviews")}</p>
         ) : (
-          <ul className="space-y-3">
-            {reviews.map((row, i) => (
-              <li
-                key={i}
-                className="store-panel p-3 text-sm"
-              >
-                <details>
-                  <summary className="cursor-pointer font-semibold text-secondary/90">
-                    {t("reviewItem")} #{i + 1}
-                  </summary>
-                  <pre className="mt-2 whitespace-pre-wrap font-sans text-secondary/80">
-                    {JSON.stringify(row, null, 2)}
-                  </pre>
-                </details>
-              </li>
-            ))}
-          </ul>
+          <ReviewsCarousel
+            reviews={reviews}
+            anonymousReviewer={t("anonymousReviewer")}
+            outOf5={t("outOf5")}
+          />
         )}
       </section>
 

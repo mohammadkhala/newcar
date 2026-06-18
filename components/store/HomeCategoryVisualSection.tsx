@@ -53,9 +53,14 @@ export function HomeCategoryVisualSection({
                       className="h-14 w-auto object-contain"
                     />
                   ) : (
-                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-base font-bold text-primary">
-                      {item.name.slice(0, 1)}
-                    </span>
+                    <Image
+                      src="/brand/app-icon.png"
+                      alt=""
+                      width={56}
+                      height={56}
+                      unoptimized
+                      className="h-14 w-auto object-contain opacity-50"
+                    />
                   )}
                 </div>
                 <span className="line-clamp-2 text-sm font-semibold text-secondary">

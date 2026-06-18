@@ -327,13 +327,14 @@ html[dir="rtl"] .home-tab-mobile-toggle {
 }
 
 .home-show-more-btn {
-  background: #f7c600;
+  background: var(--primary);
+  color: #fff;
   border: none;
   cursor: pointer;
 }
 
 .home-show-more-btn:hover:not(:disabled) {
-  filter: brightness(1.03);
+  filter: brightness(1.06);
 }
 
 /* avsb-style-01 — "Find Exact Model" */

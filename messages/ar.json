@@ -185,6 +185,8 @@
     "descriptionTrusted": "الوصف من لوحة التحكم — يُعرض كما أدخلته الإدارة.",
     "descriptionTitle": "وصف المنتج",
     "reviewItem": "مراجعة",
+    "outOf5": "من 5",
+    "anonymousReviewer": "مجهول",
     "unauthorizedWishlist": "يرجى تسجيل الدخول لإضافة المنتجات للمفضلة",
     "inStockBadge": "متوفر",
     "outOfStock": "غير متوفر",
@@ -289,7 +291,7 @@
     "loginTitle": "تسجيل الدخول",
     "registerTitle": "إنشاء حساب",
     "emailOrPhone": "البريد أو الجوال",
-    "whatsAppPhone": "رقمك على الواتس اب",
+    "whatsAppPhone": "رقم الهاتف",
     "password": "كلمة المرور",
     "countryCode": "مقدمة الدولة",
     "countryPalestine": "فلسطين",
@@ -303,7 +305,14 @@
     "submitLogin": "دخول",
     "submitRegister": "تسجيل",
     "needVerify": "يُطلب التحقق — أكمل الخطوات من التطبيق أو الأدمن.",
-    "error": "فشل الطلب. تحقق من البيانات."
+    "error": "فشل الطلب. تحقق من البيانات.",
+    "tooManyAttempts": "محاولات كثيرة جداً. انتظر قليلاً ثم حاول مجدداً.",
+    "networkError": "تعذّر الاتصال بالخادم. تحقق من الإنترنت وحاول مجدداً.",
+    "invalidCredentials": "بيانات الدخول غير صحيحة.",
+    "phoneTaken": "رقم الهاتف مسجّل مسبقاً.",
+    "emailTaken": "البريد الإلكتروني مسجّل مسبقاً.",
+    "weakPassword": "كلمة المرور قصيرة جداً، يجب أن تكون 6 أحرف على الأقل.",
+    "serverError": "خطأ في الخادم. حاول مجدداً لاحقاً."
   },
   "Account": {
     "title": "حسابي",
@@ -334,7 +343,21 @@
     "status": "الحالة",
     "paymentMethod": "الدفع",
     "empty": "لا توجد طلبات سابقة.",
-    "viewDetails": "التفاصيل"
+    "viewDetails": "التفاصيل",
+    "statuses": {
+      "pending": "قيد الانتظار",
+      "confirmed": "مؤكد",
+      "processing": "قيد التجهيز",
+      "out_for_delivery": "في الطريق",
+      "delivered": "تم التوصيل",
+      "canceled": "ملغي",
+      "returned": "مُعاد"
+    },
+    "payments": {
+      "cash_on_delivery": "الدفع عند الاستلام",
+      "digital_payment": "دفع إلكتروني",
+      "offline_payment": "دفع يدوي"
+    }
   },
   "Cart": {
     "title": "سلة التسوق",
@@ -392,17 +415,28 @@
     "faqsTitle": "أسئلة شائعة",
     "servicesTitle": "خدمات",
     "serviceDetail": "تفاصيل الخدمة",
-    "contactTitle": "اتصل بنا",
+    "contactTitle": "تواصل معنا",
+    "contactSubtitle": "نحن هنا للإجابة على استفساراتك — تواصل معنا بأي طريقة تناسبك",
+    "contactFormTitle": "أرسل لنا رسالة",
+    "contactName": "الاسم الكامل",
+    "contactEmail": "البريد الإلكتروني",
+    "contactPhone": "رقم الهاتف (اختياري)",
+    "contactSubject": "الموضوع (اختياري)",
+    "contactMessage": "الرسالة",
+    "contactSubmit": "إرسال الرسالة",
+    "contactPhone2": "اتصل بنا",
+    "contactWhatsApp": "واتساب",
+    "contactEmailLabel": "البريد الإلكتروني",
+    "contactAddress": "العنوان",
+    "contactLocation": "موقعنا على الخريطة",
+    "sent": "تم الإرسال! سنتواصل معك قريباً.",
+    "throttle": "طلبات كثيرة — حاول لاحقاً.",
     "quoteTitle": "طلب عرض سعر",
     "quoteName": "الاسم",
     "quoteEmail": "البريد (اختياري)",
     "quotePhone": "الجوال (اختياري)",
     "quoteMessage": "الرسالة",
-    "quoteSubmit": "إرسال",
-    "contactMessage": "الرسالة",
-    "contactSubmit": "إرسال",
-    "sent": "تم الإرسال.",
-    "throttle": "طلبات كثيرة — حاول لاحقاً."
+    "quoteSubmit": "إرسال"
   },
   "Notifications": {
     "title": "الإشعارات",

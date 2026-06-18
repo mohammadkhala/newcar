@@ -185,6 +185,8 @@
     "descriptionTrusted": "Description from admin — rendered as provided.",
     "descriptionTitle": "Product description",
     "reviewItem": "Review",
+    "outOf5": "out of 5",
+    "anonymousReviewer": "Anonymous",
     "unauthorizedWishlist": "Please sign in to manage your wishlist",
     "inStockBadge": "In stock",
     "outOfStock": "Out of stock",
@@ -289,7 +291,7 @@
     "loginTitle": "Sign in",
     "registerTitle": "Create account",
     "emailOrPhone": "Email or phone",
-    "whatsAppPhone": "Your WhatsApp number",
+    "whatsAppPhone": "Phone number",
     "password": "Password",
     "countryCode": "Country code",
     "countryPalestine": "Palestine",
@@ -303,7 +305,14 @@
     "submitLogin": "Sign in",
     "submitRegister": "Register",
     "needVerify": "Verification required — complete steps via app or admin.",
-    "error": "Request failed. Check your details."
+    "error": "Request failed. Check your details.",
+    "tooManyAttempts": "Too many attempts. Please wait a moment and try again.",
+    "networkError": "Could not reach the server. Check your connection and try again.",
+    "invalidCredentials": "Incorrect login details.",
+    "phoneTaken": "This phone number is already registered.",
+    "emailTaken": "This email address is already registered.",
+    "weakPassword": "Password is too short — minimum 6 characters.",
+    "serverError": "Server error. Please try again later."
   },
   "Account": {
     "title": "My account",
@@ -334,7 +343,21 @@
     "status": "Status",
     "paymentMethod": "Payment",
     "empty": "No past orders found.",
-    "viewDetails": "Details"
+    "viewDetails": "Details",
+    "statuses": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "processing": "Processing",
+      "out_for_delivery": "Out for delivery",
+      "delivered": "Delivered",
+      "canceled": "Canceled",
+      "returned": "Returned"
+    },
+    "payments": {
+      "cash_on_delivery": "Cash on delivery",
+      "digital_payment": "Digital payment",
+      "offline_payment": "Manual payment"
+    }
   },
   "Cart": {
     "title": "Shopping cart",
@@ -393,16 +416,27 @@
     "servicesTitle": "Services",
     "serviceDetail": "Service details",
     "contactTitle": "Contact us",
+    "contactSubtitle": "We're here to answer your questions — reach out in any way that suits you",
+    "contactFormTitle": "Send us a message",
+    "contactName": "Full name",
+    "contactEmail": "Email address",
+    "contactPhone": "Phone number (optional)",
+    "contactSubject": "Subject (optional)",
+    "contactMessage": "Message",
+    "contactSubmit": "Send message",
+    "contactPhone2": "Call us",
+    "contactWhatsApp": "WhatsApp",
+    "contactEmailLabel": "Email",
+    "contactAddress": "Address",
+    "contactLocation": "Our location",
+    "sent": "Sent! We'll get back to you soon.",
+    "throttle": "Too many requests — try again later.",
     "quoteTitle": "Request a quote",
     "quoteName": "Name",
     "quoteEmail": "Email (optional)",
     "quotePhone": "Phone (optional)",
     "quoteMessage": "Message",
-    "quoteSubmit": "Send",
-    "contactMessage": "Message",
-    "contactSubmit": "Send",
-    "sent": "Sent successfully.",
-    "throttle": "Too many requests — try again later."
+    "quoteSubmit": "Send"
   },
   "Notifications": {
     "title": "Notifications",

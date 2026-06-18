@@ -185,6 +185,8 @@
     "descriptionTrusted": "תיאור מהמערכת — מוצג כפי שנשלח.",
     "descriptionTitle": "תיאור מוצר",
     "reviewItem": "ביקורת",
+    "outOf5": "מתוך 5",
+    "anonymousReviewer": "אנונימי",
     "unauthorizedWishlist": "אנא התחברו כדי לנהל את רשימת המשאלות שלכם",
     "inStockBadge": "במלאי",
     "outOfStock": "אזל מהמלאי",
@@ -289,7 +291,7 @@
     "loginTitle": "התחברות",
     "registerTitle": "יצירת חשבון",
     "emailOrPhone": "אימייל או טלפון",
-    "whatsAppPhone": "מספר הוואטסאפ שלך",
+    "whatsAppPhone": "מספר טלפון",
     "password": "סיסמה",
     "countryCode": "קידומת מדינה",
     "countryPalestine": "פלסטין",
@@ -303,7 +305,14 @@
     "submitLogin": "התחברות",
     "submitRegister": "הרשמה",
     "needVerify": "נדרש אימות — השלימו דרך האפליקציה או הניהול.",
-    "error": "הבקשה נכשלה. בדקו את הפרטים."
+    "error": "הבקשה נכשלה. בדקו את הפרטים.",
+    "tooManyAttempts": "יותר מדי ניסיונות. המתינו רגע ונסו שוב.",
+    "networkError": "לא ניתן להתחבר לשרת. בדקו את החיבור לאינטרנט ונסו שוב.",
+    "invalidCredentials": "פרטי ההתחברות שגויים.",
+    "phoneTaken": "מספר הטלפון כבר רשום במערכת.",
+    "emailTaken": "כתובת האימייל כבר רשומה במערכת.",
+    "weakPassword": "הסיסמה קצרה מדי — נדרשים לפחות 6 תווים.",
+    "serverError": "שגיאת שרת. נסו שוב מאוחר יותר."
   },
   "Account": {
     "title": "החשבון שלי",
@@ -334,7 +343,21 @@
     "status": "סטטוס",
     "paymentMethod": "תשלום",
     "empty": "לא נמצאו הזמנות קודמות.",
-    "viewDetails": "פרטים"
+    "viewDetails": "פרטים",
+    "statuses": {
+      "pending": "ממתין",
+      "confirmed": "מאושר",
+      "processing": "בעיבוד",
+      "out_for_delivery": "בדרך",
+      "delivered": "נמסר",
+      "canceled": "בוטל",
+      "returned": "הוחזר"
+    },
+    "payments": {
+      "cash_on_delivery": "תשלום במסירה",
+      "digital_payment": "תשלום דיגיטלי",
+      "offline_payment": "תשלום ידני"
+    }
   },
   "Cart": {
     "title": "עגלת קניות",
@@ -393,16 +416,27 @@
     "servicesTitle": "שירותים",
     "serviceDetail": "פרטי שירות",
     "contactTitle": "צרו קשר",
+    "contactSubtitle": "אנחנו כאן לענות על שאלותיכם — צרו איתנו קשר בכל דרך שנוחה לכם",
+    "contactFormTitle": "שלחו לנו הודעה",
+    "contactName": "שם מלא",
+    "contactEmail": "כתובת אימייל",
+    "contactPhone": "מספר טלפון (אופציונלי)",
+    "contactSubject": "נושא (אופציונלי)",
+    "contactMessage": "הודעה",
+    "contactSubmit": "שלח הודעה",
+    "contactPhone2": "התקשרו אלינו",
+    "contactWhatsApp": "וואטסאפ",
+    "contactEmailLabel": "אימייל",
+    "contactAddress": "כתובת",
+    "contactLocation": "המיקום שלנו",
+    "sent": "נשלח! נחזור אליכם בקרוב.",
+    "throttle": "יותר מדי בקשות — נסו שוב מאוחר יותר.",
     "quoteTitle": "בקשת הצעת מחיר",
     "quoteName": "שם",
     "quoteEmail": "אימייל (אופציונלי)",
     "quotePhone": "טלפון (אופציונלי)",
     "quoteMessage": "הודעה",
-    "quoteSubmit": "שליחה",
-    "contactMessage": "הודעה",
-    "contactSubmit": "שליחה",
-    "sent": "נשלח בהצלחה.",
-    "throttle": "יותר מדי בקשות — נסו שוב מאוחר יותר."
+    "quoteSubmit": "שליחה"
   },
   "Notifications": {
     "title": "התראות",

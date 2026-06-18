@@ -64,13 +64,11 @@ export function StoreHeaderCategoriesBar({
         shopDropdownOpen={state.shopDropdownOpen}
         openFeaturedId={state.openFeaturedId}
         onToggleMobileMenu={() => actions.setMenuOpen(true)}
-        onToggleCategories={() =>
-          actions.setCategoriesDropdownOpen((open) => !open)
-        }
-        onToggleShop={() => actions.setShopDropdownOpen((open) => !open)}
-        onToggleFeatured={(id) =>
-          actions.setOpenFeaturedId((current) => (current === id ? null : id))
-        }
+        onToggleCategories={actions.toggleCategories}
+        onToggleShop={actions.toggleShop}
+        onOpenFeatured={actions.openFeatured}
+        onScheduledCloseFeatured={actions.scheduledCloseFeatured}
+        onCancelCloseFeatured={actions.cancelCloseFeatured}
         closeAllDesktop={actions.closeAllDesktop}
         categoriesRef={refs.categoriesRef}
         shopRef={refs.shopRef}

@@ -7,6 +7,7 @@ import {
   fetchProductSearch,
   fetchRootCategories,
   fetchTags,
+  fetchVehicleBrands,
   fetchVehicleModels,
   getApiBaseUrl,
 } from "@/lib/api";
@@ -14,6 +15,7 @@ import type { SearchQuery } from "@/lib/api-queries";
 import { Link } from "@/i18n/navigation";
 import { SearchSidebar } from "@/components/store/SearchSidebar";
 import { VehicleModelSlider } from "@/components/store/VehicleModelSlider";
+import { VehicleBrandSlider } from "@/components/store/VehicleBrandSlider";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -65,7 +67,7 @@ export default async function ShopSearchPage({ searchParams, params }: PageProps
 
   const vehicleBrandIdNum = Number(query.vehicle_brand_id ?? "");
 
-  const [data, tags, attributes, config, rootCategories, brandList, vehicleModels] =
+  const [data, tags, attributes, config, rootCategories, brandList, vehicleModels, vehicleBrandList] =
     await Promise.all([
       apiBase ? fetchProductSearch(query) : Promise.resolve(null),
       apiBase ? fetchTags() : Promise.resolve([]),
@@ -76,6 +78,7 @@ export default async function ShopSearchPage({ searchParams, params }: PageProps
       apiBase && vehicleBrandIdNum > 0
         ? fetchVehicleModels(vehicleBrandIdNum)
         : Promise.resolve([]),
+      apiBase ? fetchVehicleBrands().catch(() => ({ brands: [] })) : Promise.resolve({ brands: [] }),
     ]);
 
   const currencyCode =
@@ -83,6 +86,7 @@ export default async function ShopSearchPage({ searchParams, params }: PageProps
 
   const products = data?.products ?? [];
   const productBrands = brandList?.brands ?? [];
+  const vehicleBrands = vehicleBrandList?.brands ?? [];
   const offsetNum = Number(query.offset ?? "1") || 1;
   const limitNum = Number(query.limit ?? "12") || 12;
   const total = data?.total_size ?? 0;
@@ -144,13 +148,19 @@ export default async function ShopSearchPage({ searchParams, params }: PageProps
 
   return (
     <div className="store-shell space-y-6 py-8">
-      {vehicleModels.length > 0 ? (
+      {vehicleBrands.length > 0 && (
+        <VehicleBrandSlider
+          brands={vehicleBrands}
+          activeBrandId={query.vehicle_brand_id}
+        />
+      )}
+      {vehicleModels.length > 0 && (
         <VehicleModelSlider
           models={vehicleModels}
           activeModelId={query.vehicle_model_id}
           baseQuery={query as Record<string, string | undefined>}
         />
-      ) : null}
+      )}
 
       <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
         <SearchSidebar

@@ -64,7 +64,7 @@ export function CatalogProductCard({ product }: Props) {
         </Link>
         <Link
           href={href}
-          className="mt-auto inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md px-3 text-sm font-bold transition-opacity hover:opacity-90 bg-[#f7c600] text-secondary"
+          className="mt-auto inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md px-3 text-sm font-bold transition-opacity hover:opacity-90 bg-primary text-white"
         >
           <span>{t("addToCart")}</span>
           <CartIcon />

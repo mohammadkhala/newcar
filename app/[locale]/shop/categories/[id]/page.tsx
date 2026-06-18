@@ -163,26 +163,32 @@ export default async function CategoryDetailPage({
   return (
     <div className="store-shell py-6 md:py-8">
       <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,280px)_minmax(0,1fr)] lg:gap-8">
-        <aside className="store-card h-fit p-4 lg:sticky lg:top-24">
+        <aside className="store-card h-fit overflow-hidden p-4 lg:sticky lg:top-24">
+
+          {/* ── Category tree navigation ── */}
           {categoryContext ? (
-            <div className="mb-4 space-y-3 border-b border-border-soft pb-4">
-              <p className="text-xs font-bold uppercase tracking-wide text-secondary/70">
+            <div className="mb-5 border-b border-border-soft pb-5">
+              <p className="mb-3 flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-secondary/50">
+                <span className="inline-block h-4 w-1 shrink-0 rounded-full bg-primary/50" aria-hidden />
                 {t("hierarchyTitle")}
               </p>
+
               {categoryContext.parent ? (
                 <Link
                   href={`/shop/categories/${categoryContext.parent.id}`}
-                  className="block text-sm font-semibold text-primary hover:underline"
+                  className="mb-3 flex items-center gap-2 rounded-xl bg-surface-muted px-3 py-2.5 text-sm font-semibold text-secondary/75 transition-colors hover:bg-primary/10 hover:text-primary"
                 >
-                  {t("upToParent")}: {categoryContext.parent.name}
+                  <span className="shrink-0 text-base leading-none text-secondary/35" aria-hidden>↑</span>
+                  <span className="truncate">{categoryContext.parent.name}</span>
                 </Link>
               ) : null}
+
               {categoryContext.siblings.length > 1 ? (
                 <>
-                  <p className="text-xs font-medium text-secondary/80">
+                  <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-secondary/40">
                     {t("siblingsTitle")}
                   </p>
-                  <ul className="max-h-52 space-y-1 overflow-y-auto text-sm pe-1">
+                  <ul className="max-h-52 space-y-0.5 overflow-y-auto [scrollbar-color:var(--color-border-soft)_transparent] [scrollbar-width:thin]">
                     {categoryContext.siblings.map((s) => {
                       const isHere = s.id === categoryContext.current_id;
                       return (
@@ -191,11 +197,14 @@ export default async function CategoryDetailPage({
                             href={`/shop/categories/${s.id}`}
                             className={
                               isHere
-                                ? "font-bold text-primary"
-                                : "text-secondary/90 hover:text-primary"
+                                ? "flex items-center gap-2.5 rounded-xl bg-primary/10 px-3 py-2 text-sm font-bold text-primary"
+                                : "flex items-center rounded-xl px-3 py-2 text-sm text-secondary/70 transition-colors hover:bg-surface-muted hover:text-secondary"
                             }
                             {...(isHere ? { "aria-current": "page" as const } : {})}
                           >
+                            {isHere && (
+                              <span className="h-2 w-2 shrink-0 rounded-full bg-primary" aria-hidden />
+                            )}
                             {s.name}
                           </Link>
                         </li>
@@ -207,51 +216,64 @@ export default async function CategoryDetailPage({
             </div>
           ) : null}
 
+          {/* ── Filter header ── */}
           <div className="mb-4 flex items-center justify-between gap-2 border-b border-border-soft pb-3">
-            <h2 className="text-base font-black text-secondary">
+            <h2 className="flex items-center gap-2 text-base font-black text-secondary">
+              <span className="inline-block h-5 w-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
               {t("filtersTitle")}
             </h2>
             {activeFilterCount > 0 ? (
-              <span className="rounded-full bg-primary/10 px-2 py-1 text-xs font-bold text-primary">
+              <span className="rounded-full bg-primary px-2.5 py-0.5 text-xs font-bold text-white shadow-sm">
                 {activeFilterCount}
               </span>
             ) : null}
           </div>
+
           <form
             method="get"
             action={`/${locale}/shop/categories/${id}`}
-            className="space-y-4"
+            className="space-y-5"
           >
             <input type="hidden" name="offset" value="1" />
 
-            <p className="rounded-lg bg-primary/5 px-3 py-2 text-xs font-medium text-secondary">
-              {t("filterScopeHint")}
-            </p>
+            {/* Scope hint */}
+            <div className="flex items-start gap-2 rounded-xl border border-primary/10 bg-primary/5 px-3 py-2.5">
+              <span className="mt-px shrink-0 text-sm leading-none text-primary/60" aria-hidden>ℹ</span>
+              <p className="text-xs leading-relaxed text-secondary/65">{t("filterScopeHint")}</p>
+            </div>
 
-            <label className="flex flex-col gap-1 text-sm font-medium text-secondary">
+            {/* Name search */}
+            <label className="flex flex-col gap-1.5 text-sm font-semibold text-secondary">
               {tSearch("nameLabel")}
               <input
                 type="search"
                 name="name"
                 defaultValue={query.name ?? ""}
                 placeholder={tSearch("namePlaceholder")}
-                className="store-input"
+                className="store-input font-normal"
                 autoComplete="off"
+                suppressHydrationWarning
               />
             </label>
 
-            <div className="space-y-2 border-t border-border-soft pt-4">
-              <p className="text-sm font-bold text-secondary">{tNav("brands")}</p>
-              <label className="flex items-center gap-2 text-sm text-secondary/85">
-                <input
-                  type="radio"
-                  name="product_brand_id"
-                  value=""
-                  defaultChecked={!query.product_brand_id}
-                />
-                {tSearch("clearFilters")}
-              </label>
-              <div className="grid max-h-60 grid-cols-3 gap-2 overflow-y-auto pe-1">
+            {/* Product brands */}
+            <div className="space-y-3 border-t border-border-soft pt-4">
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-sm font-bold text-secondary">{tNav("brands")}</p>
+                <label className="cursor-pointer">
+                  <input
+                    type="radio"
+                    name="product_brand_id"
+                    value=""
+                    defaultChecked={!query.product_brand_id}
+                    className="peer sr-only"
+                  />
+                  <span className="inline-flex cursor-pointer items-center rounded-full border border-border-soft bg-white px-2.5 py-0.5 text-[11px] font-semibold text-secondary/55 transition hover:border-secondary/25 peer-checked:border-primary/40 peer-checked:bg-primary/5 peer-checked:text-primary">
+                    {tSearch("clearFilters")}
+                  </span>
+                </label>
+              </div>
+              <div className="grid max-h-60 grid-cols-3 gap-2 overflow-y-auto [scrollbar-color:var(--color-border-soft)_transparent] [scrollbar-width:thin]">
                 {productBrands.map((brand) => {
                   const brandLogo = resolveMediaUrl(
                     brand.image_full_url ?? brand.image ?? null,
@@ -293,35 +315,50 @@ export default async function CategoryDetailPage({
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 border-t border-border-soft pt-4">
-              <label className="flex flex-col gap-1 text-xs font-medium text-secondary">
-                {tSearch("priceMin")}
-                <input
-                  type="number"
-                  name="price_low"
-                  defaultValue={query.price_low ?? ""}
-                  className="store-input min-h-10"
-                  autoComplete="off"
-                />
-              </label>
-              <label className="flex flex-col gap-1 text-xs font-medium text-secondary">
-                {tSearch("priceMax")}
-                <input
-                  type="number"
-                  name="price_high"
-                  defaultValue={query.price_high ?? ""}
-                  className="store-input min-h-10"
-                  autoComplete="off"
-                />
-              </label>
+            {/* Price range */}
+            <div className="space-y-2.5 border-t border-border-soft pt-4">
+              <p className="text-sm font-bold text-secondary">
+                {tSearch("priceMin")} — {tSearch("priceMax")}
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                <label className="flex flex-col gap-1 text-xs font-medium text-secondary/65">
+                  {tSearch("priceMin")}
+                  <input
+                    type="number"
+                    name="price_low"
+                    defaultValue={query.price_low ?? ""}
+                    className="store-input min-h-10"
+                    autoComplete="off"
+                    suppressHydrationWarning
+                  />
+                </label>
+                <label className="flex flex-col gap-1 text-xs font-medium text-secondary/65">
+                  {tSearch("priceMax")}
+                  <input
+                    type="number"
+                    name="price_high"
+                    defaultValue={query.price_high ?? ""}
+                    className="store-input min-h-10"
+                    autoComplete="off"
+                    suppressHydrationWarning
+                  />
+                </label>
+              </div>
             </div>
 
-            <details className="border-t border-border-soft pt-4">
-              <summary className="cursor-pointer text-sm font-bold text-secondary">
-                {tSearch("filters")}
+            {/* Advanced filters (collapsible) */}
+            <details className="group border-t border-border-soft pt-4">
+              <summary className="flex cursor-pointer list-none items-center justify-between text-sm font-bold text-secondary [&::-webkit-details-marker]:hidden">
+                <span>{tSearch("filters")}</span>
+                <span
+                  className="flex h-6 w-6 items-center justify-center rounded-lg bg-surface-muted text-xs text-secondary/50 transition-transform duration-200 group-open:rotate-180"
+                  aria-hidden
+                >
+                  ▾
+                </span>
               </summary>
-              <div className="mt-3 space-y-3">
-                <label className="flex flex-col gap-1 text-xs font-medium text-secondary">
+              <div className="mt-4 space-y-4">
+                <label className="flex flex-col gap-1.5 text-xs font-medium text-secondary/65">
                   {tSearch("ratingMin")}
                   <input
                     type="number"
@@ -330,9 +367,10 @@ export default async function CategoryDetailPage({
                     defaultValue={query.rating ?? ""}
                     className="store-input min-h-10"
                     autoComplete="off"
+                    suppressHydrationWarning
                   />
                 </label>
-                <label className="flex flex-col gap-1 text-xs font-medium text-secondary">
+                <label className="flex flex-col gap-1.5 text-xs font-medium text-secondary/65">
                   {tSearch("tags")}
                   <select
                     name="tag_ids"
@@ -344,6 +382,7 @@ export default async function CategoryDetailPage({
                     }
                     className="store-input min-h-20 py-2"
                     size={3}
+                    suppressHydrationWarning
                   >
                     {tags.map((tag) => (
                       <option key={tag.id} value={String(tag.id)}>
@@ -352,7 +391,7 @@ export default async function CategoryDetailPage({
                     ))}
                   </select>
                 </label>
-                <label className="flex flex-col gap-1 text-xs font-medium text-secondary">
+                <label className="flex flex-col gap-1.5 text-xs font-medium text-secondary/65">
                   {tSearch("attributes")}
                   <select
                     name="attribute_ids"
@@ -364,6 +403,7 @@ export default async function CategoryDetailPage({
                     }
                     className="store-input min-h-20 py-2"
                     size={3}
+                    suppressHydrationWarning
                   >
                     {attributes.map((attribute) => (
                       <option key={attribute.id} value={String(attribute.id)}>
@@ -375,12 +415,14 @@ export default async function CategoryDetailPage({
               </div>
             </details>
 
-            <label className="flex flex-col gap-1 text-sm font-medium text-secondary">
+            {/* Sort */}
+            <label className="flex flex-col gap-1.5 border-t border-border-soft pt-4 text-sm font-semibold text-secondary">
               {tSearch("sortLabel")}
               <select
                 name="sort_by"
                 defaultValue={query.sort_by ?? "new_arrival"}
-                className="store-input"
+                className="store-input font-normal"
+                suppressHydrationWarning
               >
                 {SORT_KEYS.map((k) => (
                   <option key={k} value={k}>
@@ -390,7 +432,7 @@ export default async function CategoryDetailPage({
               </select>
             </label>
 
-            <button type="submit" className="store-btn-primary w-full text-sm">
+            <button type="submit" className="store-btn-primary w-full text-sm" suppressHydrationWarning>
               {tSearch("submit")}
             </button>
           </form>
@@ -398,8 +440,9 @@ export default async function CategoryDetailPage({
           <div className="mt-4 border-t border-border-soft pt-4">
             <Link
               href={`/shop/categories/${id}`}
-              className="text-sm font-semibold text-primary hover:underline"
+              className="flex w-full items-center justify-center gap-1.5 rounded-xl py-2 text-sm font-semibold text-secondary/45 transition-colors hover:bg-primary/5 hover:text-primary"
             >
+              <span aria-hidden>↺</span>
               {t("resetFilters")}
             </Link>
           </div>
@@ -417,9 +460,7 @@ export default async function CategoryDetailPage({
                     {t("breadcrumbHome")}
                   </Link>
                 </li>
-                <li className="shrink-0 text-secondary/45" aria-hidden>
-                  ·
-                </li>
+                <li className="shrink-0 text-secondary/35" aria-hidden>›</li>
                 <li className="shrink-0">
                   <Link href="/shop/categories" className="hover:text-primary">
                     {t("title")}
@@ -432,9 +473,7 @@ export default async function CategoryDetailPage({
                       key={item.id}
                       className="flex min-w-0 max-w-full items-center gap-1.5"
                     >
-                      <span className="shrink-0 text-secondary/45" aria-hidden>
-                        ·
-                      </span>
+                      <span className="shrink-0 text-secondary/35" aria-hidden>›</span>
                       {isLast ? (
                         <span
                           className="truncate font-semibold text-secondary"
