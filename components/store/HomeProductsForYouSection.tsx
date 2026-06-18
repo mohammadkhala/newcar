@@ -66,6 +66,21 @@ export function HomeProductsForYouSection({ pageSize, initial }: Props) {
     : (tabs[0]?.id ?? "bestSelling");
 
   const [active, setActive] = useState<ProductsForYouTabKey>(defaultTab);
+  const pausedRef = useRef(false);
+
+  useEffect(() => {
+    if (tabs.length <= 1) return;
+    const id = window.setInterval(() => {
+      if (!pausedRef.current) {
+        setActive((prev) => {
+          const idx = tabs.findIndex((t) => t.id === prev);
+          return tabs[(idx + 1) % tabs.length]!.id;
+        });
+      }
+    }, 4000);
+    return () => window.clearInterval(id);
+  }, [tabs]);
+
   const [tabState, setTabState] = useState(() => {
     const next = { ...initial };
     if (
@@ -97,6 +112,9 @@ export function HomeProductsForYouSection({ pageSize, initial }: Props) {
   const selectTab = useCallback((id: ProductsForYouTabKey) => {
     setActive(id);
     setMenuOpen(false);
+    // Pause auto-advance briefly after manual selection
+    pausedRef.current = true;
+    setTimeout(() => { pausedRef.current = false; }, 8000);
   }, []);
 
   useEffect(() => {
@@ -169,6 +187,8 @@ export function HomeProductsForYouSection({ pageSize, initial }: Props) {
     <section
       className="cdz-tabs-wrap tabs-style-08 home-products-for-you"
       aria-label={t("title")}
+      onMouseEnter={() => { pausedRef.current = true; }}
+      onMouseLeave={() => { pausedRef.current = false; }}
     >
       <div className="cdz-block-title">
         <h2 className="b-title text-2xl font-black text-secondary">{t("title")}</h2>
