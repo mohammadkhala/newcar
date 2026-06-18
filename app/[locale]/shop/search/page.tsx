@@ -93,6 +93,17 @@ export default async function ShopSearchPage({ searchParams, params }: PageProps
   const shownSoFar = (offsetNum - 1) * limitNum + products.length;
   const hasPrev = offsetNum > 1;
   const hasNext = shownSoFar < total;
+  const totalPages = Math.max(1, Math.ceil(total / limitNum));
+
+  function pageRange(current: number, last: number): (number | "…")[] {
+    if (last <= 7) return Array.from({ length: last }, (_, i) => i + 1);
+    const pages: (number | "…")[] = [1];
+    if (current > 3) pages.push("…");
+    for (let p = Math.max(2, current - 2); p <= Math.min(last - 1, current + 2); p++) pages.push(p);
+    if (current < last - 2) pages.push("…");
+    pages.push(last);
+    return pages;
+  }
   const activeFilterCount = [
     query.name,
     query.price_low,
@@ -225,25 +236,60 @@ export default async function ShopSearchPage({ searchParams, params }: PageProps
                   </li>
                 ))}
               </ul>
-              <nav className="flex flex-wrap items-center justify-center gap-3 pt-4">
-                {hasPrev && (
+              <nav className="flex flex-wrap items-center justify-center gap-1.5 pt-6" aria-label="pagination">
+                {/* Prev */}
+                {hasPrev ? (
                   <Link
                     href={hrefWithOffset(offsetNum - 1)}
-                    className="store-btn-soft inline-flex items-center px-4 text-sm"
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border-soft bg-white text-lg font-bold text-secondary shadow-sm transition hover:border-primary/40 hover:text-primary"
+                    aria-label={t("prev")}
                   >
-                    {t("prev")}
+                    ›
                   </Link>
+                ) : (
+                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border-soft bg-white text-lg font-bold text-secondary/20">
+                    ›
+                  </span>
                 )}
-                <span className="rounded-lg border border-border-soft bg-white px-4 py-2 text-sm font-semibold text-secondary/80">
-                  {t("page")} {offsetNum}
-                </span>
-                {hasNext && (
+
+                {/* Numbered pages */}
+                {pageRange(offsetNum, totalPages).map((p, i) =>
+                  p === "…" ? (
+                    <span key={`dots-${i}`} className="inline-flex h-10 w-8 items-center justify-center text-sm text-secondary/40">
+                      …
+                    </span>
+                  ) : p === offsetNum ? (
+                    <span
+                      key={p}
+                      className="inline-flex h-10 min-w-[2.5rem] items-center justify-center rounded-xl bg-primary px-3 text-sm font-black text-white shadow"
+                      aria-current="page"
+                    >
+                      {p}
+                    </span>
+                  ) : (
+                    <Link
+                      key={p}
+                      href={hrefWithOffset(p)}
+                      className="inline-flex h-10 min-w-[2.5rem] items-center justify-center rounded-xl border border-border-soft bg-white px-3 text-sm font-semibold text-black shadow-sm transition hover:border-primary/40 hover:text-primary"
+                    >
+                      {p}
+                    </Link>
+                  )
+                )}
+
+                {/* Next */}
+                {hasNext ? (
                   <Link
                     href={hrefWithOffset(offsetNum + 1)}
-                    className="store-btn-soft inline-flex items-center px-4 text-sm"
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border-soft bg-white text-lg font-bold text-secondary shadow-sm transition hover:border-primary/40 hover:text-primary"
+                    aria-label={t("next")}
                   >
-                    {t("next")}
+                    ‹
                   </Link>
+                ) : (
+                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border-soft bg-white text-lg font-bold text-secondary/20">
+                    ‹
+                  </span>
                 )}
               </nav>
             </>
