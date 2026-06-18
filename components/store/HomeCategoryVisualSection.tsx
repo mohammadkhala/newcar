@@ -63,7 +63,7 @@ export function HomeCategoryVisualSection({
                     />
                   )}
                 </div>
-                <span className="line-clamp-2 text-sm font-semibold text-secondary">
+                <span className="line-clamp-2 text-sm font-semibold text-black">
                   {item.name}
                 </span>
               </Link>

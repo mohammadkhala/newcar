@@ -58,7 +58,7 @@ export function CatalogProductCard({ product }: Props) {
       <div className="flex flex-1 flex-col gap-3 px-3 pb-3 pt-3 text-center">
         <Link
           href={href}
-          className="line-clamp-2 min-h-11 text-sm font-semibold leading-snug text-secondary"
+          className="line-clamp-2 min-h-11 text-sm font-semibold leading-snug text-black"
         >
           {product.name}
         </Link>

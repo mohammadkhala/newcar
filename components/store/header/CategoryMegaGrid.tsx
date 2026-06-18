@@ -26,7 +26,7 @@ export function CategoryMegaGrid({ navCategories, emptyLabel, onNavigate }: Prop
             onClick={onNavigate}
           >
             <CategoryThumb imageSrc={category.imageSrc} label={category.name} size={64} />
-            <span className="line-clamp-2 text-sm font-bold text-secondary group-hover:text-primary">
+            <span className="line-clamp-2 text-sm font-bold text-black group-hover:text-primary">
               {category.name}
             </span>
           </Link>

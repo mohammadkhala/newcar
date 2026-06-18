@@ -55,7 +55,7 @@ export function ProductCard({
         </div>
       </div>
       <div className="flex flex-1 flex-col gap-3 p-4">
-        <Link href={href} className="line-clamp-2 min-h-11 text-sm font-semibold text-secondary md:text-base">
+        <Link href={href} className="line-clamp-2 min-h-11 text-sm font-semibold text-black md:text-base">
           {product.name}
         </Link>
         <div className="mt-auto flex flex-wrap items-end justify-between gap-2">

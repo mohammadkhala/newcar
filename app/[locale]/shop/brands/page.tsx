@@ -45,7 +45,7 @@ export default async function BrandsPage({ params }: Props) {
                       </span>
                     )}
                   </div>
-                  <span className="text-sm font-semibold text-secondary group-hover:text-primary">
+                  <span className="text-sm font-bold text-black group-hover:text-primary">
                     {b.name}
                   </span>
                 </Link>
