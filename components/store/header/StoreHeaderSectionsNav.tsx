@@ -110,6 +110,7 @@ export function StoreHeaderSectionsNav({
             type="button"
             className="inline-flex min-h-[2.5rem] items-center gap-2 rounded-md bg-white px-3 text-sm font-bold text-black shadow-sm outline-none transition-colors hover:bg-gray-50 focus-visible:ring-2 focus-visible:ring-black/30 md:hidden"
             onClick={onToggleMobileMenu}
+            suppressHydrationWarning
           >
             <span aria-hidden>☰</span>
             <span className="max-w-[10rem] truncate">{labels.allPartsByCategory}</span>
