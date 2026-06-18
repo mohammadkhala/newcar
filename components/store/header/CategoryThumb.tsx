@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useState } from "react";
 
 type Props = {
   imageSrc: string | null;
@@ -9,15 +10,20 @@ type Props = {
 };
 
 export function CategoryThumb({ imageSrc, label, size = 44 }: Props) {
-  if (imageSrc) {
+  const [broken, setBroken] = useState(false);
+
+  const showFallback = !imageSrc || broken;
+
+  if (!showFallback) {
     return (
       <Image
-        src={imageSrc}
+        src={imageSrc!}
         alt=""
         width={size}
         height={size}
         className="shrink-0 rounded-md object-cover"
         unoptimized
+        onError={() => setBroken(true)}
       />
     );
   }
