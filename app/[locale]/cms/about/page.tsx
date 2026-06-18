@@ -59,7 +59,7 @@ export default async function AboutPage({ params }: Props) {
             </div>
           </div>
           <h1 className="text-3xl font-black md:text-4xl">تعرّف علينا</h1>
-          <p className="mt-4 text-lg font-medium opacity-80">
+          <p className="mt-4 text-base font-medium opacity-80 md:text-lg">
             متجرك الأول لكماليات وإكسسوارات السيارات
           </p>
         </div>
