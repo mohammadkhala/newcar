@@ -12,6 +12,7 @@ import type {
   ProductBrandProductsResponse,
   ProductDetailPayload,
   ProductSearchResponse,
+  ProductReview,
   StoreProductListItem,
   TagRow,
   VehicleBrandsResponse,
@@ -533,7 +534,7 @@ export async function fetchProductReviews(
   productId: string,
   limit: string,
   offset: string,
-): Promise<{ data?: unknown[]; limit?: number; offset?: number } | null> {
+): Promise<{ data?: ProductReview[]; limit?: number; offset?: number } | null> {
   const base = getApiBaseUrl();
   if (!base) {
     return null;
@@ -546,7 +547,7 @@ export async function fetchProductReviews(
     return null;
   }
   return res.json() as Promise<{
-    data?: unknown[];
+    data?: ProductReview[];
     limit?: number;
     offset?: number;
   }>;
