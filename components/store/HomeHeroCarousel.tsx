@@ -24,56 +24,46 @@ type Props = {
   slides: HomeHeroSlide[];
 };
 
-/**
- * Full-width horizontal snap carousel for home banner images from the API.
- */
 export function HomeHeroCarousel({ slides }: Props) {
   const t = useTranslations("Home");
-  const scrollerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const pausedRef = useRef(false);
 
   useEffect(() => {
-    if (slides.length <= 1) {
-      return;
-    }
-    const timer = window.setInterval(() => {
-      const el = scrollerRef.current;
-      if (!el) {
-        return;
+    if (slides.length <= 1) return;
+    const id = window.setInterval(() => {
+      if (!pausedRef.current) {
+        setActiveIndex((prev) => (prev + 1) % slides.length);
       }
-      const next = (activeIndex + 1) % slides.length;
-      const width = el.clientWidth;
-      el.scrollTo({ left: width * next, behavior: "smooth" });
-      setActiveIndex(next);
     }, 4500);
+    return () => window.clearInterval(id);
+  }, [slides.length]);
 
-    return () => window.clearInterval(timer);
-  }, [activeIndex, slides.length]);
-
-  if (slides.length === 0) {
-    return null;
-  }
-
-  function jumpTo(index: number) {
-    const el = scrollerRef.current;
-    if (!el) {
-      return;
-    }
-    el.scrollTo({ left: el.clientWidth * index, behavior: "smooth" });
-    setActiveIndex(index);
-  }
+  if (slides.length === 0) return null;
 
   return (
-    <section className="w-full bg-black" aria-label={t("sections.banners")}>
-      <div className="relative w-full">
+    <section
+      className="w-full bg-black"
+      aria-label={t("sections.banners")}
+      onMouseEnter={() => { pausedRef.current = true; }}
+      onMouseLeave={() => { pausedRef.current = false; }}
+      onTouchStart={() => { pausedRef.current = true; }}
+      onTouchEnd={() => { pausedRef.current = false; }}
+    >
+      <div className="relative w-full overflow-hidden">
+        {/* Film strip — always LTR so translateX is consistent */}
         <div
-          ref={scrollerRef}
-          className="flex touch-pan-x snap-x snap-mandatory overflow-x-auto scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          dir="ltr"
+          className="flex transition-transform duration-500 ease-in-out"
+          style={{
+            width: `${slides.length * 100}%`,
+            transform: `translateX(-${activeIndex * (100 / slides.length)}%)`,
+          }}
         >
           {slides.map((s) => {
             const inner = (
               <div className="relative aspect-[2/1] max-h-[min(52vh,560px)] min-h-[200px] w-full bg-surface-muted">
-                {/* eslint-disable-next-line @next/next/no-img-element -- remote Laravel URLs */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={s.src}
                   alt={s.alt}
@@ -85,7 +75,8 @@ export function HomeHeroCarousel({ slides }: Props) {
             return (
               <div
                 key={s.key}
-                className="w-full min-w-full shrink-0 snap-start snap-always"
+                className="shrink-0"
+                style={{ width: `${100 / slides.length}%` }}
               >
                 {s.href ? (
                   isExternalHref(s.href) ? (
@@ -112,28 +103,28 @@ export function HomeHeroCarousel({ slides }: Props) {
             );
           })}
         </div>
-        {slides.length > 1 ? (
-          <>
-            <div className="absolute inset-x-0 bottom-3 z-10 flex items-center justify-center gap-1">
-              {slides.map((slide, idx) => (
-                <button
-                  key={slide.key}
-                  type="button"
-                  onClick={() => jumpTo(idx)}
-                  aria-label={`${t("sections.banners")} ${idx + 1}`}
-                  className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                >
-                  <span
-                    className={`block h-3 w-3 rounded-full ${
-                      activeIndex === idx ? "bg-primary" : "bg-white/80"
-                    }`}
-                    aria-hidden
-                  />
-                </button>
-              ))}
-            </div>
-          </>
-        ) : null}
+
+        {/* Dot indicators */}
+        {slides.length > 1 && (
+          <div className="absolute inset-x-0 bottom-3 z-10 flex items-center justify-center gap-1">
+            {slides.map((slide, idx) => (
+              <button
+                key={slide.key}
+                type="button"
+                onClick={() => setActiveIndex(idx)}
+                aria-label={`${t("sections.banners")} ${idx + 1}`}
+                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              >
+                <span
+                  className={`block rounded-full transition-all duration-300 ${
+                    activeIndex === idx ? "h-3 w-6 bg-primary" : "h-3 w-3 bg-white/80"
+                  }`}
+                  aria-hidden
+                />
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
