@@ -24,13 +24,7 @@ export function AuthPhoneField({
       <label htmlFor={id} className="block text-sm font-semibold text-secondary">
         {label}
       </label>
-      <div className="flex items-stretch gap-2" dir="ltr">
-        <span
-          className="store-input inline-flex min-w-[4.75rem] shrink-0 items-center justify-center bg-surface-muted px-3 text-sm font-semibold text-secondary"
-          aria-hidden
-        >
-          {DEFAULT_AUTH_COUNTRY_CODE}
-        </span>
+      <div dir="ltr">
         <input
           id={id}
           required
@@ -39,7 +33,7 @@ export function AuthPhoneField({
           maxLength={10}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="store-input min-w-0 flex-1"
+          className="store-input w-full"
           placeholder={placeholder}
           autoComplete={autoComplete}
           suppressHydrationWarning
