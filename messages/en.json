@@ -285,7 +285,8 @@
     "linkCompanyAddress": "Company Address",
     "whatsappContact": "Contact us on WhatsApp",
     "taglineHala": "New Car, your first destination for luxury car accessories and professional tuning services",
-    "bottomRights": "New Car for Car Accessories and Tuning"
+    "bottomRights": "New Car for Car Accessories and Tuning",
+    "devCredit": "Developed by Bait Al-Programiyyat for Information Technology"
   },
   "Auth": {
     "loginTitle": "Sign in",

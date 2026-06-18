@@ -158,7 +158,7 @@ export async function StoreFooter() {
       <div className="bg-primary py-3">
         <div className="mx-auto max-w-7xl px-4 text-center">
           <a href="https://baitpait.com/" target="_blank" rel="noopener noreferrer" className="text-xs font-medium text-white/80 hover:text-white transition-colors">
-            برمجة وتطوير بيت البرمجيات وتكنولوجيا المعلومات
+            {t("devCredit")}
           </a>
         </div>
       </div>
