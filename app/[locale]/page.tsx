@@ -529,19 +529,31 @@ export default async function HomePage({ params }: Props) {
           </section>
         ) : null}
 
-        <section className="store-card border-primary/20 bg-linear-to-br from-primary/5 to-white px-6 py-8 text-center md:text-start">
-          <h2 className="text-xl font-semibold text-secondary">
-            {t("quoteCtaTitle")}
-          </h2>
-          <p className="mt-2 max-w-xl text-sm text-secondary/90">
-            {t("quoteCtaBody")}
-          </p>
-          <Link
-            href="/cms/quote"
-            className="store-btn-primary mt-4 inline-flex items-center justify-center px-6 text-sm"
-          >
-            {t("quoteCtaButton")}
-          </Link>
+        <section className="relative overflow-hidden rounded-3xl bg-gradient-to-l from-primary via-amber-400 to-yellow-300 px-8 py-10 md:px-14 md:py-12">
+          {/* Decorative circles */}
+          <div className="pointer-events-none absolute -end-10 -top-10 h-44 w-44 rounded-full bg-black/10" />
+          <div className="pointer-events-none absolute -bottom-14 end-24 h-32 w-32 rounded-full bg-black/10" />
+          <div className="pointer-events-none absolute start-4 top-4 h-16 w-16 rounded-full bg-white/15" />
+
+          <div className="relative z-10 flex flex-col items-start gap-5 md:flex-row md:items-center md:justify-between">
+            <div>
+              <div className="mb-3 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-black/10 text-xl">
+                💬
+              </div>
+              <h2 className="text-2xl font-black text-black md:text-3xl">
+                {t("quoteCtaTitle")}
+              </h2>
+              <p className="mt-2 max-w-lg text-sm font-medium text-black/65">
+                {t("quoteCtaBody")}
+              </p>
+            </div>
+            <Link
+              href="/cms/quote"
+              className="shrink-0 rounded-2xl bg-black px-7 py-3.5 text-sm font-black text-white shadow-lg transition-opacity hover:opacity-80"
+            >
+              {t("quoteCtaButton")}
+            </Link>
+          </div>
         </section>
       </div>
     </>
