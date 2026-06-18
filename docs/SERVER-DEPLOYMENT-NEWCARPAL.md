@@ -78,12 +78,19 @@ sudo /usr/local/apps/apache2/bin/apachectl graceful
 ### متغيرات وثقة البروكسي
 
 - ملف: `config/trustedproxy.php` — يقرأ `TRUSTED_PROXIES` من `.env` (افتراضي `127.0.0.1,::1`).
-- إذا كان Next أو طبقة أخرى تتصل بـ `admin.newcarpal.com` من IP غير loopback، أضف ذلك الـ IP إلى `TRUSTED_PROXIES` حتى يُعتمد `X-Forwarded-For` في حدود الطلبات.
+- **إنتاج newcarpal:** المتجر (Next BFF) يتصل بـ `admin.newcarpal.com` من IP السيرفر وليس loopback — بدون ثقة البروكسي يُحسب **كل الزوار** في دلو واحد → رسالة `Too Many Attempts` عند التسجيل.
+- **الإصلاح على السيرفر:**
+
+```bash
+# في .env داخل adminNewcar
+TRUSTED_PROXIES=*
+php artisan config:clear
+```
 
 ### حد الطلبات (Rate limit)
 
 - مجموعة API العامة: `throttle:300,1` في `bootstrap/app.php`.
-- مجموعة `auth`: `throttle:120,1` في `routes/api/v1/api.php`.
+- مسارات `auth`: `throttle:auth` (60/دقيقة لكل IP) و`registration` منفصل: `throttle:auth-register` (20/دقيقة) — يتطلب `TRUSTED_PROXIES` أعلاه.
 
 ### Passport — مفاتيح OAuth (خطأ شائع)
 

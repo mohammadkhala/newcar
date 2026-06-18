@@ -21,21 +21,35 @@ function normalizeDigits(input: string): string {
   return out;
 }
 
+export const DEFAULT_AUTH_COUNTRY_CODE = "+972" as const;
+
+export type AuthCountryCode = typeof DEFAULT_AUTH_COUNTRY_CODE | "+970";
+
 export function normalizePhoneLocal(raw: string): string {
   const ascii = normalizeDigits(raw);
   return ascii.replace(/\D/g, "");
 }
 
+function stripAnyCountryPrefix(localDigits: string): string {
+  if (localDigits.startsWith("972")) {
+    return localDigits.slice(3);
+  }
+  if (localDigits.startsWith("970")) {
+    return localDigits.slice(3);
+  }
+  return localDigits;
+}
+
 export function buildInternationalPhone(
   localPhoneRaw: string,
-  countryCode: "+970" | "+972",
+  countryCode: AuthCountryCode = DEFAULT_AUTH_COUNTRY_CODE,
 ): string {
   let local = normalizePhoneLocal(localPhoneRaw);
+  local = stripAnyCountryPrefix(local);
   local = local.replace(/^0+/, "");
   return `${countryCode}${local}`;
 }
 
-/** Builds the canonical +972 international phone for the store. */
-export function buildAuthPhone(phoneLocal: string): string {
-  return buildInternationalPhone(phoneLocal, "+972");
+export function buildAuthPhone(localPhoneRaw: string): string {
+  return buildInternationalPhone(localPhoneRaw, DEFAULT_AUTH_COUNTRY_CODE);
 }

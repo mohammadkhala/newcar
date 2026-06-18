@@ -22,11 +22,6 @@ const PATTERN_MAP: Array<[RegExp, AuthApiErrorKey]> = [
   [/server error|internal server|500/i,        "serverError"],
 ];
 
-/**
- * Parses a Laravel auth API response into a typed error result.
- * Returns a translation key when a known pattern matches,
- * or the raw API message (already localized by Laravel) otherwise.
- */
 export function parseAuthApiError(
   status: number,
   data: {
@@ -49,7 +44,6 @@ export function parseAuthApiError(
   return { type: "key", key: "error" };
 }
 
-/** Helper: call inside a catch block when fetch itself throws (network error). */
 export function networkErrorResult(): AuthApiErrorResult {
   return { type: "key", key: "networkError" };
 }

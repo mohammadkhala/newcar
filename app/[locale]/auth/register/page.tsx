@@ -107,7 +107,13 @@ export default function RegisterPage() {
           </label>
         </div>
 
-        <AuthPhoneField value={phone} onChange={setPhone} />
+        <AuthPhoneField
+          id="register-phone"
+          label={t("whatsAppPhone")}
+          value={phone}
+          onChange={setPhone}
+          placeholder={t("phonePlaceholder")}
+        />
 
         {/* Password with show/hide toggle */}
         <label className="block space-y-2">

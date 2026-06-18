@@ -76,7 +76,13 @@ export default function LoginPage() {
       </div>
 
       <form onSubmit={onSubmit} className="flex flex-col gap-4">
-        <AuthPhoneField value={phone} onChange={setPhone} />
+        <AuthPhoneField
+          id="login-phone"
+          label={t("whatsAppPhone")}
+          value={phone}
+          onChange={setPhone}
+          placeholder={t("phonePlaceholder")}
+        />
 
         {/* Password with show/hide toggle */}
         <label className="block space-y-2">
