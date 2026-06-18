@@ -83,7 +83,7 @@ export function StoreHeaderMobileDrawer({
                         topOpen ? "rotate-90 text-primary" : "text-secondary/40"
                       }`}
                     >
-                      ‹
+                      ›
                     </span>
                   </button>
 
@@ -118,7 +118,7 @@ export function StoreHeaderMobileDrawer({
                                       : "text-secondary/30"
                                   }`}
                                 >
-                                  ‹
+                                  ›
                                 </span>
                               </button>
 
@@ -155,7 +155,7 @@ export function StoreHeaderMobileDrawer({
                                 aria-hidden
                                 className="shrink-0 text-base leading-none text-secondary/25"
                               >
-                                ‹
+                                ›
                               </span>
                             </Link>
                           </li>
