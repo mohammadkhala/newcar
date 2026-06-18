@@ -117,7 +117,7 @@ export function VehicleBrandSlider({ brands, activeBrandId }: Props) {
                 </div>
               )}
               <span
-                className={`max-w-[4.5rem] truncate text-center text-xs font-semibold ${
+                className={`max-w-[4.5rem] truncate text-center text-xs font-bold ${
                   active ? "text-primary" : "text-black"
                 }`}
               >

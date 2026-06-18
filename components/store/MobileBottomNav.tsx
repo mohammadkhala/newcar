@@ -53,18 +53,27 @@ function IconCar({ className, ...props }: SVGProps<SVGSVGElement>) {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth={2}
+      strokeWidth={1.75}
       strokeLinecap="round"
       strokeLinejoin="round"
       className={className}
       aria-hidden
       {...props}
     >
-      <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-2.7-.6-3.6-1.9C11.4 6.5 10.8 4 12 4h4" />
-      <path d="M5 17h2" />
-      <circle cx="7.5" cy="17.5" r="2.5" />
-      <circle cx="17.5" cy="17.5" r="2.5" />
-      <path d="M14 10h2l2 3" />
+      {/* windshield + roof */}
+      <path d="M5 11 L7.5 7 Q8.2 5.5 10 5.5 L14 5.5 Q15.8 5.5 16.5 7 L19 11" />
+      {/* car body */}
+      <rect x="2" y="11" width="20" height="5" rx="1.5" />
+      {/* front wheel well */}
+      <path d="M2 14 Q2 16 4 16" />
+      <path d="M8 16 Q10 16 10 14" />
+      {/* rear wheel well */}
+      <path d="M14 14 Q14 16 16 16" />
+      <path d="M20 16 Q22 16 22 14" />
+      {/* front wheel */}
+      <circle cx="6" cy="16.5" r="2" />
+      {/* rear wheel */}
+      <circle cx="18" cy="16.5" r="2" />
     </svg>
   );
 }
