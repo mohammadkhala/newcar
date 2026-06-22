@@ -79,45 +79,43 @@ export async function StoreHeader() {
   let featuredNavItems: CategoryTreeNode[] = [];
 
   if (apiConfigured) {
-    try {
-      const [roots, brandsRes, langs] = await Promise.all([
-        fetchRootCategories(),
-        fetchVehicleBrands().catch(
-          () =>
-            ({
-              brands: [] as VehicleBrandsResponse["brands"],
-            }) satisfies Pick<VehicleBrandsResponse, "brands">,
-        ),
-        fetchLanguages().catch(() => [] as LanguageOption[]),
-      ]);
-      navCategories = roots.map((c) => ({
-        id: c.id,
-        name: c.name ?? `#${c.id}`,
-        imageSrc: categoryDisplayImageSrc(c),
-      }));
-      vehicleBrands = brandsRes.brands ?? [];
-      languageOptions = langs;
+    const [roots, brandsRes, langs] = await Promise.all([
+      fetchRootCategories().catch(() => [] as CategoryRow[]),
+      fetchVehicleBrands().catch(
+        () =>
+          ({
+            brands: [] as VehicleBrandsResponse["brands"],
+          }) satisfies Pick<VehicleBrandsResponse, "brands">,
+      ),
+      fetchLanguages().catch(() => [] as LanguageOption[]),
+    ]);
+    navCategories = roots.map((c) => ({
+      id: c.id,
+      name: c.name ?? `#${c.id}`,
+      imageSrc: categoryDisplayImageSrc(c),
+    }));
+    vehicleBrands = brandsRes.brands ?? [];
+    languageOptions = langs;
 
-      const rootById = new Map(roots.map((r) => [r.id, r]));
-      featuredNavItems = (
-        await Promise.all(
-          FEATURED_NAV_IDS.map(async (fid) => {
-            const row = rootById.get(fid);
-            if (!row) {
-              return null;
-            }
-            const node = rowToNode(row);
+    const rootById = new Map(roots.map((r) => [r.id, r]));
+    featuredNavItems = (
+      await Promise.allSettled(
+        FEATURED_NAV_IDS.map(async (fid) => {
+          const row = rootById.get(fid);
+          if (!row) return null;
+          const node = rowToNode(row);
+          try {
             await fillChildren(node, 0, 3);
-            return node;
-          }),
-        )
-      ).filter((x): x is CategoryTreeNode => x !== null);
-    } catch {
-      navCategories = [];
-      languageOptions = [];
-      vehicleBrands = [];
-      featuredNavItems = [];
-    }
+          } catch {
+            // Children failed to load — show parent node without submenu
+          }
+          return node;
+        }),
+      )
+    )
+      .filter((r): r is PromiseFulfilledResult<CategoryTreeNode | null> => r.status === "fulfilled")
+      .map((r) => r.value)
+      .filter((x): x is CategoryTreeNode => x !== null);
   }
 
   return (
