@@ -1,15 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  /* Brand palette sampled directly from the NEW CAR logo (public/logo.png):
-     charcoal #474848 (wordmark/shield) and orange #e35e26 (car icon/stars). */
+  /* Brand palette: yellow #ffb700 (primary), charcoal #474848 (secondary). */
   --background: #ffffff;
   --foreground: #484848;
   --surface: #ffffff;
   --surface-muted: #f6f7f8;
   --border-soft: #eceff2;
-  --primary: #e35e26;
-  --primary-strong: #ba4d1f;
+  --primary: #ffb700;
+  --primary-strong: #cc9200;
   --secondary: #484848;
   --secondary-soft: #6b7280;
   --shadow-soft: 0 10px 30px rgba(20, 20, 20, 0.06);
@@ -88,7 +87,7 @@ textarea {
   min-height: 2.75rem;
   border-radius: 0.7rem;
   background: linear-gradient(180deg, var(--primary) 0%, var(--primary-strong) 100%);
-  color: #fff;
+  color: #111;
   font-weight: 700;
 }
 
