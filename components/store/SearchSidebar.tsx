@@ -247,6 +247,7 @@ export function SearchSidebar({
                     key={brand.id}
                     type="button"
                     title={brand.name}
+                    suppressHydrationWarning
                     onClick={() => {
                       if (active) {
                         clearField("product_brand_id");

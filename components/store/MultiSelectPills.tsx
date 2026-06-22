@@ -32,6 +32,7 @@ export function MultiSelectPills({ name, options, defaultValue }: Props) {
             <button
               key={id}
               type="button"
+              suppressHydrationWarning
               onClick={() => toggle(id)}
               className={`inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-bold transition-colors focus:outline-none focus-visible:ring-2 ${
                 isSelected
