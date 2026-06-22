@@ -17,6 +17,8 @@ export type VehicleModelRow = {
   vehicle_brand_id: number;
   name: string;
   slug: string;
+  image?: string | null;
+  image_full_url?: string | null;
 };
 
 export type VehicleYearRow = {

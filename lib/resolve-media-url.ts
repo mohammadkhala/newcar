@@ -8,6 +8,7 @@ export type MediaDiskFolder =
   | "banner"
   | "campaign-banners"
   | "vehicle-brand"
+  | "vehicle-model"
   | "category"
   | "notification"
   | "product-brand"

@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { Link } from "@/i18n/navigation";
+import { resolveMediaUrl } from "@/lib/resolve-media-url";
 import type { VehicleModelRow } from "@/lib/types";
 
 type Props = {
@@ -28,10 +29,6 @@ function modelHref(
   return `/shop/search?${q.toString()}`;
 }
 
-/**
- * Generic car silhouette placeholder — vehicle models have no uploaded photo in the API,
- * so this stands in for every model card instead of a broken/missing image.
- */
 function CarGlyph() {
   return (
     <svg viewBox="0 0 64 40" aria-hidden className="h-10 w-16 text-secondary/40">
@@ -44,8 +41,8 @@ function CarGlyph() {
 }
 
 /**
- * Horizontal scrollable strip of vehicle models for the active brand (e.g. all Mercedes
- * model lines) — quick shortcuts to refine the product search by model.
+ * Horizontal scrollable strip of vehicle models for the active brand.
+ * Shows the model image from the API when available, CarGlyph as fallback.
  */
 export function VehicleModelSlider({ models, activeModelId, baseQuery }: Props) {
   const scrollerRef = useRef<HTMLDivElement>(null);
@@ -75,6 +72,10 @@ export function VehicleModelSlider({ models, activeModelId, baseQuery }: Props) 
       >
         {models.map((model) => {
           const active = activeModelId === String(model.id);
+          const src = resolveMediaUrl(
+            model.image_full_url ?? model.image ?? null,
+            { defaultFolder: "vehicle-model" },
+          );
           return (
             <Link
               key={model.id}
@@ -85,7 +86,27 @@ export function VehicleModelSlider({ models, activeModelId, baseQuery }: Props) 
                   : "border-border-soft bg-white hover:border-primary/30"
               }`}
             >
-              <CarGlyph />
+              {src ? (
+                <div className="flex h-10 w-16 items-center justify-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={src}
+                    alt={model.name}
+                    width={64}
+                    height={40}
+                    className="max-h-10 w-full object-contain"
+                    onError={(e) => {
+                      e.currentTarget.style.display = "none";
+                      const parent = e.currentTarget.parentElement;
+                      if (parent) {
+                        parent.innerHTML = `<svg viewBox="0 0 64 40" aria-hidden class="h-10 w-16 text-secondary/40"><path fill="currentColor" d="M8 28a4 4 0 1 0 8 0 4 4 0 0 0-8 0Zm40 0a4 4 0 1 0 8 0 4 4 0 0 0-8 0ZM4 26l4-10c1-3 4-6 8-6h20c4 0 7 2 9 5l5 9 6 1c2 .5 4 2 4 5v3a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-3a4 4 0 0 1 2-4Zm14-16-3 8h13v-8H18Zm14 0v8h11l-4-6c-1-1.5-3-2-5-2h-2Z"/></svg>`;
+                      }
+                    }}
+                  />
+                </div>
+              ) : (
+                <CarGlyph />
+              )}
               <span
                 className={`whitespace-nowrap text-xs font-semibold ${
                   active ? "text-primary" : "text-secondary"
