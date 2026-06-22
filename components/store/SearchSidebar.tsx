@@ -300,6 +300,7 @@ export function SearchSidebar({
                 className="store-input min-h-9"
                 autoComplete="off"
                 onChange={handleInputDebounced}
+                suppressHydrationWarning
               />
             </label>
             <label className="flex flex-col gap-1 text-xs font-medium text-secondary">
@@ -311,6 +312,7 @@ export function SearchSidebar({
                 className="store-input min-h-9"
                 autoComplete="off"
                 onChange={handleInputDebounced}
+                suppressHydrationWarning
               />
             </label>
           </div>
@@ -328,6 +330,7 @@ export function SearchSidebar({
                 className="store-input min-h-9"
                 autoComplete="off"
                 onChange={handleInputDebounced}
+                suppressHydrationWarning
               />
             </label>
             <div className="flex flex-col gap-1 text-xs font-medium text-secondary" onChange={handleDirectChange}>
@@ -356,6 +359,7 @@ export function SearchSidebar({
             defaultValue={initialQuery.sort_by ?? "new_arrival"}
             className="store-input"
             onChange={handleDirectChange}
+            suppressHydrationWarning
           >
             {sortKeys.map((k) => (
               <option key={k} value={k}>
