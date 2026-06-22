@@ -37,8 +37,8 @@ async function apiFetch(
     throw new Error("NEXT_PUBLIC_API_BASE_URL is not set");
   }
   const url = `${base}/${path.replace(/^\//, "")}`;
-  const locHeaders = await apiHeaders();
   try {
+    const locHeaders = await apiHeaders();
     return await fetch(url, {
       ...init,
       headers: {
