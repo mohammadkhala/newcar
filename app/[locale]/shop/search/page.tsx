@@ -16,6 +16,7 @@ import { Link } from "@/i18n/navigation";
 import { SearchSidebar } from "@/components/store/SearchSidebar";
 import { VehicleModelSlider } from "@/components/store/VehicleModelSlider";
 import { VehicleBrandSlider } from "@/components/store/VehicleBrandSlider";
+import { ProductBrandSlider } from "@/components/store/ProductBrandSlider";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -159,11 +160,20 @@ export default async function ShopSearchPage({ searchParams, params }: PageProps
 
   return (
     <div className="store-shell space-y-6 py-8">
-      {vehicleBrands.length > 0 && (
-        <VehicleBrandSlider
-          brands={vehicleBrands}
-          activeBrandId={query.vehicle_brand_id}
-        />
+      {query.product_brand_id ? (
+        productBrands.length > 0 && (
+          <ProductBrandSlider
+            brands={productBrands}
+            activeBrandId={query.product_brand_id}
+          />
+        )
+      ) : (
+        vehicleBrands.length > 0 && (
+          <VehicleBrandSlider
+            brands={vehicleBrands}
+            activeBrandId={query.vehicle_brand_id}
+          />
+        )
       )}
       {vehicleModels.length > 0 && (
         <VehicleModelSlider
