@@ -11,7 +11,7 @@ export function BackButton({ className }: { className?: string }) {
     <button
       type="button"
       onClick={() => router.back()}
-      className={`inline-flex items-center gap-1.5 text-sm font-medium text-secondary/60 transition-colors hover:text-primary ${className ?? ""}`}
+      className={`inline-flex items-center gap-1.5 text-sm font-medium text-primary transition-colors hover:text-primary/80 ${className ?? ""}`}
     >
       <svg
         viewBox="0 0 20 20"
