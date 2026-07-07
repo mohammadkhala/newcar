@@ -14,6 +14,7 @@ import { formatMoney } from "@/lib/format-price";
 import { productAllImageSrcs } from "@/lib/product-image";
 import { ProductImageGallery } from "@/components/store/ProductImageGallery";
 import { ReviewsCarousel } from "@/components/store/ReviewsCarousel";
+import { BackButton } from "@/components/store/BackButton";
 
 type PageProps = {
   params: Promise<{ locale: string; id: string }>;
@@ -60,13 +61,16 @@ export default async function ShopProductPage({ params }: PageProps) {
 
   return (
     <div className="store-shell space-y-8 py-8 md:space-y-10">
-      <nav className="text-sm text-secondary/80">
-        <Link href="/shop/search" className="text-primary hover:underline">
-          {t("breadcrumbSearch")}
-        </Link>
-        <span className="mx-2">/</span>
-        <span className="text-secondary">{p.name}</span>
-      </nav>
+      <div className="flex items-center gap-4">
+        <BackButton />
+        <nav className="text-sm text-secondary/80">
+          <Link href="/shop/search" className="text-primary hover:underline">
+            {t("breadcrumbSearch")}
+          </Link>
+          <span className="mx-2">/</span>
+          <span className="text-secondary">{p.name}</span>
+        </nav>
+      </div>
 
       <div className="grid gap-8 lg:grid-cols-12">
         <div className="lg:col-span-7">

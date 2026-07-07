@@ -15,6 +15,7 @@ import {
 import type { SearchQuery } from "@/lib/api-queries";
 import { categoryDisplayImageSrc } from "@/lib/category-image";
 import { resolveMediaUrl } from "@/lib/resolve-media-url";
+import { BackButton } from "@/components/store/BackButton";
 
 type Props = {
   params: Promise<{ locale: string; id: string }>;
@@ -162,6 +163,7 @@ export default async function CategoryDetailPage({
 
   return (
     <div className="store-shell py-6 md:py-8">
+      <BackButton className="mb-4" />
       <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,280px)_minmax(0,1fr)] lg:gap-8">
         <aside className="store-card h-fit overflow-hidden p-4 lg:sticky lg:top-24">
 

@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { fetchConfig } from "@/lib/api";
 import { resolveFooterSupportContact } from "@/lib/footer-support";
 import { ContactForm } from "@/components/cms/ContactForm";
+import { BackButton } from "@/components/store/BackButton";
 
 export default async function ContactPage() {
   const t = await getTranslations("CMS");
@@ -32,6 +33,7 @@ export default async function ContactPage() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12">
+      <BackButton className="mb-6" />
 
       {/* ── Hero ── */}
       <div className="mb-10 text-center">

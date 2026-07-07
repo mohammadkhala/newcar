@@ -1,3 +1,4 @@
+import { BackButton } from "@/components/store/BackButton";
 import { setRequestLocale } from "next-intl/server";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
@@ -43,6 +44,7 @@ export default async function AboutPage({ params }: Props) {
 
   return (
     <div className="store-shell py-10 md:py-14">
+      <BackButton className="mb-6" />
 
       {/* Hero */}
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-l from-primary via-amber-400 to-yellow-300 px-8 py-14 text-center text-black md:px-16">

@@ -5,6 +5,7 @@ import { Link } from "@/i18n/navigation";
 import { useCart } from "@/lib/cart-context";
 import { formatMoney } from "@/lib/format-price";
 import { productPrimaryImageSrc } from "@/lib/product-image";
+import { BackButton } from "@/components/store/BackButton";
 
 export default function CartPage() {
   const t = useTranslations("Cart");
@@ -19,6 +20,7 @@ export default function CartPage() {
 
   return (
     <div className="space-y-8">
+      <BackButton />
       <h1 className="text-2xl font-bold text-secondary">{t("title")}</h1>
       <p className="text-sm text-secondary/70">{t("couponHint")}</p>
 

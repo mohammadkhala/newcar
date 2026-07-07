@@ -1,3 +1,4 @@
+import { BackButton } from "@/components/store/BackButton";
 import { setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 
@@ -144,6 +145,7 @@ export default async function PrivacyPolicyPage({ params }: Props) {
 
   return (
     <div className="store-shell py-10 md:py-14">
+      <BackButton className="mb-6" />
 
       {/* Header */}
       <div className="mb-10 text-center">

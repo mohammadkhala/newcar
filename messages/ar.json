@@ -38,7 +38,8 @@
     "cartAria": "السلة",
     "loginShort": "دخول",
     "searchShort": "بحث",
-    "cartLabelShort": "سلة المشتريات"
+    "cartLabelShort": "سلة المشتريات",
+    "back": "رجوع"
   },
   "Home": {
     "driverPicksTitle": "قطع يحتاجها كل سائق",

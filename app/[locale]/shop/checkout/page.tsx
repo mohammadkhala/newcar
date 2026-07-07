@@ -7,6 +7,7 @@ import { bffFetch } from "@/lib/bff-client";
 import { useCart } from "@/lib/cart-context";
 import { getStoredGuestId } from "@/lib/guest-storage";
 import { formatMoney } from "@/lib/format-price";
+import { BackButton } from "@/components/store/BackButton";
 
 type AddressRow = {
   id: number;
@@ -467,7 +468,8 @@ export default function CheckoutPage() {
   return (
     <div className="mx-auto max-w-4xl">
       {/* Page title */}
-      <div className="mb-6">
+      <div className="mb-6 space-y-2">
+        <BackButton />
         <h1 className="text-2xl font-bold text-secondary">{t("title")}</h1>
       </div>
 

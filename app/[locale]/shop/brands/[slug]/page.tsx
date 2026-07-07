@@ -2,6 +2,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { ProductCard } from "@/components/store/ProductCard";
+import { BackButton } from "@/components/store/BackButton";
 import {
   fetchConfig,
   fetchProductBrandProducts,
@@ -57,6 +58,7 @@ export default async function BrandProductsPage({
 
   return (
     <div className="space-y-6">
+      <BackButton />
       <div>
         <h1 className="text-2xl font-bold text-black">
           {data.brand.name}

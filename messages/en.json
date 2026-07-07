@@ -38,7 +38,8 @@
     "cartAria": "Shopping cart",
     "loginShort": "Sign in",
     "searchShort": "Search",
-    "cartLabelShort": "Shopping cart"
+    "cartLabelShort": "Shopping cart",
+    "back": "Back"
   },
   "Home": {
     "driverPicksTitle": "Essentials every driver needs",

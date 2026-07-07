@@ -4,6 +4,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { bffFetch } from "@/lib/bff-client";
+import { BackButton } from "@/components/store/BackButton";
 
 type UserInfo = {
   f_name: string;
@@ -130,6 +131,7 @@ export default function AccountProfilePage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-6 px-4 py-12">
+      <BackButton />
       <div className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-bold text-secondary">{t("profile")}</h1>
         <Link

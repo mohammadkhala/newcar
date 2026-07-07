@@ -3,6 +3,7 @@
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { clientPostJson } from "@/lib/client-post";
+import { BackButton } from "@/components/store/BackButton";
 
 export default function QuotePage() {
   const t = useTranslations("CMS");
@@ -57,6 +58,7 @@ export default function QuotePage() {
 
   return (
     <div className="store-shell py-10 md:py-14">
+      <BackButton className="mb-6" />
 
       {/* Header */}
       <div className="relative mb-10 overflow-hidden rounded-3xl bg-gradient-to-l from-primary via-amber-400 to-yellow-300 px-8 py-12 text-black md:px-14">
