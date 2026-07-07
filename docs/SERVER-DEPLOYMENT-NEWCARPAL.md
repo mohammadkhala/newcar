@@ -170,10 +170,15 @@ sudo -u baitpait bash -lc 'cd /home/baitpait/public_html/newcarpal-store && git 
 
 ```bash
 sudo -u baitpait bash -lc 'export NVM_DIR="$HOME/.nvm"; . "$NVM_DIR/nvm.sh"; nvm use 20; cd /home/baitpait/public_html/newcarpal-store && npm ci && npm run build'
-sudo -u baitpait bash -lc 'pm2 restart newcarpal-store'
+sudo -u baitpait pm2 restart newcar-store
 ```
 
-- **PM2:** يجب أن توجد **عملية واحدة** بنفس الاسم لتفادي `EADDRINUSE` على المنفذ. بعد التكرار: `pm2 delete` للمكرر ثم `pm2 save`.
+- **PM2:** الاسم الصحيح على الإنتاج **`newcar-store`** (ليس `newcarpal-store`). عملية واحدة فقط لتفادي `EADDRINUSE`.
+- **Git public:** إذا ظهر `could not read Username` — امسح credential ثم أعد السحب (انظر `docs/STORE-PULL-DEPLOY.md`).
+
+### سحب سريع (مرجع)
+
+انظر **`docs/STORE-PULL-DEPLOY.md`** لأوامر النشر الكاملة وإصلاح GitHub auth.
 
 ### BFF و Auth (توثيق سلوك)
 
@@ -210,7 +215,7 @@ curl -skI --resolve newcarpal.com:443:127.0.0.1 https://newcarpal.com/ | head -2
 tail -n 100 /home/baitpait/public_html/adminNewcar/storage/logs/laravel.log
 
 # سجلات المتجر
-sudo -u baitpait pm2 logs newcarpal-store --lines 50
+sudo -u baitpait pm2 logs newcar-store --lines 50
 
 # مرجع vhost Webuzو
 sudo grep -Rsn "newcarpal" /usr/local/apps/apache2/etc/conf.d/webuzoVH.conf | head -20
