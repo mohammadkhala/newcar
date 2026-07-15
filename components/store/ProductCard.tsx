@@ -30,7 +30,7 @@ export function ProductCard({
   return (
     <article className="store-card group flex h-full flex-col overflow-hidden transition-transform hover:-translate-y-0.5">
       <div className="relative">
-        <Link href={href} className="relative block aspect-[4/3] bg-surface-muted">
+        <Link href={href} className="relative block aspect-[4/3] touch-manipulation bg-surface-muted">
           <FallbackImg
             src={src ?? "/logo.png"}
             alt=""
@@ -38,8 +38,8 @@ export function ProductCard({
             height={600}
             loading="lazy"
             decoding="async"
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-            fallbackClassName="h-full w-full object-contain p-6 opacity-60"
+            className="pointer-events-none h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+            fallbackClassName="pointer-events-none h-full w-full object-contain p-6 opacity-60"
           />
         </Link>
         <div className="absolute start-2 top-2 z-10 flex flex-col gap-1">

@@ -85,7 +85,7 @@ export function HomeHeroCarousel({ slides }: Props) {
                     sizes="100vw"
                     priority={idx === 0}
                     fetchPriority={idx === 0 ? "high" : "auto"}
-                    className="object-cover"
+                    className="pointer-events-none object-cover"
                   />
                 ) : (
                   <div className="h-full w-full bg-surface-muted" aria-hidden />
@@ -93,11 +93,13 @@ export function HomeHeroCarousel({ slides }: Props) {
                 <div className="pointer-events-none absolute inset-0 bg-linear-to-r from-black/35 via-black/10 to-transparent" />
               </div>
             );
+            const isActive = idx === activeIndex;
             return (
               <div
                 key={s.key}
-                className="shrink-0"
+                className={`shrink-0 ${isActive ? "" : "pointer-events-none"}`}
                 style={{ width: `${100 / slides.length}%` }}
+                aria-hidden={!isActive}
               >
                 {s.href ? (
                   isExternalHref(s.href) ? (
@@ -105,14 +107,16 @@ export function HomeHeroCarousel({ slides }: Props) {
                       href={s.href.trim()}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                      tabIndex={isActive ? 0 : -1}
+                      className="block touch-manipulation focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                     >
                       {inner}
                     </a>
                   ) : (
                     <Link
                       href={internalPath(s.href)}
-                      className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                      tabIndex={isActive ? 0 : -1}
+                      className="block touch-manipulation focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                     >
                       {inner}
                     </Link>

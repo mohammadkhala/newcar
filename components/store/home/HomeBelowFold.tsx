@@ -242,10 +242,10 @@ export async function HomeBelowFold({
                 <li key={brand.id}>
                   <Link
                     href={`/shop/search?vehicle_brand_id=${brand.id}&offset=1`}
-                    className="store-panel flex min-h-[110px] flex-col items-center justify-center gap-2 px-3 py-3 text-center hover:border-primary/30"
+                    className="store-panel relative z-[1] flex min-h-[110px] touch-manipulation flex-col items-center justify-center gap-2 px-3 py-3 text-center hover:border-primary/30"
                   >
                     {src ? (
-                      <div className="relative h-16 w-full">
+                      <div className="pointer-events-none relative h-16 w-full">
                         <Image
                           src={src}
                           alt={brand.name}
@@ -256,11 +256,11 @@ export async function HomeBelowFold({
                         />
                       </div>
                     ) : (
-                      <span className="inline-flex h-16 w-full items-center justify-center rounded-lg bg-primary/10 text-lg font-bold text-primary">
+                      <span className="pointer-events-none inline-flex h-16 w-full items-center justify-center rounded-lg bg-primary/10 text-lg font-bold text-primary">
                         {brand.name.slice(0, 1)}
                       </span>
                     )}
-                    <span className="line-clamp-2 text-xs font-semibold text-secondary">
+                    <span className="pointer-events-none line-clamp-2 text-xs font-semibold text-secondary">
                       {brand.name}
                     </span>
                   </Link>
@@ -300,7 +300,7 @@ export async function HomeBelowFold({
                 <li key={brand.id}>
                   <Link
                     href={`/shop/search?product_brand_id=${brand.id}&offset=1`}
-                    className="store-panel flex min-h-[110px] flex-col items-center justify-center gap-2 px-3 py-3 text-center hover:border-primary/30"
+                    className="store-panel relative z-[1] flex min-h-[110px] touch-manipulation flex-col items-center justify-center gap-2 px-3 py-3 text-center hover:border-primary/30"
                   >
                     {src ? (
                       <Image
@@ -309,14 +309,14 @@ export async function HomeBelowFold({
                         width={80}
                         height={56}
                         loading="lazy"
-                        className="h-12 w-20 object-contain"
+                        className="pointer-events-none h-12 w-20 object-contain"
                       />
                     ) : (
-                      <span className="inline-flex h-12 w-20 items-center justify-center rounded-md bg-primary/10 text-lg font-bold text-primary">
+                      <span className="pointer-events-none inline-flex h-12 w-20 items-center justify-center rounded-md bg-primary/10 text-lg font-bold text-primary">
                         {brand.name.slice(0, 1)}
                       </span>
                     )}
-                    <span className="line-clamp-2 text-xs font-semibold text-secondary">
+                    <span className="pointer-events-none line-clamp-2 text-xs font-semibold text-secondary">
                       {brand.name}
                     </span>
                   </Link>

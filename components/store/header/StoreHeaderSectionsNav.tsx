@@ -68,6 +68,9 @@ export function StoreHeaderSectionsNav({
     }
   };
 
+  const desktopPanelOpen =
+    categoriesDropdownOpen || shopDropdownOpen || openFeaturedId !== null;
+
   return (
     <div
       id="header-sections-nav"
@@ -75,7 +78,33 @@ export function StoreHeaderSectionsNav({
       className="sticky top-0 z-[200] bg-primary shadow-[inset_0_-1px_0_rgba(0,0,0,0.08)]"
       onMouseLeave={onScheduledCloseFeatured}
     >
-      <div ref={navShellRef} className="store-shell flex flex-nowrap items-center gap-2 py-2 md:gap-3">
+      {/*
+        Transparent dismiss layer under the mega panels (sticky is z-200).
+        Forwards the same click to the content underneath so brand/tiles
+        respond on the first press instead of only dismissing the menu.
+      */}
+      {desktopPanelOpen ? (
+        <div
+          aria-hidden
+          className="fixed inset-0 z-[100] hidden md:block"
+          onPointerDown={(e) => {
+            e.preventDefault();
+            const layer = e.currentTarget;
+            const { clientX, clientY } = e;
+            // Disable hit-testing before sampling the element underneath,
+            // otherwise elementFromPoint still returns this backdrop.
+            layer.style.pointerEvents = "none";
+            closeAllDesktop();
+            const under = document.elementFromPoint(clientX, clientY);
+            const link = under?.closest?.("a");
+            if (link instanceof HTMLAnchorElement) {
+              link.click();
+            }
+          }}
+        />
+      ) : null}
+
+      <div ref={navShellRef} className="store-shell relative z-[210] flex flex-nowrap items-center gap-2 py-2 md:gap-3">
         <div className="order-1 flex shrink-0 items-center gap-2">
           <div ref={categoriesRef} className="hidden md:block">
             <div className="relative">
@@ -166,7 +195,7 @@ export function StoreHeaderSectionsNav({
           own ~40px height instead of letting them float below it. */}
 
       {openFeaturedId && featuredNavItems.length > 0 ? (
-        <div className="store-shell relative" onMouseEnter={onCancelCloseFeatured}>
+        <div className="store-shell relative z-[210]" onMouseEnter={onCancelCloseFeatured}>
           <div
             className="absolute top-0 z-[160]"
             style={{ insetInlineStart: panelInsetStart }}

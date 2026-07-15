@@ -11,6 +11,7 @@ import { StoreFooter } from "@/components/store/StoreFooter";
 import { StoreHeader } from "@/components/store/StoreHeader";
 import { FloatingWhatsApp } from "@/components/store/FloatingWhatsApp";
 import { MobileBottomNav } from "@/components/store/MobileBottomNav";
+import { NavigationProgress } from "@/components/store/NavigationProgress";
 import { Toaster } from "sonner";
 import { CartProvider } from "@/lib/cart-context";
 import { WishlistProvider } from "@/lib/wishlist-context";
@@ -131,6 +132,7 @@ export default async function LocaleLayout({ children, params }: Props) {
           <CartProvider>
             <WishlistProvider>
               <GuestInitializer />
+              <NavigationProgress />
               <StoreHeader />
               <main className="relative z-0 flex-1 overflow-x-clip px-0 py-0 max-md:pb-[calc(3.5rem+env(safe-area-inset-bottom,0px))]">
                 {children}
