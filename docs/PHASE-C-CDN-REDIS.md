@@ -52,50 +52,92 @@ curl -sSI "https://admin.newcarpal.com/storage/banner/2026-07-10-6a512d6bb3c66.w
 
 ---
 
-## 4) Redis كاش Laravel (موصى به)
+## 4) Redis كاش Laravel (اختياري — فقط إذا نجح فحص الامتداد)
 
-### تثبيت سريع (Debian/Ubuntu)
+> **حالة الإنتاج (2026-07-15):** بقي على `CACHE_DRIVER=file` بعد فشل سابق
+> (`Class "Redis" not found`). لا تفعّل Redis قبل تثبيت `php-redis`.
+
+### مسار آمن (نسخ ولصق على السيرفر كـ root)
 
 ```bash
+# 1) Redis server
 apt-get update && apt-get install -y redis-server
 systemctl enable --now redis-server
-redis-cli ping   # PONG
+redis-cli ping   # يجب: PONG
+
+# 2) امتداد PHP (عدّل 8.2 حسب php -v)
+PHP_VER=$(php -r 'echo PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION;')
+apt-get install -y "php${PHP_VER}-redis" || apt-get install -y php-redis
+phpenmod redis 2>/dev/null || true
+# إن لزم: أعد تشغيل php-fpm
+systemctl restart "php${PHP_VER}-fpm" 2>/dev/null || systemctl restart php-fpm 2>/dev/null || true
+
+php -m | grep -i redis   # يجب أن يظهر redis
 ```
 
-### `.env` في adminNewcar
+### تفعيل فقط بعد ظهور `redis` في `php -m`
+
+في `/home/baitpait/public_html/adminNewcar/.env`:
 
 ```env
 CACHE_DRIVER=redis
+REDIS_CLIENT=phpredis
 REDIS_HOST=127.0.0.1
 REDIS_PASSWORD=null
 REDIS_PORT=6379
 ```
 
-ثم:
-
 ```bash
 cd /home/baitpait/public_html/adminNewcar
+rm -f bootstrap/cache/config.php
 php artisan optimize:clear
 php artisan config:cache
+php artisan tinker --execute="echo config('cache.default').PHP_EOL; Cache::put('nc_ping','ok',60); echo Cache::get('nc_ping');"
 ```
 
-إن فشل Redis، أعد `CACHE_DRIVER=file` فوراً.
+المتوقع: `redis` ثم `ok`.
+
+إن فشل أي خطوة: أعد فوراً `CACHE_DRIVER=file` ثم `config:cache`.
 
 ---
 
-## 5) Cloudflare CDN (موصى به للدومين العام)
+## 5) Cloudflare CDN (يتطلب حسابكم + تغيير DNS — لا يُنفَّذ من الكود)
 
-1. أضف النطاق `newcarpal.com` إلى Cloudflare (DNS برتقالي / Proxied).  
-2. قواعد كاش (Cache Rules):
+> **فحص حي (2026-07-15):** الاستجابات من `Server: Apache` بدون `cf-ray`
+> → النطاق **ليس** خلف Cloudflare حالياً. التفعيل يحتاج نقل DNS عند المسجّل.
+
+1. أنشئ موقعاً في Cloudflare لـ `newcarpal.com` و`www`.  
+2. انقل Nameservers عند المسجّل إلى Cloudflare.  
+3. سجّل DNS: `@` و`www` → IP السيرفر (**Proxied / سحابة برتقالية**).  
+4. `admin.newcarpal.com` → نفس الـ IP (Proxied إن أردت كاش `/storage`).  
+5. SSL/TLS: **Full (strict)** بعد شهادة صالحة على Apache.  
+6. قواعد كاش (Cache Rules):
 
 | URI | إعداد |
 |-----|--------|
 | `newcarpal.com/_next/static/*` | Cache Everything · Edge TTL 1 month · Browser TTL 1 month |
 | `admin.newcarpal.com/storage/*` | Cache Everything · Edge TTL 7–30 days |
 
-3. اختياري: تفعيل **Polish** / **Mirage** للصور على `admin` إن كانت الخطة تدعم ذلك.
+7. **لا** تكش HTML لـ `/account/*` أو `/shop/checkout*`.
 
-لا تفعّل كاش HTML لصفحات الحساب/الدفع.
+تحقق بعد التفعيل: `curl -sSI https://newcarpal.com/ar | grep -i cf-ray`
+
+---
+
+## 5b) تنظيف أسماء صور فئات مكسورة (اختياري — DB)
+
+أربع فئات تشير لملفات غير موجودة (`category-*-thumb.png`). المتجر يتجاهلها بعد إصلاح `category-image.ts`. لتنظيف الأدمن/API أيضاً:
+
+```sql
+UPDATE categories
+SET image = NULL, updated_at = NOW()
+WHERE image IN (
+  'category-1-thumb.png',
+  'category-22-thumb.png',
+  'category-26-thumb.png',
+  'category-30-thumb.png'
+);
+```
 
 ---
 

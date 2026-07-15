@@ -56,6 +56,10 @@ export function resolveMediaUrl(
   if (file === "img2.jpg" || s.includes("/assets/admin/img/")) {
     return null;
   }
+  // Legacy WordPress/migrator thumbs that were never uploaded to Laravel storage.
+  if (/^category-\d+-thumb\.(png|jpe?g|webp)$/i.test(file)) {
+    return null;
+  }
   if (s.startsWith("data:") || s.startsWith("blob:")) {
     return s;
   }
