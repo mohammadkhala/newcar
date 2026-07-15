@@ -34,18 +34,30 @@
 3. **إزالة `fetchConfig` من الرئيسية** — العملة عبر `NEXT_PUBLIC_CURRENCY_CODE` أو `ILS`  
 4. **BFF:** كاش 60s لـ GET العامة (بدون توكن) + `optimizePackageImports`  
 
-### المرحلة C — التالية (سيرفر / محتوى)
+### المرحلة C — جاهزة للتنفيذ على السيرفر (2026-07-15)
 
-1. إعادة ضغط بنرات الهيرو (&lt;150KB)  
-2. CDN لـ `/storage` و`/_next/static`  
-3. Redis كاش على Laravel للفئات والماركات  
-4. مراقبة: PageSpeed Mobile بعد النشر  
+التفاصيل الكاملة: **`docs/PHASE-C-CDN-REDIS.md`**
+
+1. أمر Laravel `media:optimize-storage-images` لضغط الصور &gt;150KB  
+2. `.htaccess` كاش طويل لـ `/storage` + headers لـ `/_next/static`  
+3. دليل تفعيل **Redis** + **Cloudflare**  
+4. روابط مراقبة PageSpeed  
 
 ---
 
 ## نشر السيرفر
 
-### المتجر
+### Laravel (+ ضغط صور + كاش storage)
+
+```bash
+cd /home/baitpait/public_html/adminNewcar
+git pull origin main
+php artisan media:optimize-storage-images --dry-run --max-kb=150
+php artisan media:optimize-storage-images --max-kb=150 --max-width=1600 --quality=78 --backup
+php artisan optimize:clear
+```
+
+### المتجر (كاش _next/static)
 
 ```bash
 sudo -u baitpait bash -lc 'cd /home/baitpait/public_html/newcarpal-store && git pull origin main'
@@ -53,17 +65,9 @@ sudo -u baitpait bash -lc 'export NVM_DIR="$HOME/.nvm"; . "$NVM_DIR/nvm.sh"; nvm
 sudo -u baitpait pm2 restart newcar-store
 ```
 
-### Laravel (mega-nav)
-
-```bash
-cd /home/baitpait/public_html/adminNewcar
-git pull origin main
-php artisan optimize:clear
-```
-
 تحقق:
 
 ```bash
-curl -sS "https://admin.newcarpal.com/api/v1/categories/mega-nav" -H "X-localization: ar" | head -c 200
 curl -sSI https://newcarpal.com/ar | grep -iE 'cache-control|x-nextjs-cache'
+curl -sSI "https://admin.newcarpal.com/storage/banner/2026-07-10-6a512d6bb3c66.webp" | grep -i cache-control
 ```
