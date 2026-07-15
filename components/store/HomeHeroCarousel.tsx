@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "@/i18n/navigation";
@@ -45,10 +46,18 @@ export function HomeHeroCarousel({ slides }: Props) {
     <section
       className="w-full bg-black"
       aria-label={t("sections.banners")}
-      onMouseEnter={() => { pausedRef.current = true; }}
-      onMouseLeave={() => { pausedRef.current = false; }}
-      onTouchStart={() => { pausedRef.current = true; }}
-      onTouchEnd={() => { pausedRef.current = false; }}
+      onMouseEnter={() => {
+        pausedRef.current = true;
+      }}
+      onMouseLeave={() => {
+        pausedRef.current = false;
+      }}
+      onTouchStart={() => {
+        pausedRef.current = true;
+      }}
+      onTouchEnd={() => {
+        pausedRef.current = false;
+      }}
     >
       <div className="relative w-full overflow-hidden" dir="ltr">
         {/* Film strip — always LTR so translateX is consistent */}
@@ -60,15 +69,27 @@ export function HomeHeroCarousel({ slides }: Props) {
             transform: `translateX(-${activeIndex * (100 / slides.length)}%)`,
           }}
         >
-          {slides.map((s) => {
+          {slides.map((s, idx) => {
+            const nearActive =
+              Math.abs(idx - activeIndex) <= 1 ||
+              (activeIndex === 0 && idx === slides.length - 1) ||
+              (activeIndex === slides.length - 1 && idx === 0);
+
             const inner = (
               <div className="relative aspect-[2/1] max-h-[min(52vh,560px)] min-h-[200px] w-full bg-surface-muted">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={s.src}
-                  alt={s.alt}
-                  className="h-full w-full object-cover"
-                />
+                {nearActive ? (
+                  <Image
+                    src={s.src}
+                    alt={s.alt}
+                    fill
+                    sizes="100vw"
+                    priority={idx === 0}
+                    fetchPriority={idx === 0 ? "high" : "auto"}
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="h-full w-full bg-surface-muted" aria-hidden />
+                )}
                 <div className="pointer-events-none absolute inset-0 bg-linear-to-r from-black/35 via-black/10 to-transparent" />
               </div>
             );
@@ -117,7 +138,9 @@ export function HomeHeroCarousel({ slides }: Props) {
               >
                 <span
                   className={`block rounded-full transition-all duration-300 ${
-                    activeIndex === idx ? "h-3 w-6 bg-primary" : "h-3 w-3 bg-white/80"
+                    activeIndex === idx
+                      ? "h-3 w-6 bg-primary"
+                      : "h-3 w-3 bg-white/80"
                   }`}
                   aria-hidden
                 />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { CartBadge } from "@/components/store/CartBadge";
 import { HeaderStoreLogo } from "@/components/store/HeaderStoreLogo";
 import { HeaderSearch } from "@/components/store/HeaderSearch";
@@ -14,7 +14,6 @@ export type { NavCategoryItem } from "@/components/store/header/types";
 
 type Props = {
   languageOptions: LanguageOption[] | null;
-  isAuthenticated: boolean;
   storeLogoSrc: string;
   storeLogoAlt: string;
 };
@@ -23,13 +22,33 @@ type Props = {
  * Top locale bar + logo/search/cart row. The orange categories nav lives in its own
  * sticky sibling (StoreHeaderCategoriesBar) so it isn't trapped inside this ~216px-tall
  * block's containing box — see that component's docstring for why.
+ *
+ * Auth comes from /api/auth/session (client) so the server header never calls cookies().
  */
 export function StoreHeaderBody({
   languageOptions,
-  isAuthenticated,
   storeLogoSrc,
   storeLogoAlt,
 }: Props) {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    void fetch("/api/auth/session", { credentials: "same-origin" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data: { authenticated?: boolean } | null) => {
+        if (!cancelled && data?.authenticated) {
+          setIsAuthenticated(true);
+        }
+      })
+      .catch(() => {
+        /* keep guest UI */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   useFcmTokenListener(isAuthenticated);
 
   useEffect(() => {

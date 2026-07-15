@@ -50,23 +50,28 @@ export function HomeProductsForYouSection({ pageSize, initial }: Props) {
               : "bestSelling",
         ),
       })).filter((tab) => {
+        // Keep non-SSR tabs visible so they can lazy-load on the client.
         if (tab.id === "bestSelling") {
           return (
             initial.bestSelling.products.length > 0 ||
-            initial.all.products.length > 0
+            initial.all.products.length > 0 ||
+            initial.mostViewed.products.length > 0
           );
         }
-        return initial[tab.id].products.length > 0;
+        return true;
       }),
     [t, initial],
   );
 
-  const defaultTab: ProductsForYouTabKey = tabs.some((tab) => tab.id === "bestSelling")
+  const defaultTab: ProductsForYouTabKey = tabs.some(
+    (tab) => tab.id === "bestSelling",
+  )
     ? "bestSelling"
     : (tabs[0]?.id ?? "bestSelling");
 
   const [active, setActive] = useState<ProductsForYouTabKey>(defaultTab);
   const pausedRef = useRef(false);
+  const fetchedTabsRef = useRef<Set<ProductsForYouTabKey>>(new Set());
 
   useEffect(() => {
     if (tabs.length <= 1) return;
@@ -84,6 +89,11 @@ export function HomeProductsForYouSection({ pageSize, initial }: Props) {
   const [tabState, setTabState] = useState(() => {
     const next = { ...initial };
     if (
+      next.bestSelling.products.length > 0
+    ) {
+      fetchedTabsRef.current.add("bestSelling");
+    }
+    if (
       next.bestSelling.products.length === 0 &&
       next.all.products.length > 0
     ) {
@@ -92,10 +102,17 @@ export function HomeProductsForYouSection({ pageSize, initial }: Props) {
         totalSize: next.all.totalSize,
         offset: next.all.offset,
       };
+      fetchedTabsRef.current.add("bestSelling");
+    }
+    for (const key of TAB_ORDER) {
+      if (next[key].products.length > 0) {
+        fetchedTabsRef.current.add(key);
+      }
     }
     return next;
   });
   const [loading, setLoading] = useState(false);
+  const [tabLoading, setTabLoading] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -114,8 +131,46 @@ export function HomeProductsForYouSection({ pageSize, initial }: Props) {
     setMenuOpen(false);
     // Pause auto-advance briefly after manual selection
     pausedRef.current = true;
-    setTimeout(() => { pausedRef.current = false; }, 8000);
+    setTimeout(() => {
+      pausedRef.current = false;
+    }, 8000);
   }, []);
+
+  useEffect(() => {
+    if (fetchedTabsRef.current.has(effectiveActive)) {
+      return;
+    }
+
+    let cancelled = false;
+    setTabLoading(true);
+    void clientFetchProductSearch(
+      {
+        sort_by: TAB_SORT[effectiveActive],
+        limit: String(pageSize),
+        offset: "1",
+      },
+      locale,
+    )
+      .then((data) => {
+        if (cancelled) return;
+        fetchedTabsRef.current.add(effectiveActive);
+        setTabState((prev) => ({
+          ...prev,
+          [effectiveActive]: {
+            products: data?.products ?? [],
+            totalSize: data?.total_size ?? data?.products?.length ?? 0,
+            offset: 1,
+          },
+        }));
+      })
+      .finally(() => {
+        if (!cancelled) setTabLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [effectiveActive, locale, pageSize]);
 
   useEffect(() => {
     if (!menuOpen) {
@@ -233,15 +288,21 @@ export function HomeProductsForYouSection({ pageSize, initial }: Props) {
         </ul>
 
         <div className="tab-content pt-6 md:pt-10" role="tabpanel">
-          <ul className="grid grid-cols-2 gap-3 md:grid-cols-4">
-            {current.products.map((product) => (
-              <li key={product.id}>
-                <CatalogProductCard product={product} />
-              </li>
-            ))}
-          </ul>
+          {tabLoading && current.products.length === 0 ? (
+            <p className="py-8 text-center text-sm text-secondary/70">
+              {t("loading")}
+            </p>
+          ) : (
+            <ul className="grid grid-cols-2 gap-3 md:grid-cols-4">
+              {current.products.map((product) => (
+                <li key={product.id}>
+                  <CatalogProductCard product={product} />
+                </li>
+              ))}
+            </ul>
+          )}
 
-          {hasMore ? (
+          {hasMore && !tabLoading ? (
             <div className="listing-actions mt-6 text-center">
               <button
                 type="button"

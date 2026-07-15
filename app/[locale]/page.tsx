@@ -53,6 +53,9 @@ type ProductBrandRow = ProductBrandListResponse["brands"][number];
 
 type Props = { params: Promise<{ locale: string }> };
 
+/** Public home can be revalidated; auth no longer forces dynamic via cookies(). */
+export const revalidate = 60;
+
 const PRODUCTS_FOR_YOU_PAGE_SIZE = 8;
 const NEW_ARRIVAL_CAROUSEL_SIZE = 10;
 
@@ -66,27 +69,28 @@ function toProductsForYouTab(
   };
 }
 
-function copyProductsForYouTab(data: ProductsForYouTabData): ProductsForYouTabData {
-  return {
-    products: [...data.products],
-    totalSize: data.totalSize,
-    offset: data.offset,
-  };
-}
-
+/**
+ * SSR only the default tab (best_selling). Other tabs load on the client when
+ * selected — removes ~2 heavy products/search calls from the critical path.
+ */
 async function fetchProductsForYouInitial(): Promise<
   Record<ProductsForYouTabKey, ProductsForYouTabData>
 > {
   const limit = String(PRODUCTS_FOR_YOU_PAGE_SIZE);
-  const [all, mostViewed, bestSelling] = await Promise.all([
-    fetchProductSearch({ sort_by: "a_to_z", limit, offset: "1" }),
-    fetchProductSearch({ sort_by: "new_arrival", limit, offset: "1" }),
-    fetchProductSearch({ sort_by: "best_selling", limit, offset: "1" }),
-  ]);
+  const empty: ProductsForYouTabData = {
+    products: [],
+    totalSize: 0,
+    offset: 1,
+  };
 
-  const allTab = toProductsForYouTab(all);
+  let bestSellingTab = toProductsForYouTab(
+    await fetchProductSearch({
+      sort_by: "best_selling",
+      limit,
+      offset: "1",
+    }),
+  );
 
-  let bestSellingTab = toProductsForYouTab(bestSelling);
   if (bestSellingTab.products.length === 0) {
     bestSellingTab = toProductsForYouTab(
       await fetchProductSearch({ sort_by: "new_arrival", limit, offset: "1" }),
@@ -104,27 +108,10 @@ async function fetchProductsForYouInitial(): Promise<
       };
     }
   }
-  if (bestSellingTab.products.length === 0 && allTab.products.length > 0) {
-    bestSellingTab = copyProductsForYouTab(allTab);
-  }
-
-  let mostViewedTab = toProductsForYouTab(mostViewed);
-  if (mostViewedTab.products.length === 0) {
-    mostViewedTab = toProductsForYouTab(
-      await fetchProductSearch({
-        sort_by: "price_high_to_low",
-        limit,
-        offset: "1",
-      }),
-    );
-  }
-  if (mostViewedTab.products.length === 0 && allTab.products.length > 0) {
-    mostViewedTab = copyProductsForYouTab(allTab);
-  }
 
   return {
-    all: allTab,
-    mostViewed: mostViewedTab,
+    all: empty,
+    mostViewed: empty,
     bestSelling: bestSellingTab,
   };
 }
@@ -381,7 +368,7 @@ export default async function HomePage({ params }: Props) {
               </p>
             </div>
             <ul className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-              {brands.slice(0, 24).map((brand) => {
+              {brands.slice(0, 12).map((brand) => {
                 const src = resolveMediaUrl(
                   brand.image_full_url ?? brand.image ?? null,
                   { defaultFolder: "vehicle-brand" },
@@ -399,8 +386,8 @@ export default async function HomePage({ params }: Props) {
                             src={src}
                             alt={brand.name}
                             fill
-                            unoptimized
                             sizes="120px"
+                            loading="lazy"
                             className="object-contain p-1.5"
                           />
                         </div>
@@ -457,7 +444,7 @@ export default async function HomePage({ params }: Props) {
                           alt={brand.name}
                           width={80}
                           height={56}
-                          unoptimized
+                          loading="lazy"
                           className="h-12 w-20 object-contain"
                         />
                       ) : (

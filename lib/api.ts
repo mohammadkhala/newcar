@@ -56,19 +56,21 @@ async function apiFetch(
  * Fetches active vehicle brands for storefront filters.
  * Returns empty list when the API base URL is not configured (avoids throwing from apiFetch).
  */
-export async function fetchVehicleBrands(): Promise<VehicleBrandsResponse> {
-  const base = getApiBaseUrl();
-  if (!base) {
-    return { brands: [] };
-  }
-  const res = await apiFetch("vehicles/brands", {
-    next: { revalidate: 300 },
-  });
-  if (!res.ok) {
-    return { brands: [] };
-  }
-  return res.json() as Promise<VehicleBrandsResponse>;
-}
+export const fetchVehicleBrands = cache(
+  async (): Promise<VehicleBrandsResponse> => {
+    const base = getApiBaseUrl();
+    if (!base) {
+      return { brands: [] };
+    }
+    const res = await apiFetch("vehicles/brands", {
+      next: { revalidate: 600 },
+    });
+    if (!res.ok) {
+      return { brands: [] };
+    }
+    return res.json() as Promise<VehicleBrandsResponse>;
+  },
+);
 
 export async function fetchVehicleModels(
   brandId: number,
@@ -170,7 +172,7 @@ export async function fetchBanners(): Promise<BannerRow[]> {
     return [];
   }
   try {
-    const res = await apiFetch("banners", { next: { revalidate: 60 } });
+    const res = await apiFetch("banners", { next: { revalidate: 180 } });
     if (!res.ok) {
       return [];
     }
@@ -192,7 +194,7 @@ export async function fetchCampaignBanners(): Promise<CampaignBannerRow[]> {
   }
   try {
     const res = await apiFetch("marketing/campaign-banners", {
-      next: { revalidate: 60 },
+      next: { revalidate: 180 },
     });
     if (!res.ok) {
       return [];
@@ -209,7 +211,7 @@ export const fetchConfig = cache(async (): Promise<Record<string, unknown> | nul
   if (!base) {
     return null;
   }
-  const res = await apiFetch("config", { next: { revalidate: 300 } });
+  const res = await apiFetch("config", { next: { revalidate: 600 } });
   if (!res.ok) {
     return null;
   }
@@ -345,33 +347,33 @@ export async function fetchPopularCategories(): Promise<CategoryRow[]> {
   return res.json() as Promise<CategoryRow[]>;
 }
 
-export async function fetchRootCategories(): Promise<CategoryRow[]> {
+export const fetchRootCategories = cache(async (): Promise<CategoryRow[]> => {
   const base = getApiBaseUrl();
   if (!base) {
     return [];
   }
-  const res = await apiFetch("categories", { next: { revalidate: 300 } });
+  const res = await apiFetch("categories", { next: { revalidate: 600 } });
   if (!res.ok) {
     return [];
   }
   return res.json() as Promise<CategoryRow[]>;
-}
+});
 
-export async function fetchCategoryChildren(
-  categoryId: number,
-): Promise<CategoryRow[]> {
-  const base = getApiBaseUrl();
-  if (!base) {
-    return [];
-  }
-  const res = await apiFetch(`categories/childes/${categoryId}`, {
-    next: { revalidate: 300 },
-  });
-  if (!res.ok) {
-    return [];
-  }
-  return res.json() as Promise<CategoryRow[]>;
-}
+export const fetchCategoryChildren = cache(
+  async (categoryId: number): Promise<CategoryRow[]> => {
+    const base = getApiBaseUrl();
+    if (!base) {
+      return [];
+    }
+    const res = await apiFetch(`categories/childes/${categoryId}`, {
+      next: { revalidate: 600 },
+    });
+    if (!res.ok) {
+      return [];
+    }
+    return res.json() as Promise<CategoryRow[]>;
+  },
+);
 
 export type CategoryContextNavItem = { id: number; name: string };
 
@@ -599,18 +601,18 @@ export async function fetchFaqs(): Promise<unknown[]> {
   return Array.isArray(data) ? data : [];
 }
 
-export async function fetchServices(): Promise<unknown[]> {
+export const fetchServices = cache(async (): Promise<unknown[]> => {
   const base = getApiBaseUrl();
   if (!base) {
     return [];
   }
-  const res = await apiFetch("services", { next: { revalidate: 600 } });
+  const res = await apiFetch("services", { next: { revalidate: 900 } });
   if (!res.ok) {
     return [];
   }
   const data = await res.json();
   return Array.isArray(data) ? data : [];
-}
+});
 
 export async function fetchServiceDetail(
   slug: string,

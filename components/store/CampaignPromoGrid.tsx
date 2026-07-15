@@ -55,7 +55,7 @@ export function CampaignPromoGrid({ items }: Props) {
                     alt={item.title}
                     fill
                     sizes="(max-width: 768px) 100vw, 50vw"
-                    unoptimized
+                    loading="lazy"
                     className="object-cover transition-transform duration-300 group-hover:scale-[1.01]"
                   />
                   <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/80 via-black/10 to-transparent" />
