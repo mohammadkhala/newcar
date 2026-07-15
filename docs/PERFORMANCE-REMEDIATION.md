@@ -27,14 +27,14 @@
 5. **إزالة `unoptimized`** من بنرات الحملة وماركات الصفحة الرئيسية  
 6. **`revalidate = 60`** على الصفحة الرئيسية + رفع TTLs لـ config/banners/categories  
 
-### المرحلة B — التالية (كود)
+### المرحلة B — نُفّذت (2026-07-15)
 
-1. تقسيم الصفحة بـ `Suspense` (Hero أولاً، أسفل الصفحة لاحقاً)  
-2. Endpoint Laravel واحد `GET /nav/mega` بدل childes المتكررة  
-3. تصغير استجابة `config` أو تقسيمها  
-4. `optimizePackageImports` وكاش BFF للـ GET العامة  
+1. **Suspense:** `HomeBelowFold` — Hero + ثقة + فئات أولاً؛ منتجات/ماركات/خدمات لاحقاً  
+2. **Laravel `GET /api/v1/categories/mega-nav`** — شجرة عمق 2 في طلب واحد (مع fallback للـ childes)  
+3. **إزالة `fetchConfig` من الرئيسية** — العملة عبر `NEXT_PUBLIC_CURRENCY_CODE` أو `ILS`  
+4. **BFF:** كاش 60s لـ GET العامة (بدون توكن) + `optimizePackageImports`  
 
-### المرحلة C — سيرفر / محتوى
+### المرحلة C — التالية (سيرفر / محتوى)
 
 1. إعادة ضغط بنرات الهيرو (&lt;150KB)  
 2. CDN لـ `/storage` و`/_next/static`  
@@ -45,19 +45,25 @@
 
 ## نشر السيرفر
 
+### المتجر
+
 ```bash
 sudo -u baitpait bash -lc 'cd /home/baitpait/public_html/newcarpal-store && git pull origin main'
 sudo -u baitpait bash -lc 'export NVM_DIR="$HOME/.nvm"; . "$NVM_DIR/nvm.sh"; nvm use 20; cd /home/baitpait/public_html/newcarpal-store && npm ci && npm run build'
 sudo -u baitpait pm2 restart newcar-store
 ```
 
-## تحقق بعد النشر
+### Laravel (mega-nav)
 
 ```bash
-curl -sSI https://newcarpal.com/ar | grep -i cache-control
-# يُفضَّل ألا يكون no-store دائماً للزائر العام
-
-curl -sS -o /dev/null -w "ttfb=%{time_starttransfer}s total=%{time_total}s\n" https://newcarpal.com/ar
+cd /home/baitpait/public_html/adminNewcar
+git pull origin main
+php artisan optimize:clear
 ```
 
-هدف المرحلة A: انخفاض TTFB عند الزيارات الدافئة + انخفاض عدد طلبات Laravel للهيدر + أخف لصور الهيرو.
+تحقق:
+
+```bash
+curl -sS "https://admin.newcarpal.com/api/v1/categories/mega-nav" -H "X-localization: ar" | head -c 200
+curl -sSI https://newcarpal.com/ar | grep -iE 'cache-control|x-nextjs-cache'
+```

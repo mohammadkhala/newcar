@@ -5,6 +5,9 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["10.0.2.2", "127.0.0.1", "localhost", "192.168.1.106"],
+  experimental: {
+    optimizePackageImports: ["next-intl", "sonner"],
+  },
   images: {
     formats: ["image/avif", "image/webp"],
     remotePatterns: [
