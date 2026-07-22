@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { resolveMediaUrl } from "@/lib/resolve-media-url";
 import type { VehicleModelRow } from "@/lib/types";
@@ -18,6 +19,7 @@ function modelHref(
 ): string {
   const q = new URLSearchParams();
   for (const [k, v] of Object.entries(baseQuery)) {
+    // Switching models always resets year + pagination; brand stays.
     if (v && k !== "vehicle_model_id" && k !== "vehicle_year_id" && k !== "offset") {
       q.set(k, v);
     }
@@ -45,7 +47,9 @@ function CarGlyph() {
  * Shows the model image from the API when available, CarGlyph as fallback.
  */
 export function VehicleModelSlider({ models, activeModelId, baseQuery }: Props) {
+  const t = useTranslations("Search");
   const scrollerRef = useRef<HTMLDivElement>(null);
+  const allActive = !activeModelId;
 
   if (models.length === 0) {
     return null;
@@ -70,6 +74,23 @@ export function VehicleModelSlider({ models, activeModelId, baseQuery }: Props) 
         ref={scrollerRef}
         className="flex snap-x gap-3 overflow-x-auto scroll-smooth pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
+        <Link
+          href={modelHref(baseQuery, null)}
+          className={`flex shrink-0 snap-start flex-col items-center justify-center gap-1 rounded-xl border px-4 py-2 transition-colors ${
+            allActive
+              ? "border-primary bg-primary/5"
+              : "border-border-soft bg-white hover:border-primary/30"
+          }`}
+        >
+          <CarGlyph />
+          <span
+            className={`whitespace-nowrap text-xs font-semibold ${
+              allActive ? "text-primary" : "text-secondary"
+            }`}
+          >
+            {t("allModels")}
+          </span>
+        </Link>
         {models.map((model) => {
           const active = activeModelId === String(model.id);
           const src = resolveMediaUrl(
@@ -79,7 +100,7 @@ export function VehicleModelSlider({ models, activeModelId, baseQuery }: Props) 
           return (
             <Link
               key={model.id}
-              href={modelHref(baseQuery, active ? null : model.id)}
+              href={modelHref(baseQuery, model.id)}
               className={`flex shrink-0 snap-start flex-col items-center gap-1 rounded-xl border px-4 py-2 transition-colors ${
                 active
                   ? "border-primary bg-primary/5"

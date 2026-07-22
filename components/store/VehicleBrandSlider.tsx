@@ -12,6 +12,7 @@ type Props = {
 
 function brandHref(brandId: number | null): string {
   if (brandId === null) return `/shop/search`;
+  // Brand-only: clear model/year so the grid shows every product for this brand.
   return `/shop/search?vehicle_brand_id=${brandId}&offset=1`;
 }
 

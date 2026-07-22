@@ -60,7 +60,13 @@ export default async function ShopSearchPage({ searchParams, params }: PageProps
     price_low: firstString(sp.price_low),
     price_high: firstString(sp.price_high),
     rating: firstString(sp.rating),
-    sort_by: firstString(sp.sort_by) ?? "new_arrival",
+    sort_by:
+      firstString(sp.sort_by) ??
+      (firstString(sp.vehicle_brand_id) ||
+      firstString(sp.vehicle_model_id) ||
+      firstString(sp.vehicle_year_id)
+        ? "best_selling"
+        : "new_arrival"),
     limit: firstString(sp.limit) ?? "12",
     offset: firstString(sp.offset) ?? "1",
     in_stock_only: firstString(sp.in_stock_only),
