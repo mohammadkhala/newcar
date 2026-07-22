@@ -16,6 +16,9 @@
 | Node | 20 عبر nvm |
 | ملف البيئة | `.env.production` (قبل `npm run build`) |
 
+فلتر البحث حسب السيارة (ماركة → موديل) وظهور بيانات الأدمن:  
+انظر [`SEARCH-VEHICLE-FILTER.md`](./SEARCH-VEHICLE-FILTER.md).
+
 ---
 
 ## أوامر النشر (نسخ ولصق)
