@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   clientFetchVehicleModels,
   clientFetchVehicleYears,
@@ -14,21 +14,37 @@ import type {
   VehicleModelRow,
   VehicleYearRow,
 } from "@/lib/types";
+import { availableFirst, hasProducts } from "@/lib/vehicle-availability";
 
 type Props = {
   brands: VehicleBrandsResponse["brands"];
   apiConfigured: boolean;
   onSearch?: () => void;
+  /** Selection restored from the URL (?brand=&model=&year=) so Back keeps it. */
+  initialBrandId?: number | "";
+  initialModelId?: number | "";
+  initialYearId?: number | "";
 };
 
-export function VehicleFitmentPicker({ brands, apiConfigured, onSearch }: Props) {
+export function VehicleFitmentPicker({
+  brands: rawBrands,
+  apiConfigured,
+  onSearch,
+  initialBrandId = "",
+  initialModelId = "",
+  initialYearId = "",
+}: Props) {
   const t = useTranslations("VehiclePicker");
   const locale = useLocale();
   const router = useRouter();
+  const brands = availableFirst(rawBrands);
 
-  const [brandId, setBrandId] = useState<number | "">("");
-  const [modelId, setModelId] = useState<number | "">("");
-  const [yearId, setYearId] = useState<number | "">("");
+  const [brandId, setBrandId] = useState<number | "">(initialBrandId);
+  const [modelId, setModelId] = useState<number | "">(initialBrandId === "" ? "" : initialModelId);
+  const [yearId, setYearId] = useState<number | "">(initialModelId === "" ? "" : initialYearId);
+  // Last brand/model the lists were loaded for; a change (not a remount) resets the children.
+  const loadedBrandRef = useRef<number | "">(initialBrandId);
+  const loadedModelRef = useRef<number | "">(initialModelId);
   const [models, setModels] = useState<VehicleModelRow[]>([]);
   const [years, setYears] = useState<VehicleYearRow[]>([]);
   const [loadingModels, setLoadingModels] = useState(false);
@@ -38,11 +54,15 @@ export function VehicleFitmentPicker({ brands, apiConfigured, onSearch }: Props)
   const activeModel = models.find((m) => m.id === modelId) ?? null;
 
   useEffect(() => {
-    if (!apiConfigured || brandId === "") {
-      setModels([]);
+    // Clear right away so the previous brand's models/years never linger on screen.
+    setModels([]);
+    if (loadedBrandRef.current !== brandId) {
+      loadedBrandRef.current = brandId;
       setModelId("");
       setYearId("");
       setYears([]);
+    }
+    if (!apiConfigured || brandId === "") {
       return;
     }
     let cancelled = false;
@@ -51,10 +71,7 @@ export function VehicleFitmentPicker({ brands, apiConfigured, onSearch }: Props)
       try {
         const list = await clientFetchVehicleModels(Number(brandId), locale);
         if (!cancelled) {
-          setModels(list);
-          setModelId("");
-          setYearId("");
-          setYears([]);
+          setModels(availableFirst(list));
         }
       } finally {
         if (!cancelled) setLoadingModels(false);
@@ -64,9 +81,12 @@ export function VehicleFitmentPicker({ brands, apiConfigured, onSearch }: Props)
   }, [apiConfigured, brandId, locale]);
 
   useEffect(() => {
-    if (!apiConfigured || modelId === "") {
-      setYears([]);
+    setYears([]);
+    if (loadedModelRef.current !== modelId) {
+      loadedModelRef.current = modelId;
       setYearId("");
+    }
+    if (!apiConfigured || modelId === "") {
       return;
     }
     let cancelled = false;
@@ -76,7 +96,6 @@ export function VehicleFitmentPicker({ brands, apiConfigured, onSearch }: Props)
         const list = await clientFetchVehicleYears(Number(modelId), locale);
         if (!cancelled) {
           setYears(list);
-          setYearId("");
         }
       } finally {
         if (!cancelled) setLoadingYears(false);
@@ -85,11 +104,23 @@ export function VehicleFitmentPicker({ brands, apiConfigured, onSearch }: Props)
     return () => { cancelled = true; };
   }, [apiConfigured, modelId, locale]);
 
+  // Mirror the selection in the URL without navigating, so Back from results restores it.
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    for (const [key, value] of [["brand", brandId], ["model", modelId], ["year", yearId]] as const) {
+      if (value === "") q.delete(key);
+      else q.set(key, String(value));
+    }
+    const qs = q.toString();
+    window.history.replaceState(null, "", qs ? `${window.location.pathname}?${qs}` : window.location.pathname);
+  }, [brandId, modelId, yearId]);
+
   function goSearch() {
     const q = new URLSearchParams();
     if (brandId !== "") q.set("vehicle_brand_id", String(brandId));
     if (modelId !== "") q.set("vehicle_model_id", String(modelId));
     if (yearId !== "") q.set("vehicle_year_id", String(yearId));
+    q.set("offset", "1");
     onSearch?.();
     router.push(`/shop/search?${q.toString()}`);
   }
@@ -111,15 +142,21 @@ export function VehicleFitmentPicker({ brands, apiConfigured, onSearch }: Props)
               { defaultFolder: "vehicle-brand" },
             );
             const active = brand.id === brandId;
+            const available = hasProducts(brand);
             return (
               <button
                 key={brand.id}
                 type="button"
+                disabled={!available}
+                aria-disabled={!available}
+                title={available ? undefined : t("comingSoon")}
                 onClick={() => setBrandId((prev) => (prev === brand.id ? "" : brand.id))}
                 className={`flex flex-col items-center gap-2 rounded-xl border-2 p-3 text-center transition-all ${
-                  active
-                    ? "border-primary bg-primary/5 shadow-sm"
-                    : "border-border-soft bg-white hover:border-primary/40 hover:bg-surface-muted"
+                  !available
+                    ? "cursor-not-allowed border-border-soft bg-white opacity-45 grayscale"
+                    : active
+                      ? "border-primary bg-primary/5 shadow-sm"
+                      : "border-border-soft bg-white hover:border-primary/40 hover:bg-surface-muted"
                 }`}
               >
                 {src ? (
@@ -151,6 +188,9 @@ export function VehicleFitmentPicker({ brands, apiConfigured, onSearch }: Props)
                 >
                   {brand.name}
                 </span>
+                {!available && (
+                  <span className="text-[10px] font-semibold text-secondary/60">{t("comingSoon")}</span>
+                )}
               </button>
             );
           })}
@@ -160,10 +200,10 @@ export function VehicleFitmentPicker({ brands, apiConfigured, onSearch }: Props)
         {brandId !== "" && modelId === "" && (
           <div className="mt-5 flex items-center justify-between gap-4 border-t border-border-soft pt-4">
             <Link
-              href={`/shop/search?vehicle_brand_id=${brandId}`}
+              href={`/shop/search?vehicle_brand_id=${brandId}&offset=1`}
               className="text-sm font-semibold text-primary hover:underline"
             >
-              تسوق كل منتجات {activeBrand?.name} ←
+              {t("shopAllOfBrand", { brand: activeBrand?.name ?? "" })}
             </Link>
             <button
               type="button"
@@ -193,10 +233,10 @@ export function VehicleFitmentPicker({ brands, apiConfigured, onSearch }: Props)
               <span className="font-bold text-secondary">{activeBrand?.name}</span>
             </div>
             <Link
-              href={`/shop/search?vehicle_brand_id=${brandId}`}
+              href={`/shop/search?vehicle_brand_id=${brandId}&offset=1`}
               className="shrink-0 rounded-lg bg-[#EAB308] px-3 py-1.5 text-xs font-bold text-black transition hover:brightness-105"
             >
-              تسوق الكل
+              {t("shopAll")}
             </Link>
           </div>
 
@@ -207,25 +247,34 @@ export function VehicleFitmentPicker({ brands, apiConfigured, onSearch }: Props)
               {t("loading")}
             </div>
           ) : models.length === 0 ? (
-            <p className="py-4 text-sm text-secondary/50">لا توجد موديلات</p>
+            <p className="py-4 text-sm text-secondary/50">{t("noModels")}</p>
           ) : (
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
               {models.map((model) => {
                 const active = model.id === modelId;
+                const available = hasProducts(model);
                 return (
                   <button
                     key={model.id}
                     type="button"
+                    disabled={!available}
+                    aria-disabled={!available}
+                    title={available ? undefined : t("comingSoon")}
                     onClick={() =>
                       setModelId((prev) => (prev === model.id ? "" : model.id))
                     }
                     className={`rounded-xl border-2 px-3 py-3 text-center text-sm font-semibold transition-all ${
-                      active
-                        ? "border-primary bg-primary/5 text-primary shadow-sm"
-                        : "border-border-soft bg-white text-secondary/70 hover:border-primary/40 hover:bg-surface-muted hover:text-secondary"
+                      !available
+                        ? "cursor-not-allowed border-border-soft bg-white text-secondary/70 opacity-45"
+                        : active
+                          ? "border-primary bg-primary/5 text-primary shadow-sm"
+                          : "border-border-soft bg-white text-secondary/70 hover:border-primary/40 hover:bg-surface-muted hover:text-secondary"
                     }`}
                   >
                     {model.name}
+                    {!available && (
+                      <span className="block text-[10px] font-semibold text-secondary/60">{t("comingSoon")}</span>
+                    )}
                   </button>
                 );
               })}
@@ -266,20 +315,29 @@ export function VehicleFitmentPicker({ brands, apiConfigured, onSearch }: Props)
             <div className="mb-5 flex flex-wrap gap-2">
               {years.map((y) => {
                 const active = y.id === yearId;
+                const available = hasProducts(y);
                 return (
                   <button
                     key={y.id}
                     type="button"
+                    disabled={!available}
+                    aria-disabled={!available}
+                    title={available ? undefined : t("comingSoon")}
                     onClick={() =>
                       setYearId((prev) => (prev === y.id ? "" : y.id))
                     }
                     className={`rounded-xl border-2 px-5 py-2 text-sm font-bold transition-all ${
-                      active
-                        ? "border-primary bg-primary text-white shadow-sm"
-                        : "border-border-soft bg-white text-secondary/70 hover:border-primary/40 hover:text-secondary"
+                      !available
+                        ? "cursor-not-allowed border-border-soft bg-white text-secondary/70 opacity-45"
+                        : active
+                          ? "border-primary bg-primary text-white shadow-sm"
+                          : "border-border-soft bg-white text-secondary/70 hover:border-primary/40 hover:text-secondary"
                     }`}
                   >
                     {y.year}
+                    {!available && (
+                      <span className="block text-[10px] font-semibold">{t("comingSoon")}</span>
+                    )}
                   </button>
                 );
               })}

@@ -488,6 +488,11 @@
     "loading": "טוען…",
     "submit": "הצגת מוצרים תואמים",
     "noBrands": "אין מותגי רכב פעילים מה‑API.",
-    "env": "הגדירו NEXT_PUBLIC_API_BASE_URL כדי להפעיל את המסנן."
+    "env": "הגדירו NEXT_PUBLIC_API_BASE_URL כדי להפעיל את המסנן.",
+    "comingSoon": "בקרוב",
+    "shopAll": "לכל המוצרים",
+    "shopAllOfBrand": "לכל מוצרי {brand} ←",
+    "noModels": "אין דגמים",
+    "byVehicle": "לפי הרכב שלכם ›"
   }
 }

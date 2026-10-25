@@ -13,6 +13,7 @@ import type {
   VehicleModelRow,
   VehicleYearRow,
 } from "@/lib/types";
+import { availableFirst, hasProducts } from "@/lib/vehicle-availability";
 
 type Props = {
   brands: VehicleBrandsResponse["brands"];
@@ -24,11 +25,14 @@ type Props = {
  * Home "Find Exact Model" bar (reference: hala-car avsb-style-01).
  */
 export function HomeExactModelSection({
-  brands,
+  brands: rawBrands,
   categories,
   apiConfigured,
 }: Props) {
   const t = useTranslations("Home.exactModel");
+  const tPicker = useTranslations("VehiclePicker");
+  const brands = availableFirst(rawBrands);
+  const soon = (available: boolean) => (available ? "" : ` (${tPicker("comingSoon")})`);
   const locale = useLocale();
   const router = useRouter();
 
@@ -55,7 +59,7 @@ export function HomeExactModelSection({
       try {
         const list = await clientFetchVehicleModels(Number(brandId), locale);
         if (!cancelled) {
-          setModels(list);
+          setModels(availableFirst(list));
           setModelId("");
           setYearId("");
           setYears([]);
@@ -137,8 +141,8 @@ export function HomeExactModelSection({
               >
                 <option value="">{t("allOption")}</option>
                 {brands.map((b) => (
-                  <option key={b.id} value={b.id}>
-                    {b.name}
+                  <option key={b.id} value={b.id} disabled={!hasProducts(b)}>
+                    {b.name}{soon(hasProducts(b))}
                   </option>
                 ))}
               </FieldSelect>
@@ -154,8 +158,8 @@ export function HomeExactModelSection({
                   {loadingModels ? t("loading") : t("allOption")}
                 </option>
                 {models.map((m) => (
-                  <option key={m.id} value={m.id}>
-                    {m.name}
+                  <option key={m.id} value={m.id} disabled={!hasProducts(m)}>
+                    {m.name}{soon(hasProducts(m))}
                   </option>
                 ))}
               </FieldSelect>
@@ -171,8 +175,8 @@ export function HomeExactModelSection({
                   {loadingYears ? t("loading") : t("allOption")}
                 </option>
                 {years.map((y) => (
-                  <option key={y.id} value={y.id}>
-                    {y.year}
+                  <option key={y.id} value={y.id} disabled={!hasProducts(y)}>
+                    {y.year}{soon(hasProducts(y))}
                   </option>
                 ))}
               </FieldSelect>

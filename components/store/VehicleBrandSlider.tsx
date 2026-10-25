@@ -1,22 +1,32 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { resolveMediaUrl } from "@/lib/resolve-media-url";
 import type { VehicleBrandsResponse } from "@/lib/types";
+import { availableFirst, hasProducts } from "@/lib/vehicle-availability";
 
 type Props = {
   brands: VehicleBrandsResponse["brands"];
   activeBrandId?: string;
+  /** Current text search, kept when switching brands. */
+  searchName?: string;
 };
 
-function brandHref(brandId: number | null): string {
-  if (brandId === null) return `/shop/search`;
+function brandHref(brandId: number | null, searchName?: string): string {
   // Brand-only: clear model/year so the grid shows every product for this brand.
-  return `/shop/search?vehicle_brand_id=${brandId}&offset=1`;
+  const q = new URLSearchParams();
+  if (searchName) q.set("name", searchName);
+  if (brandId !== null) q.set("vehicle_brand_id", String(brandId));
+  if (q.size === 0) return `/shop/search`;
+  q.set("offset", "1");
+  return `/shop/search?${q.toString()}`;
 }
 
-export function VehicleBrandSlider({ brands, activeBrandId }: Props) {
+export function VehicleBrandSlider({ brands: rawBrands, activeBrandId, searchName }: Props) {
+  const t = useTranslations("VehiclePicker");
+  const brands = availableFirst(rawBrands);
   const scrollerRef = useRef<HTMLDivElement>(null);
   const autoIndexRef = useRef(0);
 
@@ -28,8 +38,9 @@ export function VehicleBrandSlider({ brands, activeBrandId }: Props) {
 
     const tick = () => {
       if (paused) return;
-      autoIndexRef.current = (autoIndexRef.current + 1) % brands.length;
       const items = el.querySelectorAll<HTMLElement>(":scope > a");
+      if (items.length === 0) return;
+      autoIndexRef.current = (autoIndexRef.current + 1) % items.length;
       const item = items[autoIndexRef.current];
       if (item) {
         el.scrollTo({
@@ -82,20 +93,13 @@ export function VehicleBrandSlider({ brands, activeBrandId }: Props) {
       >
         {brands.map((brand) => {
           const active = activeBrandId === String(brand.id);
+          const available = hasProducts(brand);
           const src = resolveMediaUrl(
             brand.image_full_url ?? brand.image ?? null,
             { defaultFolder: "vehicle-brand" },
           );
-          return (
-            <Link
-              key={brand.id}
-              href={brandHref(active ? null : brand.id)}
-              className={`flex shrink-0 snap-start flex-col items-center gap-1.5 rounded-xl border-2 px-3 py-2 transition-all ${
-                active
-                  ? "border-primary bg-primary/5"
-                  : "border-border-soft bg-white hover:border-primary/30 hover:bg-surface-muted"
-              }`}
-            >
+          const inner = (
+            <>
               {src ? (
                 <div className="flex h-14 w-[4.5rem] items-center justify-center">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -124,6 +128,34 @@ export function VehicleBrandSlider({ brands, activeBrandId }: Props) {
               >
                 {brand.name}
               </span>
+              {!available && (
+                <span className="text-[10px] font-semibold text-secondary/60">{t("comingSoon")}</span>
+              )}
+            </>
+          );
+          if (!available) {
+            return (
+              <div
+                key={brand.id}
+                aria-disabled="true"
+                title={t("comingSoon")}
+                className="flex shrink-0 cursor-not-allowed snap-start flex-col items-center gap-1.5 rounded-xl border-2 border-border-soft bg-white px-3 py-2 opacity-45 grayscale"
+              >
+                {inner}
+              </div>
+            );
+          }
+          return (
+            <Link
+              key={brand.id}
+              href={brandHref(active ? null : brand.id, searchName)}
+              className={`flex shrink-0 snap-start flex-col items-center gap-1.5 rounded-xl border-2 px-3 py-2 transition-all ${
+                active
+                  ? "border-primary bg-primary/5"
+                  : "border-border-soft bg-white hover:border-primary/30 hover:bg-surface-muted"
+              }`}
+            >
+              {inner}
             </Link>
           );
         })}

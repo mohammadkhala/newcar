@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { resolveMediaUrl } from "@/lib/resolve-media-url";
 import type { VehicleModelRow } from "@/lib/types";
+import { availableFirst, hasProducts } from "@/lib/vehicle-availability";
 
 type Props = {
   models: VehicleModelRow[];
@@ -46,8 +47,10 @@ function CarGlyph() {
  * Horizontal scrollable strip of vehicle models for the active brand.
  * Shows the model image from the API when available, CarGlyph as fallback.
  */
-export function VehicleModelSlider({ models, activeModelId, baseQuery }: Props) {
+export function VehicleModelSlider({ models: rawModels, activeModelId, baseQuery }: Props) {
   const t = useTranslations("Search");
+  const tPicker = useTranslations("VehiclePicker");
+  const models = availableFirst(rawModels);
   const scrollerRef = useRef<HTMLDivElement>(null);
   const allActive = !activeModelId;
 
@@ -93,20 +96,13 @@ export function VehicleModelSlider({ models, activeModelId, baseQuery }: Props) 
         </Link>
         {models.map((model) => {
           const active = activeModelId === String(model.id);
+          const available = hasProducts(model);
           const src = resolveMediaUrl(
             model.image_full_url ?? model.image ?? null,
             { defaultFolder: "vehicle-model" },
           );
-          return (
-            <Link
-              key={model.id}
-              href={modelHref(baseQuery, model.id)}
-              className={`flex shrink-0 snap-start flex-col items-center gap-1 rounded-xl border px-4 py-2 transition-colors ${
-                active
-                  ? "border-primary bg-primary/5"
-                  : "border-border-soft bg-white hover:border-primary/30"
-              }`}
-            >
+          const inner = (
+            <>
               {src ? (
                 <div className="flex h-10 w-16 items-center justify-center">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -135,6 +131,34 @@ export function VehicleModelSlider({ models, activeModelId, baseQuery }: Props) 
               >
                 {model.name}
               </span>
+              {!available && (
+                <span className="text-[10px] font-semibold text-secondary/60">{tPicker("comingSoon")}</span>
+              )}
+            </>
+          );
+          if (!available) {
+            return (
+              <div
+                key={model.id}
+                aria-disabled="true"
+                title={tPicker("comingSoon")}
+                className="flex shrink-0 cursor-not-allowed snap-start flex-col items-center gap-1 rounded-xl border border-border-soft bg-white px-4 py-2 opacity-45 grayscale"
+              >
+                {inner}
+              </div>
+            );
+          }
+          return (
+            <Link
+              key={model.id}
+              href={modelHref(baseQuery, model.id)}
+              className={`flex shrink-0 snap-start flex-col items-center gap-1 rounded-xl border px-4 py-2 transition-colors ${
+                active
+                  ? "border-primary bg-primary/5"
+                  : "border-border-soft bg-white hover:border-primary/30"
+              }`}
+            >
+              {inner}
             </Link>
           );
         })}

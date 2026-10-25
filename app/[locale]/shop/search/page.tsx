@@ -178,6 +178,7 @@ export default async function ShopSearchPage({ searchParams, params }: PageProps
           <VehicleBrandSlider
             brands={vehicleBrands}
             activeBrandId={query.vehicle_brand_id}
+            searchName={query.name}
           />
         )
       )}

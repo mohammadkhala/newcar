@@ -1,7 +1,7 @@
 "use client";
 
-import { useLocale } from "next-intl";
-import { useEffect, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { clientFetchVehicleModels, clientFetchVehicleYears } from "@/lib/client-api";
 import type {
@@ -9,6 +9,7 @@ import type {
   VehicleModelRow,
   VehicleYearRow,
 } from "@/lib/types";
+import { availableFirst, hasProducts } from "@/lib/vehicle-availability";
 
 type Props = {
   brands: VehicleBrandsResponse["brands"];
@@ -16,8 +17,10 @@ type Props = {
   onNavigate: () => void;
 };
 
-export function VehicleByCarMegaPanel({ brands, apiConfigured, onNavigate }: Props) {
+export function VehicleByCarMegaPanel({ brands: rawBrands, apiConfigured, onNavigate }: Props) {
   const locale = useLocale();
+  const t = useTranslations("VehiclePicker");
+  const brands = useMemo(() => availableFirst(rawBrands), [rawBrands]);
   const [activeBrandId, setActiveBrandId] = useState<number | null>(
     brands[0]?.id ?? null,
   );
@@ -54,8 +57,10 @@ export function VehicleByCarMegaPanel({ brands, apiConfigured, onNavigate }: Pro
       try {
         const list = await clientFetchVehicleModels(activeBrandId, locale);
         if (cancelled) return;
-        setModels(list);
-        setActiveModelId(list[0]?.id ?? null);
+        const sorted = availableFirst(list);
+        setModels(sorted);
+        // Open on the first model that has products (sorted puts those first).
+        setActiveModelId(sorted.find(hasProducts)?.id ?? null);
       } finally {
         if (!cancelled) setLoadingModels(false);
       }
@@ -89,7 +94,7 @@ export function VehicleByCarMegaPanel({ brands, apiConfigured, onNavigate }: Pro
     <div className="flex w-[min(96vw,58rem)] overflow-hidden shadow-2xl ring-1 ring-black/10">
       {!apiConfigured ? (
         <div className="w-full bg-white p-6 text-sm text-secondary/80">
-          Configure API first.
+          {t("env")}
         </div>
       ) : (
         <>
@@ -101,24 +106,32 @@ export function VehicleByCarMegaPanel({ brands, apiConfigured, onNavigate }: Pro
                 onClick={onNavigate}
                 className="text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white/70 transition-colors"
               >
-                حسب سيارتك ›
+                {t("byVehicle")}
               </Link>
             </div>
             <ul className="max-h-[22rem] overflow-y-auto [scrollbar-color:#333_transparent] [scrollbar-width:thin]">
               {brands.map((b) => {
                 const active = b.id === activeBrandId;
+                const available = hasProducts(b);
                 return (
                   <li key={b.id}>
                     <button
                       type="button"
+                      disabled={!available}
+                      aria-disabled={!available}
                       onClick={() => setActiveBrandId(b.id)}
                       className={`flex w-full items-center justify-between px-4 py-2.5 text-sm font-semibold transition-colors ${
-                        active
-                          ? "bg-white/8 text-[#EAB308]"
-                          : "text-white/65 hover:bg-white/5 hover:text-white"
+                        !available
+                          ? "cursor-not-allowed text-white/25"
+                          : active
+                            ? "bg-white/8 text-[#EAB308]"
+                            : "text-white/65 hover:bg-white/5 hover:text-white"
                       }`}
                     >
-                      <span className="truncate">{b.name}</span>
+                      <span className="truncate">
+                        {b.name}
+                        {!available && <span className="ms-1.5 text-[10px] font-normal">{t("comingSoon")}</span>}
+                      </span>
                       <span
                         aria-hidden
                         className={`shrink-0 text-base leading-none ${active ? "text-[#EAB308]" : "text-white/20"}`}
@@ -147,30 +160,38 @@ export function VehicleByCarMegaPanel({ brands, apiConfigured, onNavigate }: Pro
                     onClick={onNavigate}
                     className="shrink-0 rounded-md bg-[#EAB308] px-3 py-1.5 text-xs font-bold text-black transition hover:brightness-105"
                   >
-                    تسوق الكل
+                    {t("shopAll")}
                   </Link>
                 )}
               </div>
               <ul className="max-h-[22rem] overflow-y-auto [scrollbar-color:var(--color-border-soft)_transparent] [scrollbar-width:thin]">
                 {loadingModels ? (
-                  <li className="px-4 py-3 text-sm text-secondary/50">جاري التحميل…</li>
+                  <li className="px-4 py-3 text-sm text-secondary/50">{t("loading")}</li>
                 ) : models.length === 0 ? (
-                  <li className="px-4 py-3 text-sm text-secondary/50">لا توجد موديلات</li>
+                  <li className="px-4 py-3 text-sm text-secondary/50">{t("noModels")}</li>
                 ) : (
                   models.map((m) => {
                     const active = m.id === activeModelId;
+                    const available = hasProducts(m);
                     return (
                       <li key={m.id}>
                         <button
                           type="button"
+                          disabled={!available}
+                          aria-disabled={!available}
                           onClick={() => setActiveModelId(m.id)}
                           className={`flex w-full items-center justify-between px-4 py-2.5 text-sm font-semibold transition-colors ${
-                            active
-                              ? "bg-amber-50 text-[#EAB308]"
-                              : "text-secondary/65 hover:bg-surface-muted hover:text-secondary"
+                            !available
+                              ? "cursor-not-allowed text-secondary/30"
+                              : active
+                                ? "bg-amber-50 text-[#EAB308]"
+                                : "text-secondary/65 hover:bg-surface-muted hover:text-secondary"
                           }`}
                         >
-                          <span className="truncate">{m.name}</span>
+                          <span className="truncate">
+                            {m.name}
+                            {!available && <span className="ms-1.5 text-[10px] font-normal">{t("comingSoon")}</span>}
+                          </span>
                           <span
                             aria-hidden
                             className={`shrink-0 text-base leading-none ${active ? "text-[#EAB308]" : "text-secondary/25"}`}
@@ -202,12 +223,21 @@ export function VehicleByCarMegaPanel({ brands, apiConfigured, onNavigate }: Pro
               </div>
               <ul className="max-h-[22rem] overflow-y-auto [scrollbar-color:var(--color-border-soft)_transparent] [scrollbar-width:thin]">
                 {loadingYears ? (
-                  <li className="px-4 py-3 text-sm text-secondary/50">جاري التحميل…</li>
+                  <li className="px-4 py-3 text-sm text-secondary/50">{t("loading")}</li>
                 ) : years.length === 0 ? (
                   <li className="px-4 py-3 text-sm text-secondary/50">—</li>
                 ) : (
                   years.map((y) => (
                     <li key={y.id}>
+                      {!hasProducts(y) ? (
+                        <span
+                          aria-disabled="true"
+                          className="flex cursor-not-allowed items-center justify-between px-4 py-2.5 text-sm font-semibold text-secondary/30"
+                        >
+                          <span>{y.year}</span>
+                          <span className="text-[10px] font-normal">{t("comingSoon")}</span>
+                        </span>
+                      ) : (
                       <Link
                         href={`/shop/search?vehicle_brand_id=${activeBrandId ?? ""}&vehicle_model_id=${activeModelId ?? ""}&vehicle_year_id=${y.id}&offset=1`}
                         onClick={onNavigate}
@@ -216,6 +246,7 @@ export function VehicleByCarMegaPanel({ brands, apiConfigured, onNavigate }: Pro
                         <span>{y.year}</span>
                         <span aria-hidden className="shrink-0 text-base leading-none text-secondary/25">‹</span>
                       </Link>
+                      )}
                     </li>
                   ))
                 )}

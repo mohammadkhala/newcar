@@ -488,6 +488,11 @@
     "loading": "جاري التحميل…",
     "submit": "عرض المنتجات المتوافقة",
     "noBrands": "لا توجد ماركات مركبات نشطة في الـ API.",
-    "env": "عيّن NEXT_PUBLIC_API_BASE_URL لتفعيل الفلتر."
+    "env": "عيّن NEXT_PUBLIC_API_BASE_URL لتفعيل الفلتر.",
+    "comingSoon": "قريباً",
+    "shopAll": "تسوق الكل",
+    "shopAllOfBrand": "تسوق كل منتجات {brand} ←",
+    "noModels": "لا توجد موديلات",
+    "byVehicle": "حسب سيارتك ›"
   }
 }

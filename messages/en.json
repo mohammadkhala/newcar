@@ -488,6 +488,11 @@
     "loading": "Loading…",
     "submit": "Show compatible products",
     "noBrands": "No active vehicle brands from the API.",
-    "env": "Set NEXT_PUBLIC_API_BASE_URL to enable the filter."
+    "env": "Set NEXT_PUBLIC_API_BASE_URL to enable the filter.",
+    "comingSoon": "Coming soon",
+    "shopAll": "Shop all",
+    "shopAllOfBrand": "Shop all {brand} products →",
+    "noModels": "No models",
+    "byVehicle": "By your vehicle ›"
   }
 }

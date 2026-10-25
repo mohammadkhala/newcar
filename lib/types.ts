@@ -9,6 +9,8 @@ export type VehicleBrandsResponse = {
     slug: string;
     image?: string | null;
     image_full_url?: string | null;
+    /** Active products fitted to this brand; absent on older API builds. */
+    products_count?: number;
   }>;
 };
 
@@ -19,12 +21,14 @@ export type VehicleModelRow = {
   slug: string;
   image?: string | null;
   image_full_url?: string | null;
+  products_count?: number;
 };
 
 export type VehicleYearRow = {
   id: number;
   vehicle_model_id: number;
   year: number;
+  products_count?: number;
 };
 
 export type StoreProductListItem = {
